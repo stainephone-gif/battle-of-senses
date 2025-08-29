@@ -4,6 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
   <title>Зрение</title>
+  <!-- ВАЖНО: фиксируем базу путей, чтобы pic/... работал на GitHub Pages в /REPO/ -->
+  <base href="./">
+
   <style>
     body{ margin:0; display:flex; justify-content:center; background:#000 }
     .phone-frame{ width:393px; max-width:100%; background:#fff; overflow-x:hidden }
@@ -34,9 +37,11 @@
       transition:opacity .6s ease, transform .6s ease;
     }
 
-    .left-half{ left:-70px }   /* половина ширины 140px */
+    /* половина карточки за краем */
+    .left-half{ left:-70px }
     .right-half{ right:-70px }
 
+    /* активация */
     .placeholder.active{ filter:blur(0); transform:translateX(70px) }
     .placeholder.right-half.active{ transform:translateX(-70px) }
     .placeholder.active .caption{ opacity:1; transform:translateY(0) }
@@ -88,7 +93,7 @@
   </div>
 
   <script>
-    // ---- данные: 3 изображения на каждую секцию (клади файлы в /pic) ----
+    // ---- данные: 3 изображения на каждую секцию (файлы положи в /pic) ----
     const data = {
       antique: [
         { img: "pic/Plato.png", text: "Платон — называл зрение «солнцем души», а слух — проводником гармонии." },
@@ -142,7 +147,7 @@
       return out.sort(() => Math.random() - 0.5); // «неравномерность»
     }
 
-    // ---- рендер ----
+    // ---- рендер карточек ----
     Object.entries(data).forEach(([id, items]) => {
       const gallery = document.querySelector(`#${id} .gallery`);
       if(!gallery) return;
@@ -168,7 +173,7 @@
       });
     });
 
-    // ---- клики: одна активная, повторный клик снимает ----
+    // ---- клики: в секции активна одна, повторный клик снимает ----
     document.querySelectorAll(".gallery").forEach(gal => {
       gal.addEventListener("click", e => {
         const target = e.target.closest(".placeholder");
@@ -187,6 +192,35 @@
       entries.forEach(en => { if(en.isIntersecting) en.target.classList.add("visible"); });
     }, {threshold:.35});
     document.querySelectorAll("h2").forEach(h => io.observe(h));
+
+    // --- DEBUG: ?debug=1 — автоактивация и список реальных URL картинок ---
+    (function debugHelp(){
+      const params = new URLSearchParams(location.search);
+      if (params.get('debug') !== '1') return;
+
+      // активируем первую карточку в каждой секции, чтобы подписи сразу были видны
+      document.querySelectorAll('.gallery').forEach(gal => {
+        const first = gal.querySelector('.placeholder');
+        if (first) first.classList.add('active');
+      });
+
+      // панель со списком URL (поможет поймать неверный регистр/путь)
+      const panel = document.createElement('div');
+      panel.style.cssText = 'position:fixed;left:0;right:0;bottom:0;max-height:45vh;overflow:auto;background:rgba(0,0,0,.86);color:#fff;font:12px/1.4 monospace;padding:8px;z-index:9999';
+      panel.innerHTML = '<b>DEBUG: проверка путей к изображениям</b><br>';
+
+      document.querySelectorAll('.gallery img').forEach(img => {
+        const url = img.currentSrc || img.src;
+        const row = document.createElement('div');
+        row.textContent = '… ' + url;
+        img.addEventListener('load',  () => row.textContent = 'OK  ' + url, {once:true});
+        img.addEventListener('error', () => row.textContent = 'ERR ' + url, {once:true});
+        panel.appendChild(row);
+      });
+      document.body.appendChild(panel);
+    })();
   </script>
 </body>
 </html>
+
+
