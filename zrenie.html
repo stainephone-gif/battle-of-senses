@@ -1,181 +1,192 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Выбор: Зрение</title>
-
-  <!-- Подключаем Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&family=Cutive+Mono&family=Roboto:wght@400;700&family=Cinzel+Decorative:wght@700&family=Fredericka+the+Great&display=swap" rel="stylesheet">
-
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>Зрение</title>
   <style>
-    body {
-      margin: 0;
-      scroll-behavior: smooth;
+    body{ margin:0; display:flex; justify-content:center; background:#000 }
+    .phone-frame{ width:393px; max-width:100%; background:#fff; overflow-x:hidden }
+
+    section{
+      position:relative; height:100vh; overflow:hidden;
+      display:flex; flex-direction:column; align-items:center; padding:20px; text-align:center;
+    }
+    h2{
+      font-size:1.2rem; margin:0 0 18px;
+      opacity:0; transform:translateY(24px);
+      transition:opacity .6s ease, transform .6s ease;
+    }
+    h2.visible{ opacity:1; transform:translateY(0) }
+
+    .gallery{ position:relative; flex:1; width:100% }
+
+    .placeholder{
+      position:absolute; width:140px; cursor:pointer; text-align:center;
+      filter:blur(8px);
+      transition:transform .6s ease, filter .6s ease;
+      will-change:transform, filter;
+    }
+    .placeholder img{ width:100%; height:auto; display:block; border-radius:6px; background:#ddd }
+    .caption{
+      font-size:.82rem; line-height:1.2rem; margin-top:6px;
+      opacity:0; transform:translateY(10px);
+      transition:opacity .6s ease, transform .6s ease;
     }
 
-    section {
-      position: relative;
-      height: 100vh;
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-      flex-direction: column;
-      padding: 40px 20px;
-      text-align: center;
-    }
+    .left-half{ left:-70px }   /* половина ширины 140px */
+    .right-half{ right:-70px }
 
-    h2 {
-      font-size: 1.8rem;
-      margin-bottom: 20px;
-      opacity: 0;
-      transform: translateY(30px);
-      transition: all 1s ease;
-    }
+    .placeholder.active{ filter:blur(0); transform:translateX(70px) }
+    .placeholder.right-half.active{ transform:translateX(-70px) }
+    .placeholder.active .caption{ opacity:1; transform:translateY(0) }
 
-    h2.visible {
-      opacity: 1;
-      transform: translateY(0);
+    .arrow{
+      position:absolute; bottom:16px; left:50%; transform:translateX(-50%);
+      font-size:1.6rem; color:#000; text-decoration:none; animation:bounce 1.5s infinite;
     }
+    @keyframes bounce{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,10px)}}
 
-    .gallery {
-      position: relative;
-      flex: 1;
-      width: 100%;
-    }
-
-    .placeholder {
-      position: absolute;
-      width: 140px;
-      height: 180px;
-      background: #ccc;
-      filter: blur(8px);
-      transition: filter 0.6s ease, transform 0.4s ease;
-      border-radius: 6px;
-    }
-
-    .placeholder:hover {
-      filter: blur(0);
-      transform: scale(1.05);
-    }
-
-    .p1 { top: 15%; left: 10%; }
-    .p2 { top: 25%; right: 15%; }
-    .p3 { bottom: 20%; left: 20%; }
-    .p4 { bottom: 25%; right: 25%; }
-
-    .arrow {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 2rem;
-      text-decoration: none;
-      color: #000;
-      animation: bounce 1.5s infinite;
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translate(-50%, 0); }
-      50% { transform: translate(-50%, 10px); }
-    }
-
-    /* ===== ФОНЫ и ШРИФТЫ ===== */
-    #antique {
-      background: #faf6ef;
-      font-family: "Fredericka the Great", cursive;
-    }
-
-    #middle {
-      background: linear-gradient(to bottom, #f5f0e9, #cbb9d9);
-      font-family: "Cinzel Decorative", serif;
-    }
-
-    #german {
-      background: linear-gradient(to bottom, #d2bdd8, #f5d9a6);
-      font-family: "UnifrakturCook", cursive;
-    }
-
-    #modern {
-      background: #f7e1b5;
-      font-family: "Cutive Mono", monospace;
-    }
-
-    #neuro {
-      background: #dbe6f3;
-      font-family: "Roboto", sans-serif;
-    }
+    /* фоны секций */
+    #antique{ background:#faf6ef }
+    #middle { background:linear-gradient(to bottom,#f5f0e9,#cbb9d9) }
+    #german { background:linear-gradient(to bottom,#d2bdd8,#f5d9a6) }
+    #modern { background:#f7e1b5 }
+    #neuro  { background:#dbe6f3 }
   </style>
 </head>
 <body>
+  <div class="phone-frame">
+    <section id="antique">
+      <h2>АНТИЧНЫЕ ФИЛОСОФЫ</h2>
+      <div class="gallery"></div>
+      <a class="arrow" href="#middle">⌄</a>
+    </section>
 
-  <!-- Античные философы -->
-  <section id="antique">
-    <h2>АНТИЧНЫЕ ФИЛОСОФЫ</h2>
-    <div class="gallery">
-      <div class="placeholder p1"></div>
-      <div class="placeholder p2"></div>
-      <div class="placeholder p3"></div>
-      <div class="placeholder p4"></div>
-    </div>
-    <a href="#middle" class="arrow">⌄</a>
-  </section>
+    <section id="middle">
+      <h2>СРЕДНЕВЕКОВЫЕ И РАННИЕ СОВРЕМЕННЫЕ ФИЛОСОФЫ</h2>
+      <div class="gallery"></div>
+      <a class="arrow" href="#german">⌄</a>
+    </section>
 
-  <!-- Средневековые -->
-  <section id="middle">
-    <h2>СРЕДНЕВЕКОВЫЕ И РАННИЕ СОВРЕМЕННЫЕ ФИЛОСОФЫ</h2>
-    <div class="gallery">
-      <div class="placeholder p1"></div>
-      <div class="placeholder p2"></div>
-      <div class="placeholder p3"></div>
-    </div>
-    <a href="#german" class="arrow">⌄</a>
-  </section>
+    <section id="german">
+      <h2>НЕМЕЦКАЯ КЛАССИЧЕСКАЯ ФИЛОСОФИЯ</h2>
+      <div class="gallery"></div>
+      <a class="arrow" href="#modern">⌄</a>
+    </section>
 
-  <!-- Немецкая классическая философия -->
-  <section id="german">
-    <h2>НЕМЕЦКАЯ КЛАССИЧЕСКАЯ ФИЛОСОФИЯ</h2>
-    <div class="gallery">
-      <div class="placeholder p1"></div>
-      <div class="placeholder p2"></div>
-      <div class="placeholder p3"></div>
-    </div>
-    <a href="#modern" class="arrow">⌄</a>
-  </section>
+    <section id="modern">
+      <h2>ХХ ВЕК И СОВРЕМЕННОСТЬ</h2>
+      <div class="gallery"></div>
+      <a class="arrow" href="#neuro">⌄</a>
+    </section>
 
-  <!-- ХХ век -->
-  <section id="modern">
-    <h2>ХХ ВЕК И СОВРЕМЕННОСТЬ</h2>
-    <div class="gallery">
-      <div class="placeholder p1"></div>
-      <div class="placeholder p2"></div>
-      <div class="placeholder p3"></div>
-    </div>
-    <a href="#neuro" class="arrow">⌄</a>
-  </section>
+    <section id="neuro">
+      <h2>НЕЙРОФИЗИОЛОГИ</h2>
+      <div class="gallery"></div>
+    </section>
+  </div>
 
-  <!-- Нейрофизиологи -->
-  <section id="neuro">
-    <h2>НЕЙРОФИЗИОЛОГИ</h2>
-    <div class="gallery">
-      <div class="placeholder p1"></div>
-      <div class="placeholder p2"></div>
-    </div>
-  </section>
-
-  <!-- JS для анимации заголовков -->
   <script>
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("visible");
+    // ---- данные: 3 изображения на каждую секцию (клади файлы в /pic) ----
+    const data = {
+      antique: [
+        { img: "pic/Plato.png", text: "Платон — называл зрение «солнцем души», а слух — проводником гармонии." },
+        { img: "pic/Piph.png",  text: "Пифагор — видел в музыке основу мира, а в зрении — инструмент постижения геометрии." },
+        { img: "pic/Arist.png", text: "Аристотель — выделял зрение и слух как «разумные» чувства, ведущие к знанию." }
+      ],
+      middle: [
+        { img: "pic/mid1.png", text: "Философ Средневековья 1 — подпись." },
+        { img: "pic/mid2.png", text: "Философ Средневековья 2 — подпись." },
+        { img: "pic/mid3.png", text: "Философ Средневековья 3 — подпись." }
+      ],
+      german: [
+        { img: "pic/germ1.png", text: "Немецкий философ 1 — подпись." },
+        { img: "pic/germ2.png", text: "Немецкий философ 2 — подпись." },
+        { img: "pic/germ3.png", text: "Немецкий философ 3 — подпись." }
+      ],
+      modern: [
+        { img: "pic/xx1.png", text: "Философ ХХ века 1 — подпись." },
+        { img: "pic/xx2.png", text: "Философ ХХ века 2 — подпись." },
+        { img: "pic/xx3.png", text: "Философ ХХ века 3 — подпись." }
+      ],
+      neuro: [
+        { img: "pic/neuro1.png", text: "Нейрофизиолог 1 — подпись." },
+        { img: "pic/neuro2.png", text: "Нейрофизиолог 2 — подпись." },
+        { img: "pic/neuro3.png", text: "Нейрофизиолог 3 — подпись." }
+      ]
+    };
+
+    // ---- SVG-заглушка (если файл не найден) ----
+    const fallbackDataURI = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="140" height="180">
+        <rect width="100%" height="100%" fill="#ddd"/>
+        <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+              font-family="Arial" font-size="12" fill="#666">no image</text>
+      </svg>`
+    );
+
+    // ---- генерация случайных вертикальных позиций без наложений ----
+    function generatePositions(count){
+      const min = 10, max = 80, minGap = 24; // проценты
+      const out = [];
+      let guard = 0;
+      while(out.length < count && guard < 200){
+        guard++;
+        const cand = Math.floor(Math.random()*(max-min))+min;
+        if(out.every(x => Math.abs(x - cand) >= minGap)) out.push(cand);
+      }
+      while(out.length < count){ // подстраховка
+        out.push(min + (out.length * ((max-min)/(count+1))));
+      }
+      return out.sort(() => Math.random() - 0.5); // «неравномерность»
+    }
+
+    // ---- рендер ----
+    Object.entries(data).forEach(([id, items]) => {
+      const gallery = document.querySelector(`#${id} .gallery`);
+      if(!gallery) return;
+      const tops = generatePositions(items.length);
+
+      items.forEach((item, i) => {
+        const card = document.createElement("div");
+        card.className = "placeholder " + (i % 2 === 0 ? "left-half" : "right-half");
+        card.style.top = tops[i] + "%";
+
+        const img = document.createElement("img");
+        img.src = item.img;
+        img.alt = item.text.slice(0,48);
+        img.onerror = () => { img.src = fallbackDataURI; };
+
+        const cap = document.createElement("div");
+        cap.className = "caption";
+        cap.textContent = item.text;
+
+        card.appendChild(img);
+        card.appendChild(cap);
+        gallery.appendChild(card);
+      });
+    });
+
+    // ---- клики: одна активная, повторный клик снимает ----
+    document.querySelectorAll(".gallery").forEach(gal => {
+      gal.addEventListener("click", e => {
+        const target = e.target.closest(".placeholder");
+        if(!target) return;
+        if(target.classList.contains("active")){
+          target.classList.remove("active");
+        } else {
+          gal.querySelectorAll(".placeholder").forEach(p => p.classList.remove("active"));
+          target.classList.add("active");
         }
       });
-    }, { threshold: 0.4 });
-
-    document.querySelectorAll("h2").forEach(h2 => {
-      observer.observe(h2);
     });
+
+    // ---- анимация заголовков ----
+    const io = new IntersectionObserver(entries=>{
+      entries.forEach(en => { if(en.isIntersecting) en.target.classList.add("visible"); });
+    }, {threshold:.35});
+    document.querySelectorAll("h2").forEach(h => io.observe(h));
   </script>
 </body>
 </html>

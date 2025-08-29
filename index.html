@@ -1,118 +1,62 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Сделай свой выбор</title>
   <style>
-    :root {
-      --transition-time: 1.5s;
-    }
+    :root { --transition-time: 1.5s; --shift: 20px; }
 
     body {
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
       font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      display: flex; justify-content: center; align-items: center;
       height: 100vh;
       transition: background-color var(--transition-time) ease, color var(--transition-time) ease;
+      background-color: #111; color: #fff;
     }
 
-    .container {
-      max-width: 500px;
-      padding: 20px;
-      text-align: center;
-      line-height: 1.6;
-    }
+    .container { max-width: 500px; padding: 20px; text-align: center; line-height: 1.6; }
 
-    h1 {
-      font-size: 1.8rem;
-      margin-bottom: 20px;
-    }
-
-    p {
-      font-size: 1rem;
-      margin-bottom: 20px;
-    }
-
-    h2 {
-      font-size: 1.2rem;
-      margin-bottom: 25px;
-    }
+    h1 { font-size: 1.8rem; margin-bottom: 20px; }
+    p  { font-size: 1rem;   margin-bottom: 20px; }
+    h2 { font-size: 1.2rem; margin-bottom: 25px; }
 
     .buttons {
-      display: flex;
-      justify-content: space-between; /* кнопки по разным краям */
-      gap: 40px;
-      position: relative;
+      display: flex; justify-content: space-between; gap: 40px; position: relative;
     }
 
     .buttons a {
-      text-decoration: none;
-      background: #ccc;
-      padding: 10px 20px;
-      border-radius: 6px;
-      font-weight: bold;
-      transition: background 0.3s, transform var(--transition-time) ease;
-      color: inherit;
+      text-decoration: none; background: #333; color: #fff;
+      padding: 10px 20px; border-radius: 6px; font-weight: bold;
+      transition: background .3s, transform var(--transition-time) ease;
       display: inline-block;
+      will-change: transform;
     }
+    .buttons a:hover { background: #555; }
 
-    .buttons a:hover {
-      background: #aaa;
-    }
+    /* Светлая/тёмная темы */
+    body.light { background-color: #fdf6ef; color: #000; }
+    body.light .buttons a { background:#ddd; color:#000; }
+    body.light .buttons a:hover { background:#bbb; }
 
-    /* Тёмная тема */
-    body.dark {
-      background-color: #111;
-      color: #fff;
-    }
-    body.dark .buttons a {
-      background: #333;
-      color: #fff;
-    }
-    body.dark .buttons a:hover {
-      background: #555;
-    }
+    body.dark { background-color: #111; color: #fff; }
+    body.dark .buttons a { background:#333; color:#fff; }
+    body.dark .buttons a:hover { background:#555; }
 
-    /* Светлая тема */
-    body.light {
-      background-color: #fdf6ef;
-      color: #000;
-    }
-    body.light .buttons a {
-      background: #ddd;
-      color: #000;
-    }
-    body.light .buttons a:hover {
-      background: #bbb;
-    }
+    /* Зеркальная параллельная анимация (величина сдвига — var(--shift)) */
+    body.dark .btn-zrenie { transform: translateY(calc(-1 * var(--shift))); }
+    body.dark .btn-sluh   { transform: translateY(var(--shift)); }
+    body.light .btn-zrenie{ transform: translateY(var(--shift)); }
+    body.light .btn-sluh  { transform: translateY(calc(-1 * var(--shift))); }
 
-    /* Зеркальная анимация параллельно */
-    body.dark .btn-zrenie {
-      transform: translateY(-20px); /* зрение выше */
-    }
-    body.dark .btn-sluh {
-      transform: translateY(20px);  /* слух ниже */
-    }
-
-    body.light .btn-zrenie {
-      transform: translateY(20px);  /* зрение вниз */
-    }
-    body.light .btn-sluh {
-      transform: translateY(-20px); /* слух вверх */
-    }
-
-    /* Если отключены анимации */
+    /* Меньше движения, если пользователь так настроил */
     @media (prefers-reduced-motion: reduce) {
-      body {
-        transition: none;
-      }
-      .buttons a {
-        transition: none;
-      }
+      body, .buttons a { transition: none !important; }
+      body.light .btn-zrenie,
+      body.light .btn-sluh,
+      body.dark .btn-zrenie,
+      body.dark .btn-sluh { transform: none !important; }
     }
   </style>
 </head>
@@ -120,26 +64,41 @@
   <div class="container">
     <h1>Сделай свой выбор</h1>
     <p>
-      Зрение и слух — первые в списке must-have древних философов.
-      Еще Платон и Аристотель считали эти чувства «благородными»,
-      с помощью которых человек сохраняет и познаёт этот мир,
-      то есть те, которые связаны с разумом.
-      По Платону чувства связаны со стихиями.
-      Зрение связано со светом, а значит, со стихией огня,
-      слух же соотносится со стихией воздуха.
+      Зрение и слух — первые в списке must-have древних философов. Ещё Платон и Аристотель считали эти чувства
+      «благородными», с помощью которых человек сохраняет и познаёт мир. По Платону чувства связаны со стихиями:
+      зрение — со светом (огонь), слух — с воздухом.
     </p>
     <h2>Какое чувство для вас важнее?</h2>
     <div class="buttons">
       <a href="zrenie.html" class="btn-zrenie">зрение</a>
-      <a href="sluh.html" class="btn-sluh">слух</a>
+      <a href="sluh.html"    class="btn-sluh">слух</a>
     </div>
   </div>
 
   <script>
-    setInterval(() => {
-      document.body.classList.toggle("dark");
-      document.body.classList.toggle("light");
-    }, 3000); // каждые 3 секунды
+    // измеряем высоту кнопки и задаём сдвиг = её высоте
+    function setShift() {
+      const z = document.querySelector('.btn-zrenie');
+      if (!z) return;
+      const h = Math.ceil(z.getBoundingClientRect().height);
+      document.documentElement.style.setProperty('--shift', h + 'px');
+    }
+    setShift();
+    window.addEventListener('resize', setShift);
+
+    // если пользователь не отключал анимации — цикличная смена темы
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!prefersReduced) {
+      setInterval(() => {
+        document.body.classList.toggle('dark');
+        document.body.classList.toggle('light');
+      }, 3000); // каждые 3 сек
+    } else {
+      // фиксируем «светлую» как базовую, без анимаций
+      document.body.classList.remove('dark');
+      document.body.classList.add('light');
+    }
   </script>
 </body>
 </html>
+
