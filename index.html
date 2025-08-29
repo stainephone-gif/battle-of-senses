@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Battle of Senses — старт</title>
   <style>
     body {
@@ -12,84 +11,31 @@
       background: linear-gradient(135deg, #f7f0e9, #cbb9d9);
       font-family: Arial, sans-serif;
     }
-    .menu {
-      text-align: center; background: #fff; padding: 32px;
-      border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,.15);
-      max-width: 420px;
-    }
-    h1 { margin: 0 0 16px; font-size: 1.8rem; color: #333; }
-    p  { margin: 0 0 20px; color: #555; }
-    .btn {
-      display: block; width: 240px; margin: 10px auto; text-align: center;
-      padding: 12px 18px; border-radius: 10px; color: #fff; text-decoration: none;
-      background: #6c5ce7; transition: background .2s;
-    }
-    .btn:hover { background: #5547cf; }
-    .hint { margin-top: 10px; font-size: .9rem; color: #666; }
-    code { background: #f3f3f3; padding: 2px 6px; border-radius: 6px; }
+    .menu { text-align: center; background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+    h1 { margin-bottom: 30px; font-size: 1.8rem; color: #333; }
+    .btn { display: block; margin: 15px auto; padding: 12px 20px; font-size: 1.1rem; text-decoration: none; color: #fff; background: #6c5ce7; border-radius: 8px; transition: background 0.3s ease; width: 220px; }
+    .btn:hover { background: #4b3fc3; }
   </style>
 </head>
 <body>
   <div class="menu">
     <h1>Battle of Senses</h1>
     <p>Если автоопределение не сработало, выберите вручную:</p>
-    <a class="btn" href="zrenie.html">Полная версия</a>
-    <a class="btn" href="zrenie_mob.html">Мобильная версия</a>
-    <div class="hint">
-      Подсказка: можно принудительно открыть через<br />
-      <code>?force=mobile</code> или <code>?force=desktop</code>
-    </div>
+    <a href="zrenie.html" class="btn">Полная версия</a>
+    <a href="zrenie_mob.html" class="btn">Мобильная версия</a>
   </div>
 
   <script>
-    (function () {
-      // --- helpers ---
-      const qs = new URLSearchParams(location.search);
-      const force = (qs.get("force") || "").toLowerCase(); // 'mobile' | 'desktop' | ''
-      const ua = navigator.userAgent || navigator.vendor || window.opera;
+    window.addEventListener("load", function() {
+      const ua = navigator.userAgent;
+      const isMobile = /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(ua);
 
-      const isMobileUA =
-        /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(ua);
-
-      const smallScreen = Math.min(window.innerWidth, window.innerHeight) <= 480;
-      const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
-
-      const wantsMobile = () => {
-        if (force === "mobile") return true;
-        if (force === "desktop") return false;
-        // Решение большинства кейсов: хоть один из признаков — мобильный
-        return isMobileUA || (coarsePointer && smallScreen);
-      };
-
-      // Собираем корректный URL в рамках текущей папки/репозитория:
-      // new URL('zrenie_mob.html', location.href) учитывает и поддиректории проекта на GitHub Pages
-      const toURL = (file) => new URL(file, location.href).href;
-
-      // --- debug ---
-      console.log("[index] ua:", ua);
-      console.log("[index] isMobileUA:", isMobileUA, "smallScreen:", smallScreen, "coarse:", coarsePointer);
-      console.log("[index] force:", force);
-
-      // Делаем редирект ПОСЛЕ полной загрузки (чтобы не ломать отрисовку и BaseURL)
-      window.addEventListener("load", () => {
-        try {
-          const target = wantsMobile() ? "zrenie_mob.html" : "zrenie.html";
-          const href = toURL(target);
-          console.log("[index] redirecting to:", href);
-          // replace — чтобы не оставлять index в истории назад
-          window.location.replace(href);
-          // На всякий случай фолбэк: если replace не сработал за 1200мс — пробуем assign
-          setTimeout(() => {
-            if (document.visibilityState === "visible") {
-              console.log("[index] fallback assign →", href);
-              window.location.assign(href);
-            }
-          }, 1200);
-        } catch (e) {
-          console.error("[index] redirect error:", e);
-        }
-      });
-    })();
+      if (isMobile) {
+        window.location.replace("zrenie_mob.html");
+      } else {
+        window.location.replace("zrenie.html");
+      }
+    });
   </script>
 </body>
 </html>
