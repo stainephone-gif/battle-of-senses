@@ -2,58 +2,144 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Battle of Senses — старт</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Сделай свой выбор</title>
   <style>
-    body {
-      margin: 0;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #f7f0e9, #cbb9d9);
-      font-family: Arial, sans-serif;
+    :root {
+      --transition-time: 1.5s;
     }
 
-    .menu {
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      transition: background-color var(--transition-time) ease, color var(--transition-time) ease;
+    }
+
+    .container {
+      max-width: 500px;
+      padding: 20px;
       text-align: center;
-      background: #fff;
-      padding: 40px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      line-height: 1.6;
     }
 
     h1 {
-      margin-bottom: 30px;
       font-size: 1.8rem;
-      color: #333;
+      margin-bottom: 20px;
     }
 
-    .btn {
-      display: block;
-      margin: 15px auto;
-      padding: 12px 20px;
-      font-size: 1.1rem;
+    p {
+      font-size: 1rem;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      margin-bottom: 25px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between; /* кнопки по разным краям */
+      gap: 40px;
+      position: relative;
+    }
+
+    .buttons a {
       text-decoration: none;
-      color: #fff;
-      background: #6c5ce7;
-      border-radius: 8px;
-      transition: background 0.3s ease;
-      width: 220px;
+      background: #ccc;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: background 0.3s, transform var(--transition-time) ease;
+      color: inherit;
+      display: inline-block;
     }
 
-    .btn:hover {
-      background: #4b3fc3;
+    .buttons a:hover {
+      background: #aaa;
+    }
+
+    /* Тёмная тема */
+    body.dark {
+      background-color: #111;
+      color: #fff;
+    }
+    body.dark .buttons a {
+      background: #333;
+      color: #fff;
+    }
+    body.dark .buttons a:hover {
+      background: #555;
+    }
+
+    /* Светлая тема */
+    body.light {
+      background-color: #fdf6ef;
+      color: #000;
+    }
+    body.light .buttons a {
+      background: #ddd;
+      color: #000;
+    }
+    body.light .buttons a:hover {
+      background: #bbb;
+    }
+
+    /* Зеркальная анимация параллельно */
+    body.dark .btn-zrenie {
+      transform: translateY(-20px); /* зрение выше */
+    }
+    body.dark .btn-sluh {
+      transform: translateY(20px);  /* слух ниже */
+    }
+
+    body.light .btn-zrenie {
+      transform: translateY(20px);  /* зрение вниз */
+    }
+    body.light .btn-sluh {
+      transform: translateY(-20px); /* слух вверх */
+    }
+
+    /* Если отключены анимации */
+    @media (prefers-reduced-motion: reduce) {
+      body {
+        transition: none;
+      }
+      .buttons a {
+        transition: none;
+      }
     }
   </style>
 </head>
-<body>
-  <div class="menu">
-    <h1>Battle of Senses</h1>
-    <a href="zrenie.html" class="btn">Полная версия</a>
-    <a href="zrenie_mob.html" class="btn">Мобильная версия</a>
+<body class="dark">
+  <div class="container">
+    <h1>Сделай свой выбор</h1>
+    <p>
+      Зрение и слух — первые в списке must-have древних философов.
+      Еще Платон и Аристотель считали эти чувства «благородными»,
+      с помощью которых человек сохраняет и познаёт этот мир,
+      то есть те, которые связаны с разумом.
+      По Платону чувства связаны со стихиями.
+      Зрение связано со светом, а значит, со стихией огня,
+      слух же соотносится со стихией воздуха.
+    </p>
+    <h2>Какое чувство для вас важнее?</h2>
+    <div class="buttons">
+      <a href="zrenie.html" class="btn-zrenie">зрение</a>
+      <a href="sluh.html" class="btn-sluh">слух</a>
+    </div>
   </div>
+
+  <script>
+    setInterval(() => {
+      document.body.classList.toggle("dark");
+      document.body.classList.toggle("light");
+    }, 3000); // каждые 3 секунды
+  </script>
 </body>
 </html>
-
