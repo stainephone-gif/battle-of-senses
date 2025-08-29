@@ -60,10 +60,8 @@
 
     .placeholder img {
       width: 100%;
-      height: auto;
       border-radius: 6px;
       display: block;
-      background: #ddd; /* запасной фон */
     }
 
     .left-half  { left: -70px; }
@@ -107,114 +105,59 @@
     }
 
     #antique { background: #faf6ef; font-family: "Georgia", serif; }
-    #middle  { background: linear-gradient(to bottom, #f5f0e9, #cbb9d9); font-family: "Georgia", serif; }
-    #german  { background: linear-gradient(to bottom, #d2bdd8, #f5d9a6); font-family: "Georgia", serif; }
-    #modern  { background: #f7e1b5; font-family: "Georgia", serif; }
-    #neuro   { background: #dbe6f3; font-family: "Georgia", serif; }
   </style>
 </head>
 <body>
   <div class="phone-frame">
-    <!-- Секции -->
+    <!-- Античные -->
     <section id="antique">
       <h2>АНТИЧНЫЕ ФИЛОСОФЫ</h2>
-      <div class="gallery"></div>
+      <div class="gallery">
+        <!-- Платон -->
+        <div class="placeholder left-half" style="top: 20%;">
+          <img src="pic/Plato.png" alt="Платон">
+          <div class="caption">
+            Платон — называл зрение “солнцем души”, а слух — проводником гармонии. 
+            Считал их главными для познания идей.
+          </div>
+        </div>
+        <!-- Пифагор -->
+        <div class="placeholder right-half" style="top: 50%;">
+          <img src="pic/Piph.png" alt="Пифагор">
+          <div class="caption">
+            Пифагор — видел в музыке (слухе) математическую основу мира, 
+            а в зрении — инструмент постижения геометрии.
+          </div>
+        </div>
+        <!-- Аристотель -->
+        <div class="placeholder left-half" style="top: 75%;">
+          <img src="pic/Arist.png" alt="Аристотель">
+          <div class="caption">
+            Аристотель — в труде “О душе” выделял зрение и слух 
+            как “разумные” чувства, связывающие человека с абстрактным знанием.
+          </div>
+        </div>
+      </div>
       <a href="#middle" class="arrow">⌄</a>
     </section>
 
+    <!-- Следующий экран -->
     <section id="middle">
       <h2>СРЕДНЕВЕКОВЫЕ И РАННИЕ СОВРЕМЕННЫЕ ФИЛОСОФЫ</h2>
-      <div class="gallery"></div>
-      <a href="#german" class="arrow">⌄</a>
-    </section>
-
-    <section id="german">
-      <h2>НЕМЕЦКАЯ КЛАССИЧЕСКАЯ ФИЛОСОФИЯ</h2>
-      <div class="gallery"></div>
-      <a href="#modern" class="arrow">⌄</a>
-    </section>
-
-    <section id="modern">
-      <h2>ХХ ВЕК И СОВРЕМЕННОСТЬ</h2>
-      <div class="gallery"></div>
-      <a href="#neuro" class="arrow">⌄</a>
-    </section>
-
-    <section id="neuro">
-      <h2>НЕЙРОФИЗИОЛОГИ</h2>
       <div class="gallery"></div>
     </section>
   </div>
 
   <script>
-    // Данные для каждой секции
-    const data = {
-      antique: [
-        { img: "pic/Plato.png", text: "Платон — называл зрение “солнцем души”, а слух — проводником гармонии. Считал их главными для познания идей." },
-        { img: "pic/Piph.png", text: "Пифагор — видел в музыке (слухе) математическую основу мира, а в зрении — инструмент постижения геометрии." },
-        { img: "pic/Arist.png", text: "Аристотель — в труде “О душе” выделял зрение и слух как “разумные” чувства, связывающие человека с абстрактным знанием." }
-      ],
-      middle: [
-        { img: "pic/mid1.png", text: "Средневековый философ 1 — текст..." },
-        { img: "pic/mid2.png", text: "Средневековый философ 2 — текст..." },
-        { img: "pic/mid3.png", text: "Средневековый философ 3 — текст..." }
-      ],
-      german: [
-        { img: "pic/germ1.png", text: "Немецкий философ 1 — текст..." },
-        { img: "pic/germ2.png", text: "Немецкий философ 2 — текст..." },
-        { img: "pic/germ3.png", text: "Немецкий философ 3 — текст..." }
-      ],
-      modern: [
-        { img: "pic/xx1.png", text: "Философ ХХ века 1 — текст..." },
-        { img: "pic/xx2.png", text: "Философ ХХ века 2 — текст..." },
-        { img: "pic/xx3.png", text: "Философ ХХ века 3 — текст..." }
-      ],
-      neuro: [
-        { img: "pic/neuro1.png", text: "Нейрофизиолог 1 — текст..." },
-        { img: "pic/neuro2.png", text: "Нейрофизиолог 2 — текст..." },
-        { img: "pic/neuro3.png", text: "Нейрофизиолог 3 — текст..." }
-      ]
-    };
-
-    // Случайные вертикальные позиции (без наложений)
-    function generatePositions(count) {
-      let used = [];
-      let positions = [];
-      while (positions.length < count) {
-        let top = Math.floor(Math.random() * 70) + 10; // 10% - 80%
-        if (!used.some(u => Math.abs(u - top) < 25)) { // разница минимум 25%
-          used.push(top);
-          positions.push(top);
-        }
-      }
-      return positions;
-    }
-
-    // Рисуем галереи
-    Object.entries(data).forEach(([sectionId, items]) => {
-      const gallery = document.querySelector(`#${sectionId} .gallery`);
-      let positions = generatePositions(items.length);
-      items.forEach((item, i) => {
-        let div = document.createElement("div");
-        div.classList.add("placeholder");
-        div.classList.add(i % 2 === 0 ? "left-half" : "right-half");
-        div.style.top = positions[i] + "%";
-
-        let img = document.createElement("img");
-        img.src = item.img;
-        img.alt = item.text.slice(0, 20);
-
-        let caption = document.createElement("div");
-        caption.classList.add("caption");
-        caption.textContent = item.text;
-
-        div.appendChild(img);
-        div.appendChild(caption);
-        gallery.appendChild(div);
+    // Анимация заголовков
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add("visible");
       });
-    });
+    }, { threshold: 0.4 });
+    document.querySelectorAll("h2").forEach(h2 => observer.observe(h2));
 
-    // Клик: одна активная в секции
+    // Клик: одна активная, повторный клик снимает
     document.querySelectorAll(".gallery").forEach(gallery => {
       gallery.addEventListener("click", e => {
         const target = e.target.closest(".placeholder");
@@ -228,15 +171,9 @@
         }
       });
     });
-
-    // Анимация заголовков при скролле
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) entry.target.classList.add("visible");
-      });
-    }, { threshold: 0.4 });
-    document.querySelectorAll("h2").forEach(h2 => observer.observe(h2));
   </script>
 </body>
 </html>
+
+
 
