@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Выбор: Зрение</title>
+
+  <!-- Подключаем Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&family=Cutive+Mono&family=Roboto:wght@400;700&family=Cinzel+Decorative:wght@700&family=Fredericka+the+Great&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      scroll-behavior: smooth;
+    }
+
+    section {
+      position: relative;
+      height: 100vh;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      flex-direction: column;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 1s ease;
+    }
+
+    h2.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .gallery {
+      position: relative;
+      flex: 1;
+      width: 100%;
+    }
+
+    .placeholder {
+      position: absolute;
+      width: 140px;
+      height: 180px;
+      background: #ccc;
+      filter: blur(8px);
+      transition: filter 0.6s ease, transform 0.4s ease;
+      border-radius: 6px;
+    }
+
+    .placeholder:hover {
+      filter: blur(0);
+      transform: scale(1.05);
+    }
+
+    .p1 { top: 15%; left: 10%; }
+    .p2 { top: 25%; right: 15%; }
+    .p3 { bottom: 20%; left: 20%; }
+    .p4 { bottom: 25%; right: 25%; }
+
+    .arrow {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2rem;
+      text-decoration: none;
+      color: #000;
+      animation: bounce 1.5s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translate(-50%, 0); }
+      50% { transform: translate(-50%, 10px); }
+    }
+
+    /* ===== ФОНЫ и ШРИФТЫ ===== */
+    #antique {
+      background: #faf6ef;
+      font-family: "Fredericka the Great", cursive;
+    }
+
+    #middle {
+      background: linear-gradient(to bottom, #f5f0e9, #cbb9d9);
+      font-family: "Cinzel Decorative", serif;
+    }
+
+    #german {
+      background: linear-gradient(to bottom, #d2bdd8, #f5d9a6);
+      font-family: "UnifrakturCook", cursive;
+    }
+
+    #modern {
+      background: #f7e1b5;
+      font-family: "Cutive Mono", monospace;
+    }
+
+    #neuro {
+      background: #dbe6f3;
+      font-family: "Roboto", sans-serif;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Античные философы -->
+  <section id="antique">
+    <h2>АНТИЧНЫЕ ФИЛОСОФЫ</h2>
+    <div class="gallery">
+      <div class="placeholder p1"></div>
+      <div class="placeholder p2"></div>
+      <div class="placeholder p3"></div>
+      <div class="placeholder p4"></div>
+    </div>
+    <a href="#middle" class="arrow">⌄</a>
+  </section>
+
+  <!-- Средневековые -->
+  <section id="middle">
+    <h2>СРЕДНЕВЕКОВЫЕ И РАННИЕ СОВРЕМЕННЫЕ ФИЛОСОФЫ</h2>
+    <div class="gallery">
+      <div class="placeholder p1"></div>
+      <div class="placeholder p2"></div>
+      <div class="placeholder p3"></div>
+    </div>
+    <a href="#german" class="arrow">⌄</a>
+  </section>
+
+  <!-- Немецкая классическая философия -->
+  <section id="german">
+    <h2>НЕМЕЦКАЯ КЛАССИЧЕСКАЯ ФИЛОСОФИЯ</h2>
+    <div class="gallery">
+      <div class="placeholder p1"></div>
+      <div class="placeholder p2"></div>
+      <div class="placeholder p3"></div>
+    </div>
+    <a href="#modern" class="arrow">⌄</a>
+  </section>
+
+  <!-- ХХ век -->
+  <section id="modern">
+    <h2>ХХ ВЕК И СОВРЕМЕННОСТЬ</h2>
+    <div class="gallery">
+      <div class="placeholder p1"></div>
+      <div class="placeholder p2"></div>
+      <div class="placeholder p3"></div>
+    </div>
+    <a href="#neuro" class="arrow">⌄</a>
+  </section>
+
+  <!-- Нейрофизиологи -->
+  <section id="neuro">
+    <h2>НЕЙРОФИЗИОЛОГИ</h2>
+    <div class="gallery">
+      <div class="placeholder p1"></div>
+      <div class="placeholder p2"></div>
+    </div>
+  </section>
+
+  <!-- JS для анимации заголовков -->
+  <script>
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+        }
+      });
+    }, { threshold: 0.4 });
+
+    document.querySelectorAll("h2").forEach(h2 => {
+      observer.observe(h2);
+    });
+  </script>
+</body>
+</html>

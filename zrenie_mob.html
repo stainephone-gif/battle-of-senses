@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Выбор: Зрение</title>
+
+  <style>
+    body { margin: 0; display: flex; justify-content: center; background: #000; }
+    .phone-frame { width: 393px; max-width: 100%; background: #fff; overflow-x: hidden; }
+
+    section {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h2 { font-size: 1.2rem; margin-bottom: 20px; }
+
+    .gallery {
+      position: relative;
+      width: 100%;
+      flex: 1;
+    }
+
+    .placeholder {
+      position: relative;
+      width: 140px;
+      margin: 40px auto;
+      cursor: pointer;
+      filter: blur(8px);
+      transition: transform 0.6s ease, filter 0.6s ease;
+    }
+
+    .placeholder img {
+      width: 100%;
+      max-width: 100%;
+      border-radius: 6px;
+      display: block;
+      background: #ddd;
+    }
+
+    .caption {
+      font-size: 0.8rem;
+      margin-top: 6px;
+      line-height: 1.2rem;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .placeholder.active { filter: blur(0); transform: translateX(20px); }
+    .placeholder.active .caption { opacity: 1; transform: translateY(0); }
+
+    .arrow {
+      margin-top: 20px;
+      font-size: 1.5rem;
+      text-decoration: none;
+      color: #000;
+      animation: bounce 1.5s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(10px); }
+    }
+
+    #antique { background: #faf6ef; }
+    #middle  { background: linear-gradient(to bottom, #f5f0e9, #cbb9d9); }
+    #german  { background: linear-gradient(to bottom, #d2bdd8, #f5d9a6); }
+    #modern  { background: #f7e1b5; }
+    #neuro   { background: #dbe6f3; }
+  </style>
+</head>
+<body>
+  <div class="phone-frame">
+    <!-- Секции -->
+    <section id="antique">
+      <h2>АНТИЧНЫЕ ФИЛОСОФЫ</h2>
+      <div class="gallery"></div>
+      <a href="#middle" class="arrow">⌄</a>
+    </section>
+
+    <section id="middle">
+      <h2>СРЕДНЕВЕКОВЫЕ И РАННИЕ СОВРЕМЕННЫЕ ФИЛОСОФЫ</h2>
+      <div class="gallery"></div>
+      <a href="#german" class="arrow">⌄</a>
+    </section>
+
+    <section id="german">
+      <h2>НЕМЕЦКАЯ КЛАССИЧЕСКАЯ ФИЛОСОФИЯ</h2>
+      <div class="gallery"></div>
+      <a href="#modern" class="arrow">⌄</a>
+    </section>
+
+    <section id="modern">
+      <h2>ХХ ВЕК И СОВРЕМЕННОСТЬ</h2>
+      <div class="gallery"></div>
+      <a href="#neuro" class="arrow">⌄</a>
+    </section>
+
+    <section id="neuro">
+      <h2>НЕЙРОФИЗИОЛОГИ</h2>
+      <div class="gallery"></div>
+    </section>
+  </div>
+
+  <script>
+    // Данные (пример)
+    const data = {
+      antique: [
+        { img: "./pic/Plato.png", text: "Платон — называл зрение солнцем души…" },
+        { img: "./pic/Piph.png", text: "Пифагор — видел в музыке основу мира…" },
+        { img: "./pic/Arist.png", text: "Аристотель — выделял зрение и слух…" }
+      ],
+      middle: [
+        { img: "https://via.placeholder.com/120x160.png?text=Middle1", text: "Философ Средневековья 1" },
+        { img: "https://via.placeholder.com/120x160.png?text=Middle2", text: "Философ Средневековья 2" },
+        { img: "https://via.placeholder.com/120x160.png?text=Middle3", text: "Философ Средневековья 3" }
+      ]
+      // german, modern, neuro → по аналогии
+    };
+
+    // Добавление картинок в секции
+    Object.entries(data).forEach(([sectionId, items]) => {
+      const gallery = document.querySelector(`#${sectionId} .gallery`);
+      items.forEach(item => {
+        let div = document.createElement("div");
+        div.classList.add("placeholder");
+
+        let img = document.createElement("img");
+        img.src = item.img;
+
+        let caption = document.createElement("div");
+        caption.classList.add("caption");
+        caption.textContent = item.text;
+
+        div.appendChild(img);
+        div.appendChild(caption);
+        gallery.appendChild(div);
+      });
+    });
+
+    // Клик: активировать/деактивировать
+    document.querySelectorAll(".gallery").forEach(gallery => {
+      gallery.addEventListener("click", e => {
+        const target = e.target.closest(".placeholder");
+        if (target) {
+          if (target.classList.contains("active")) {
+            target.classList.remove("active");
+          } else {
+            gallery.querySelectorAll(".placeholder").forEach(p => p.classList.remove("active"));
+            target.classList.add("active");
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+

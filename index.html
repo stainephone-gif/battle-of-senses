@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Сделай свой выбор</title>
+  <style>
+    :root {
+      --transition-time: 1.5s;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      transition: background-color var(--transition-time) ease, color var(--transition-time) ease;
+    }
+
+    .container {
+      max-width: 500px;
+      padding: 20px;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+    }
+
+    p {
+      font-size: 1rem;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      margin-bottom: 25px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center; /* кнопки ближе друг к другу */
+      gap: 20px;
+      position: relative;
+    }
+
+    .buttons a {
+      text-decoration: none;
+      background: #ccc;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: background 0.3s, transform var(--transition-time) ease;
+      color: inherit;
+      display: inline-block;
+    }
+
+    .buttons a:hover {
+      background: #aaa;
+    }
+
+    /* Тёмная тема */
+    body.dark {
+      background-color: #111;
+      color: #fff;
+    }
+    body.dark .buttons a {
+      background: #333;
+      color: #fff;
+    }
+    body.dark .buttons a:hover {
+      background: #555;
+    }
+
+    /* Светлая тема */
+    body.light {
+      background-color: #fdf6ef;
+      color: #000;
+    }
+    body.light .buttons a {
+      background: #ddd;
+      color: #000;
+    }
+    body.light .buttons a:hover {
+      background: #bbb;
+    }
+
+    /* Зеркальная анимация */
+    body.dark .btn-zrenie {
+      transform: translateY(-10px);
+    }
+    body.dark .btn-sluh {
+      transform: translateY(10px);
+    }
+
+    body.light .btn-zrenie {
+      transform: translateY(10px);
+    }
+    body.light .btn-sluh {
+      transform: translateY(-10px);
+    }
+
+    /* Если отключены анимации */
+    @media (prefers-reduced-motion: reduce) {
+      body {
+        transition: none;
+      }
+      .buttons a {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+<body class="dark">
+  <div class="container">
+    <h1>Сделай свой выбор</h1>
+    <p>
+      Зрение и слух — первые в списке must-have древних философов.
+      Еще Платон и Аристотель считали эти чувства «благородными»,
+      с помощью которых человек сохраняет и познаёт этот мир,
+      то есть те, которые связаны с разумом.
+      По Платону чувства связаны со стихиями.
+      Зрение связано со светом, а значит, со стихией огня,
+      слух же соотносится со стихией воздуха.
+    </p>
+    <h2>Какое чувство для вас важнее?</h2>
+    <div class="buttons">
+      <a href="zrenie_mob.html" class="btn-zrenie">зрение</a>
+      <a href="sluh.html" class="btn-sluh">слух</a>
+    </div>
+  </div>
+
+  <script>
+    setInterval(() => {
+      document.body.classList.toggle("dark");
+      document.body.classList.toggle("light");
+    }, 2000); // каждые 3 секунды
+  </script>
+</body>
+</html>
