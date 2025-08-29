@@ -4,38 +4,56 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Battle of Senses — старт</title>
+
   <style>
     body {
-      margin: 0; height: 100vh;
-      display: flex; align-items: center; justify-content: center;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       background: linear-gradient(135deg, #f7f0e9, #cbb9d9);
       font-family: Arial, sans-serif;
     }
-    .menu { text-align: center; background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-    h1 { margin-bottom: 30px; font-size: 1.8rem; color: #333; }
-    .btn { display: block; margin: 15px auto; padding: 12px 20px; font-size: 1.1rem; text-decoration: none; color: #fff; background: #6c5ce7; border-radius: 8px; transition: background 0.3s ease; width: 220px; }
-    .btn:hover { background: #4b3fc3; }
+
+    .menu {
+      text-align: center;
+      background: #fff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      font-size: 1.8rem;
+      color: #333;
+    }
+
+    .btn {
+      display: block;
+      margin: 15px auto;
+      padding: 12px 20px;
+      font-size: 1.1rem;
+      text-decoration: none;
+      color: #fff;
+      background: #6c5ce7;
+      border-radius: 8px;
+      transition: background 0.3s ease;
+      width: 220px;
+    }
+
+    .btn:hover {
+      background: #4b3fc3;
+    }
   </style>
 </head>
 <body>
   <div class="menu">
     <h1>Battle of Senses</h1>
-    <p>Если автоопределение не сработало, выберите вручную:</p>
     <a href="zrenie.html" class="btn">Полная версия</a>
     <a href="zrenie_mob.html" class="btn">Мобильная версия</a>
   </div>
-
-  <script>
-    window.addEventListener("load", function() {
-      const ua = navigator.userAgent;
-      const isMobile = /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(ua);
-
-      if (isMobile) {
-        window.location.replace("zrenie_mob.html");
-      } else {
-        window.location.replace("zrenie.html");
-      }
-    });
-  </script>
 </body>
 </html>
+
