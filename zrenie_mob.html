@@ -1,58 +1,70 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Зрение (мобильная версия)</title>
-
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  />
+  <title>Зрение — мобильная</title>
   <style>
-    body { margin: 0; display: flex; justify-content: center; background: #000; }
-    .phone-frame { width: 393px; max-width: 100%; background: #fff; overflow-x: hidden; }
+    /* Рамка «мобильного экрана» */
+    body { margin:0; display:flex; justify-content:center; background:#000; }
+    .phone-frame { width:393px; max-width:100%; background:#fff; overflow-x:hidden; }
 
-    section {
-      position: relative;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-      text-align: center;
-      overflow: hidden;
+    section{
+      position:relative; height:100vh; overflow:hidden;
+      display:flex; flex-direction:column; align-items:center; padding:20px; text-align:center;
     }
 
-    h2 { font-size: 1.3rem; margin-bottom: 20px; opacity: 0; transform: translateY(30px); transition: all 1s ease; }
-    h2.visible { opacity: 1; transform: translateY(0); }
+    h2{
+      font-size:1.2rem; margin:0 0 18px;
+      opacity:0; transform:translateY(24px);
+      transition:opacity .6s ease, transform .6s ease;
+    }
+    h2.visible{ opacity:1; transform:translateY(0); }
 
-    .gallery { position: relative; flex: 1; width: 100%; }
+    .gallery{ position:relative; flex:1; width:100%; }
 
-    .placeholder {
-      position: absolute;
-      width: 140px;
-      cursor: pointer;
-      filter: blur(8px);
-      transition: transform 0.6s ease, filter 0.6s ease;
-      text-align: center;
+    /* Карточка изображения + подпись */
+    .placeholder{
+      position:absolute; width:140px; cursor:pointer; text-align:center;
+      filter:blur(8px);
+      transition:transform .6s ease, filter .6s ease;
+      will-change:transform, filter;
+    }
+    .placeholder img{
+      width:100%; height:auto; display:block; border-radius:6px; background:#ddd;
+    }
+    .caption{
+      font-size:.82rem; line-height:1.2rem; margin-top:6px;
+      opacity:0; transform:translateY(10px);
+      transition:opacity .6s ease, transform .6s ease;
     }
 
-    .placeholder img { width: 100%; border-radius: 6px; display: block; background: #ddd; }
+    /* Половина за краем */
+    .left-half  { left:-70px; }
+    .right-half { right:-70px; }
 
-    .left-half  { left: -70px; }
-    .right-half { right: -70px; }
+    /* Активация */
+    .placeholder.active{ filter:blur(0); transform:translateX(70px); }
+    .placeholder.right-half.active{ transform:translateX(-70px); }
+    .placeholder.active .caption{ opacity:1; transform:translateY(0); }
 
-    .placeholder.active { filter: blur(0); transform: translateX(70px); }
-    .placeholder.right-half.active { transform: translateX(-70px); }
-
-    .caption {
-      font-size: 0.8rem;
-      margin-top: 6px;
-      line-height: 1.2rem;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
+    /* Стрелка вниз (межэкраневый переход, опционально) */
+    .arrow{
+      position:absolute; bottom:16px; left:50%; transform:translateX(-50%);
+      font-size:1.6rem; color:#000; text-decoration:none;
+      animation:bounce 1.5s infinite;
     }
-    .placeholder.active .caption { opacity: 1; transform: translateY(0); }
+    @keyframes bounce{ 0%,100%{ transform:translate(-50%,0) } 50%{ transform:translate(-50%,10px) } }
 
-    .arrow { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 1.5rem; color: #000; text-decoration: none; }
+    /* Фоны секций */
+    #antique{ background:#faf6ef; }
+    #middle { background:linear-gradient(to bottom,#f5f0e9,#cbb9d9); }
+    #german { background:linear-gradient(to bottom,#d2bdd8,#f5d9a6); }
+    #modern { background:#f7e1b5; }
+    #neuro  { background:#dbe6f3; }
   </style>
 </head>
 <body>
@@ -60,25 +72,25 @@
     <section id="antique">
       <h2>АНТИЧНЫЕ ФИЛОСОФЫ</h2>
       <div class="gallery"></div>
-      <a href="#middle" class="arrow">⌄</a>
+      <a class="arrow" href="#middle">⌄</a>
     </section>
 
     <section id="middle">
       <h2>СРЕДНЕВЕКОВЫЕ И РАННИЕ СОВРЕМЕННЫЕ ФИЛОСОФЫ</h2>
       <div class="gallery"></div>
-      <a href="#german" class="arrow">⌄</a>
+      <a class="arrow" href="#german">⌄</a>
     </section>
 
     <section id="german">
       <h2>НЕМЕЦКАЯ КЛАССИЧЕСКАЯ ФИЛОСОФИЯ</h2>
       <div class="gallery"></div>
-      <a href="#modern" class="arrow">⌄</a>
+      <a class="arrow" href="#modern">⌄</a>
     </section>
 
     <section id="modern">
       <h2>ХХ ВЕК И СОВРЕМЕННОСТЬ</h2>
       <div class="gallery"></div>
-      <a href="#neuro" class="arrow">⌄</a>
+      <a class="arrow" href="#neuro">⌄</a>
     </section>
 
     <section id="neuro">
@@ -88,91 +100,109 @@
   </div>
 
   <script>
-    // Данные с путями для GitHub Pages
-    const data = {
-      antique: [
-        { img: "pic/Plato.png", text: "Платон — называл зрение «солнцем души», а слух — проводником гармонии." },
-        { img: "pic/Piph.png", text: "Пифагор — видел в музыке основу мира, а в зрении — инструмент постижения геометрии." },
-        { img: "pic/Arist.png", text: "Аристотель — выделял зрение и слух как «разумные» чувства, связывающие с абстрактным знанием." }
-      ],
-      middle: [
-        { img: "pic/mid1.png", text: "Философ Средневековья 1" },
-        { img: "pic/mid2.png", text: "Философ Средневековья 2" },
-        { img: "pic/mid3.png", text: "Философ Средневековья 3" }
-      ],
-      german: [
-        { img: "pic/germ1.png", text: "Немецкий философ 1" },
-        { img: "pic/germ2.png", text: "Немецкий философ 2" },
-        { img: "pic/germ3.png", text: "Немецкий философ 3" }
-      ],
-      modern: [
-        { img: "pic/xx1.png", text: "Философ ХХ века 1" },
-        { img: "pic/xx2.png", text: "Философ ХХ века 2" },
-        { img: "pic/xx3.png", text: "Философ ХХ века 3" }
-      ],
-      neuro: [
-        { img: "pic/neuro1.png", text: "Нейрофизиолог 1" },
-        { img: "pic/neuro2.png", text: "Нейрофизиолог 2" },
-        { img: "pic/neuro3.png", text: "Нейрофизиолог 3" }
-      ]
-    };
+    document.addEventListener("DOMContentLoaded", () => {
+      /* --- ДАННЫЕ --- */
+      const data = {
+        antique: [
+          { img: "pic/Plato.png", text: "Платон — называл зрение «солнцем души», а слух — проводником гармонии." },
+          { img: "pic/Piph.png",  text: "Пифагор — видел в музыке основу мира, а в зрении — инструмент постижения геометрии." },
+          { img: "pic/Arist.png", text: "Аристотель — выделял зрение и слух как «разумные» чувства, ведущие к знанию." }
+        ],
+        middle: [
+          { img: "pic/mid1.png", text: "Философ Средневековья 1 — подпись." },
+          { img: "pic/mid2.png", text: "Философ Средневековья 2 — подпись." },
+          { img: "pic/mid3.png", text: "Философ Средневековья 3 — подпись." }
+        ],
+        german: [
+          { img: "pic/germ1.png", text: "Немецкий философ 1 — подпись." },
+          { img: "pic/germ2.png", text: "Немецкий философ 2 — подпись." },
+          { img: "pic/germ3.png", text: "Немецкий философ 3 — подпись." }
+        ],
+        modern: [
+          { img: "pic/xx1.png", text: "Философ ХХ века 1 — подпись." },
+          { img: "pic/xx2.png", text: "Философ ХХ века 2 — подпись." },
+          { img: "pic/xx3.png", text: "Философ ХХ века 3 — подпись." }
+        ],
+        neuro: [
+          { img: "pic/neuro1.png", text: "Нейрофизиолог 1 — подпись." },
+          { img: "pic/neuro2.png", text: "Нейрофизиолог 2 — подпись." },
+          { img: "pic/neuro3.png", text: "Нейрофизиолог 3 — подпись." }
+        ]
+      };
 
-    // Генерация случайных позиций
-    function generatePositions(count) {
-      let used = [], positions = [];
-      while (positions.length < count) {
-        let top = Math.floor(Math.random() * 70) + 10; // 10–80%
-        if (!used.some(u => Math.abs(u - top) < 25)) {
-          used.push(top);
-          positions.push(top);
+      /* --- ПОДСТРАХОВОЧНАЯ ЗАГЛУШКА SVG, если файл не найден --- */
+      const fallbackDataURI = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(
+        `<svg xmlns="http://www.w3.org/2000/svg" width="140" height="180">
+          <rect width="100%" height="100%" fill="#ddd"/>
+          <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+                font-family="Arial" font-size="12" fill="#666">no image</text>
+        </svg>`
+      );
+
+      /* --- генерация 3 случайных вертикальных позиций без наложений --- */
+      function generatePositions(count){
+        const min = 10, max = 80, minGap = 24; // проценты
+        const out = [];
+        let guard = 0;
+        while(out.length < count && guard < 200){
+          guard++;
+          const cand = Math.floor(Math.random()*(max-min))+min;
+          if(out.every(x => Math.abs(x - cand) >= minGap)) out.push(cand);
         }
+        // если вдруг не хватило из-за ограничений — заполним равномерно
+        while(out.length < count){
+          out.push(min + (out.length * ((max-min)/(count+1))));
+        }
+        // Немного перемешаем чтобы интервалы были «неравномерные»
+        return out.sort(() => Math.random() - 0.5);
       }
-      return positions;
-    }
 
-    // Рендер картинок
-    Object.entries(data).forEach(([sectionId, items]) => {
-      const gallery = document.querySelector(`#${sectionId} .gallery`);
-      let positions = generatePositions(items.length);
-      items.forEach((item, i) => {
-        let div = document.createElement("div");
-        div.classList.add("placeholder");
-        div.classList.add(i % 2 === 0 ? "left-half" : "right-half");
-        div.style.top = positions[i] + "%";
+      /* --- рендер секций --- */
+      Object.entries(data).forEach(([id, items]) => {
+        const gallery = document.querySelector(`#${id} .gallery`);
+        if(!gallery) return;
 
-        let img = document.createElement("img");
-        img.src = item.img;
+        const tops = generatePositions(items.length);
+        items.forEach((item, i) => {
+          const card = document.createElement("div");
+          card.className = "placeholder " + (i % 2 === 0 ? "left-half" : "right-half");
+          card.style.top = tops[i] + "%";
 
-        let caption = document.createElement("div");
-        caption.classList.add("caption");
-        caption.textContent = item.text;
+          const img = document.createElement("img");
+          img.src = item.img;
+          img.alt = item.text.slice(0, 40);
+          img.onerror = () => { img.src = fallbackDataURI; };
 
-        div.appendChild(img);
-        div.appendChild(caption);
-        gallery.appendChild(div);
+          const cap = document.createElement("div");
+          cap.className = "caption";
+          cap.textContent = item.text;
+
+          card.appendChild(img);
+          card.appendChild(cap);
+          gallery.appendChild(card);
+        });
       });
-    });
 
-    // Активация по клику
-    document.querySelectorAll(".gallery").forEach(gallery => {
-      gallery.addEventListener("click", e => {
-        const target = e.target.closest(".placeholder");
-        if (target) {
-          if (target.classList.contains("active")) {
+      /* --- клики: одна активная, повторный клик снимает --- */
+      document.querySelectorAll(".gallery").forEach(gal => {
+        gal.addEventListener("click", e => {
+          const target = e.target.closest(".placeholder");
+          if(!target) return;
+          if(target.classList.contains("active")){
             target.classList.remove("active");
           } else {
-            gallery.querySelectorAll(".placeholder").forEach(p => p.classList.remove("active"));
+            gal.querySelectorAll(".placeholder").forEach(p => p.classList.remove("active"));
             target.classList.add("active");
           }
-        }
+        });
       });
-    });
 
-    // Заголовки при скролле
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add("visible"); });
-    }, { threshold: 0.4 });
-    document.querySelectorAll("h2").forEach(h2 => observer.observe(h2));
+      /* --- анимация заголовков --- */
+      const io = new IntersectionObserver(entries=>{
+        entries.forEach(en => { if(en.isIntersecting) en.target.classList.add("visible"); });
+      }, {threshold: .35});
+      document.querySelectorAll("h2").forEach(h => io.observe(h));
+    });
   </script>
 </body>
 </html>
