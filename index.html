@@ -2,103 +2,210 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Сделай свой выбор</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Battle of Senses</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    :root { --transition-time: 1.5s; --shift: 20px; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     body {
-      margin: 0; padding: 0;
-      font-family: Arial, sans-serif;
-      display: flex; justify-content: center; align-items: center;
-      height: 100vh;
-      transition: background-color var(--transition-time) ease, color var(--transition-time) ease;
-      background-color: #111; color: #fff;
+      margin: 0;
+      font-family: 'Space Mono', 'Courier New', monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #000000;
+      color: #000;
+      overflow-x: hidden;
+      padding: 20px;
     }
 
-    .container { max-width: 500px; padding: 20px; text-align: center; line-height: 1.6; }
+    /* Карточка стартового экрана */
+    .card {
+      background: #E5E5E5;
+      width: 90%;
+      max-width: 450px;
+      padding: 50px;
+      border-radius: 0px;
+      text-align: center;
+      opacity: 0;
+      transform: scale(0.95);
+      animation: fadeInScale 0.5s ease-out forwards;
+    }
 
-    h1 { font-size: 1.8rem; margin-bottom: 20px; }
-    p  { font-size: 1rem;   margin-bottom: 20px; }
-    h2 { font-size: 1.2rem; margin-bottom: 25px; }
+    @keyframes fadeInScale {
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
 
+    /* Заголовок "Сделай свой выбор" */
+    .title {
+      font-size: 26px;
+      font-weight: 700;
+      color: #000000;
+      margin-bottom: 35px;
+      text-align: center;
+    }
+
+    /* Философский текст */
+    .description {
+      font-size: 15px;
+      font-weight: 400;
+      color: #333333;
+      line-height: 1.6;
+      text-align: center;
+      margin-bottom: 45px;
+    }
+
+    /* Вопрос */
+    .question {
+      font-size: 17px;
+      font-weight: 600;
+      color: #000000;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    /* Контейнер для кнопок */
     .buttons {
-      display: flex; justify-content: space-between; gap: 40px; position: relative;
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      flex-wrap: wrap;
     }
 
-    .buttons a {
-      text-decoration: none; background: #333; color: #fff;
-      padding: 10px 20px; border-radius: 6px; font-weight: bold;
-      transition: background .3s, transform var(--transition-time) ease;
+    /* Кнопки выбора */
+    .choice-button {
       display: inline-block;
-      will-change: transform;
+      width: 150px;
+      height: 46px;
+      background: #D0D0D0;
+      color: #000000;
+      font-family: 'Space Mono', 'Courier New', monospace;
+      font-size: 15px;
+      font-weight: 700;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .buttons a:hover { background: #555; }
 
-    /* Светлая/тёмная темы */
-    body.light { background-color: #fdf6ef; color: #000; }
-    body.light .buttons a { background:#ddd; color:#000; }
-    body.light .buttons a:hover { background:#bbb; }
+    .choice-button:hover {
+      background: #A0A0A0;
+    }
 
-    body.dark { background-color: #111; color: #fff; }
-    body.dark .buttons a { background:#333; color:#fff; }
-    body.dark .buttons a:hover { background:#555; }
+    .choice-button:active {
+      transform: scale(0.98);
+    }
 
-    /* Зеркальная параллельная анимация (величина сдвига — var(--shift)) */
-    body.dark .btn-zrenie { transform: translateY(calc(-1 * var(--shift))); }
-    body.dark .btn-sluh   { transform: translateY(var(--shift)); }
-    body.light .btn-zrenie{ transform: translateY(var(--shift)); }
-    body.light .btn-sluh  { transform: translateY(calc(-1 * var(--shift))); }
+    /* Адаптация для маленьких экранов */
+    @media (max-width: 480px) {
+      .card {
+        padding: 40px 30px;
+      }
 
-    /* Меньше движения, если пользователь так настроил */
+      .title {
+        font-size: 24px;
+        margin-bottom: 30px;
+      }
+
+      .description {
+        font-size: 14px;
+        margin-bottom: 40px;
+      }
+
+      .question {
+        font-size: 16px;
+        margin-bottom: 20px;
+      }
+
+      .choice-button {
+        width: 140px;
+        height: 44px;
+        font-size: 14px;
+      }
+    }
+
+    /* Адаптация для очень маленьких экранов */
+    @media (max-width: 360px) {
+      .buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .choice-button {
+        width: 100%;
+        max-width: 200px;
+      }
+    }
+
+    /* Адаптация для уменьшения анимаций */
     @media (prefers-reduced-motion: reduce) {
-      body, .buttons a { transition: none !important; }
-      body.light .btn-zrenie,
-      body.light .btn-sluh,
-      body.dark .btn-zrenie,
-      body.dark .btn-sluh { transform: none !important; }
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.2s !important;
+      }
     }
   </style>
 </head>
-<body class="dark">
-  <div class="container">
-    <h1>Сделай свой выбор</h1>
-    <p>
-      Зрение и слух — первые в списке must-have древних философов. Ещё Платон и Аристотель считали эти чувства
-      «благородными», с помощью которых человек сохраняет и познаёт мир. По Платону чувства связаны со стихиями:
-      зрение — со светом (огонь), слух — с воздухом.
+<body>
+  <div class="card">
+    <h1 class="title">Сделай свой выбор</h1>
+
+    <p class="description">
+      Мир древних философов. Еще Платон
+      и Аристотель считали два чувства
+      «благородными». С появлением цифровых
+      технологий наше восприятие изменилось.
+      Это есть то, которое связано с разумом.
+      Но Платон чувство зрения по отдельно
+      ставил выше, потому что посредством
+      со страсти или, скорее со состояния
+      со страшной боли и пустоты.
     </p>
-    <h2>Какое чувство для вас важнее?</h2>
+
+    <h2 class="question">Какое чувство для вас важнее?</h2>
+
     <div class="buttons">
-      <a href="zrenie_mob.html" class="btn-zrenie">зрение</a>
-      <a href="sluh.html"       class="btn-sluh">слух</a>
+      <a href="zrenie_mob.html" class="choice-button">Зрение</a>
+      <a href="sluh.html" class="choice-button">Слух</a>
     </div>
   </div>
 
   <script>
-    // измеряем высоту кнопки и задаём сдвиг = её высоте
-    function setShift() {
-      const z = document.querySelector('.btn-zrenie');
-      if (!z) return;
-      const h = Math.ceil(z.getBoundingClientRect().height);
-      document.documentElement.style.setProperty('--shift', h + 'px');
-    }
-    setShift();
-    window.addEventListener('resize', setShift);
+    // Предзагрузка следующих страниц для быстрой навигации
+    const preloadLinks = ['zrenie_mob.html', 'sluh.html'];
+    preloadLinks.forEach(href => {
+      const link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.href = href;
+      document.head.appendChild(link);
+    });
 
-    // если пользователь не отключал анимации — цикличная смена темы
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!prefersReduced) {
-      setInterval(() => {
-        document.body.classList.toggle('dark');
-        document.body.classList.toggle('light');
-      }, 3000); // каждые 3 сек
-    } else {
-      // фиксируем «светлую» как базовую, без анимаций
-      document.body.classList.remove('dark');
-      document.body.classList.add('light');
+    // Добавляем тактильную обратную связь на мобильных устройствах
+    if ('vibrate' in navigator) {
+      document.querySelectorAll('.choice-button').forEach(button => {
+        button.addEventListener('click', () => {
+          navigator.vibrate(10); // 10ms вибрация
+        });
+      });
     }
   </script>
 </body>
 </html>
-
