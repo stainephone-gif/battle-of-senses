@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Battle of Senses</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -13,173 +16,141 @@
 
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-family: 'Space Mono', 'Courier New', monospace;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      background: #000;
-      color: #fff;
+      background: #000000;
+      color: #000;
       overflow-x: hidden;
+      padding: 20px;
     }
 
-    .container {
-      width: 100%;
-      max-width: 428px;
-      padding: 30px 20px;
+    /* Карточка стартового экрана */
+    .card {
+      background: #E5E5E5;
+      width: 90%;
+      max-width: 450px;
+      padding: 50px;
+      border-radius: 0px;
       text-align: center;
-      position: relative;
-    }
-
-    /* Заголовок */
-    h1 {
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin-bottom: 20px;
-      letter-spacing: -1px;
       opacity: 0;
-      animation: fadeInUp 1s ease forwards;
+      transform: scale(0.95);
+      animation: fadeInScale 0.5s ease-out forwards;
     }
 
-    @keyframes fadeInUp {
+    @keyframes fadeInScale {
       to {
         opacity: 1;
-        transform: translateY(0);
-      }
-      from {
-        opacity: 0;
-        transform: translateY(20px);
+        transform: scale(1);
       }
     }
 
-    /* Описание концепции */
+    /* Заголовок "Сделай свой выбор" */
+    .title {
+      font-size: 26px;
+      font-weight: 700;
+      color: #000000;
+      margin-bottom: 35px;
+      text-align: center;
+    }
+
+    /* Философский текст */
     .description {
-      font-size: 1rem;
+      font-size: 15px;
+      font-weight: 400;
+      color: #333333;
       line-height: 1.6;
-      color: #aaa;
-      margin-bottom: 50px;
-      max-width: 380px;
-      margin-left: auto;
-      margin-right: auto;
-      opacity: 0;
-      animation: fadeInUp 1s ease 0.2s forwards;
+      text-align: center;
+      margin-bottom: 45px;
     }
 
     /* Вопрос */
     .question {
-      font-size: 1.2rem;
-      font-weight: 500;
-      margin-bottom: 40px;
-      color: #fff;
-      opacity: 0;
-      animation: fadeInUp 1s ease 0.4s forwards;
+      font-size: 17px;
+      font-weight: 600;
+      color: #000000;
+      text-align: center;
+      margin-bottom: 25px;
     }
 
     /* Контейнер для кнопок */
-    .paths {
+    .buttons {
       display: flex;
-      flex-direction: column;
-      gap: 20px;
-      max-width: 350px;
-      margin: 0 auto;
+      justify-content: center;
+      gap: 18px;
+      flex-wrap: wrap;
     }
 
-    /* Общий стиль кнопок */
-    .path-button {
-      position: relative;
-      padding: 0;
-      text-decoration: none;
-      border-radius: 16px;
-      overflow: hidden;
-      display: block;
-      opacity: 0;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .path-button:nth-child(1) {
-      animation: fadeInUp 1s ease 0.6s forwards;
-    }
-
-    .path-button:nth-child(2) {
-      animation: fadeInUp 1s ease 0.8s forwards;
-    }
-
-    .path-button:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 40px rgba(255, 255, 255, 0.15);
-    }
-
-    .path-button:active {
-      transform: translateY(-2px);
-    }
-
-    /* Внутренний контент кнопки */
-    .path-content {
-      padding: 30px 24px;
-      position: relative;
-      z-index: 2;
-    }
-
-    /* Визуальная ветвь - градиентный фон */
-    .path-visual {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
-    }
-
-    /* Аудиальная ветвь - монохромный фон */
-    .path-audio {
-      background: linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%);
-      box-shadow: 0 8px 30px rgba(76, 161, 175, 0.4);
-    }
-
-    /* Название пути */
-    .path-title {
-      font-size: 1.8rem;
+    /* Кнопки выбора */
+    .choice-button {
+      display: inline-block;
+      width: 150px;
+      height: 46px;
+      background: #D0D0D0;
+      color: #000000;
+      font-family: 'Space Mono', 'Courier New', monospace;
+      font-size: 15px;
       font-weight: 700;
-      margin-bottom: 8px;
-      color: #fff;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    /* Описание пути */
-    .path-desc {
-      font-size: 0.9rem;
-      color: rgba(255, 255, 255, 0.8);
-      line-height: 1.4;
+    .choice-button:hover {
+      background: #A0A0A0;
     }
 
-    /* Иконка */
-    .path-icon {
-      font-size: 3rem;
-      margin-bottom: 12px;
-      display: block;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-    }
-
-    /* Футер */
-    .footer {
-      margin-top: 60px;
-      font-size: 0.85rem;
-      color: #666;
-      opacity: 0;
-      animation: fadeInUp 1s ease 1s forwards;
+    .choice-button:active {
+      transform: scale(0.98);
     }
 
     /* Адаптация для маленьких экранов */
-    @media (max-width: 380px) {
-      h1 {
-        font-size: 2rem;
+    @media (max-width: 480px) {
+      .card {
+        padding: 40px 30px;
       }
 
-      .path-title {
-        font-size: 1.5rem;
-      }
-
-      .path-icon {
-        font-size: 2.5rem;
+      .title {
+        font-size: 24px;
+        margin-bottom: 30px;
       }
 
       .description {
-        font-size: 0.95rem;
+        font-size: 14px;
+        margin-bottom: 40px;
+      }
+
+      .question {
+        font-size: 16px;
+        margin-bottom: 20px;
+      }
+
+      .choice-button {
+        width: 140px;
+        height: 44px;
+        font-size: 14px;
+      }
+    }
+
+    /* Адаптация для очень маленьких экранов */
+    @media (max-width: 360px) {
+      .buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .choice-button {
+        width: 100%;
+        max-width: 200px;
       }
     }
 
@@ -191,55 +162,29 @@
         transition-duration: 0.2s !important;
       }
     }
-
-    /* Пульсация для привлечения внимания */
-    @keyframes pulse {
-      0%, 100% {
-        transform: scale(1);
-      }
-      50% {
-        transform: scale(1.02);
-      }
-    }
-
-    .path-button:hover .path-icon {
-      animation: pulse 1s ease infinite;
-    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Battle of Senses</h1>
+  <div class="card">
+    <h1 class="title">Сделай свой выбор</h1>
 
     <p class="description">
-      Исследование искажений визуального и слухового восприятия в цифровой среде.
-      Философы древности считали зрение и слух «благородными чувствами», через которые человек познаёт мир.
+      Мир древних философов. Еще Платон
+      и Аристотель считали два чувства
+      «благородными». С появлением цифровых
+      технологий наше восприятие изменилось.
+      Это есть то, которое связано с разумом.
+      Но Платон чувство зрения по отдельно
+      ставил выше, потому что посредством
+      со страсти или, скорее со состояния
+      со страшной боли и пустоты.
     </p>
 
     <h2 class="question">Какое чувство для вас важнее?</h2>
 
-    <div class="paths">
-      <!-- Визуальная ветвь -->
-      <a href="zrenie_mob.html" class="path-button path-visual">
-        <div class="path-content">
-          <span class="path-icon">👁️</span>
-          <div class="path-title">Зрение</div>
-          <div class="path-desc">Нарастающий поток образов и глитч-эффектов</div>
-        </div>
-      </a>
-
-      <!-- Аудиальная ветвь -->
-      <a href="sluh.html" class="path-button path-audio">
-        <div class="path-content">
-          <span class="path-icon">👂</span>
-          <div class="path-title">Слух</div>
-          <div class="path-desc">Какофония звуков в черно-белом пространстве</div>
-        </div>
-      </a>
-    </div>
-
-    <div class="footer">
-      Битва чувств · 2024
+    <div class="buttons">
+      <a href="zrenie_mob.html" class="choice-button">Зрение</a>
+      <a href="sluh.html" class="choice-button">Слух</a>
     </div>
   </div>
 
@@ -255,7 +200,7 @@
 
     // Добавляем тактильную обратную связь на мобильных устройствах
     if ('vibrate' in navigator) {
-      document.querySelectorAll('.path-button').forEach(button => {
+      document.querySelectorAll('.choice-button').forEach(button => {
         button.addEventListener('click', () => {
           navigator.vibrate(10); // 10ms вибрация
         });
