@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Зрение — Battle of Senses</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* ================================================
+       БАЗОВЫЕ СТИЛИ И СБРОС
+       ================================================ */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Space Mono', 'Courier New', monospace;
+      background: #000000;
+      color: #000000;
+      overflow-x: hidden;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* ================================================
+       СЕКЦИИ С SNAP-SCROLLING
+       ================================================ */
+    section {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      position: relative;
+    }
+
+    /* ================================================
+       КАРТОЧКА - БАЗОВЫЕ СТИЛИ
+       ================================================ */
+    .card {
+      width: 90%;
+      max-width: 450px;
+      padding: 50px 40px;
+      border-radius: 0;
+      text-align: center;
+      position: relative;
+      opacity: 0;
+      transform: scale(0.95);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .card.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .card-title {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 30px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .card-image {
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto 25px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 8px;
+    }
+
+    .card-image img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 8px;
+    }
+
+    .card-text {
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 1.6;
+    }
+
+    /* ================================================
+       СТРЕЛКА ВНИЗ (ИНДИКАТОР ПРОКРУТКИ)
+       ================================================ */
+    .scroll-arrow {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 36px;
+      color: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+      animation: bounce 2s ease-in-out infinite;
+      z-index: 100;
+      user-select: none;
+      transition: color 0.3s ease;
+    }
+
+    .scroll-arrow:hover {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translate(-50%, 0); }
+      50% { transform: translate(-50%, 12px); }
+    }
+
+    /* ================================================
+       НАВИГАЦИЯ ДОМОЙ
+       ================================================ */
+    .nav-home {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      width: 48px;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: #fff;
+      font-size: 24px;
+      z-index: 1000;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .nav-home:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.1);
+    }
+
+    /* ================================================
+       УРОВЕНЬ 1: ЛЕГКОЕ РАЗМЫТИЕ (Карточки 1-2)
+       ================================================ */
+
+    /* Карточка 1 */
+    #card1 .card {
+      background: #E5E5DD;
+    }
+
+    #card1 .card-title {
+      color: #000000;
+    }
+
+    #card1 .card-image img {
+      filter: blur(3px) opacity(0.92);
+    }
+
+    #card1 .card-text {
+      color: #333333;
+    }
+
+    /* Карточка 2 */
+    #card2 .card {
+      background: #E8E5E0;
+    }
+
+    #card2 .card-title {
+      color: #000000;
+    }
+
+    #card2 .card-image img {
+      filter: blur(5px) opacity(0.88);
+    }
+
+    #card2 .card-text {
+      color: #333333;
+    }
+
+    /* ================================================
+       УРОВЕНЬ 2: ГРАДИЕНТЫ (Карточки 3-4)
+       ================================================ */
+
+    /* Карточка 3 */
+    #card3 .card {
+      background: linear-gradient(180deg, #E8B4D9 0%, #F2D4A8 100%);
+    }
+
+    #card3 .card-title {
+      color: #000000;
+      animation: shake 5s ease-in-out infinite;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      2% { transform: translateX(-1px); }
+      4% { transform: translateX(1px); }
+    }
+
+    #card3 .card-image img {
+      filter: blur(7px) saturate(1.3) opacity(0.85);
+    }
+
+    #card3 .card-image::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(232, 180, 217, 0.3) 0%, rgba(242, 212, 168, 0.3) 100%);
+      mix-blend-mode: multiply;
+      pointer-events: none;
+    }
+
+    #card3 .card-text {
+      color: #222222;
+    }
+
+    /* Карточка 4 */
+    #card4 .card {
+      background: linear-gradient(180deg, #D4A5F4 0%, #F4D4A5 100%);
+      animation: breathe 6s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.005); }
+    }
+
+    #card4 .card-title {
+      color: #000000;
+      animation: wave 4s ease-in-out infinite;
+    }
+
+    @keyframes wave {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-2px); }
+    }
+
+    #card4 .card-image img {
+      filter: blur(10px) saturate(1.4) opacity(0.82);
+      animation: float 5s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    #card4 .card-image::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(212, 165, 244, 0.4) 0%, rgba(244, 212, 165, 0.4) 100%);
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+
+    #card4 .card-text {
+      color: #222222;
+    }
+
+    /* ================================================
+       УРОВЕНЬ 3: ГЛИТЧ-ЭФФЕКТЫ (Карточки 5-6)
+       ================================================ */
+
+    /* Карточка 5 */
+    #card5 .card {
+      background: linear-gradient(135deg, #FF6B9D 0%, #FFA06B 50%, #FFD96B 100%);
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+
+    #card5 .card-title {
+      color: #000000;
+      animation: glitch1 2.5s ease-in-out infinite;
+    }
+
+    @keyframes glitch1 {
+      0%, 100% {
+        text-shadow: 0 0 0 transparent;
+        transform: translateX(0);
+      }
+      5%, 12% {
+        text-shadow: 3px 0 0 #FF00FF, -3px 0 0 #00FFFF;
+        transform: translateX(-4px) skew(-2deg);
+      }
+      8%, 15% {
+        text-shadow: -3px 0 0 #FF00FF, 3px 0 0 #00FFFF;
+        transform: translateX(4px) skew(2deg);
+      }
+    }
+
+    #card5 .card-image img {
+      filter: blur(12px) saturate(1.8) contrast(1.3) hue-rotate(20deg);
+      animation: glitchImg1 2s ease-in-out infinite;
+    }
+
+    @keyframes glitchImg1 {
+      0%, 100% { transform: translate(0, 0); }
+      6% { transform: translate(-6px, 4px) skew(-3deg); }
+      12% { transform: translate(6px, -4px) skew(3deg); }
+      18% { transform: translate(-4px, 2px); }
+    }
+
+    /* Scanlines */
+    #card5 .card-image::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.15) 0px,
+        rgba(0, 0, 0, 0.15) 2px,
+        transparent 2px,
+        transparent 4px
+      );
+      animation: scanlines 10s linear infinite;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    @keyframes scanlines {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(20px); }
+    }
+
+    #card5 .card-text {
+      color: #111111;
+    }
+
+    /* Карточка 6 */
+    #card6 .card {
+      background: linear-gradient(135deg,
+        #FF3366 0%, #9933FF 25%, #33FFFF 50%, #FFFF33 75%, #FF3366 100%);
+      background-size: 200% 200%;
+      animation: gradientMove 6s ease infinite;
+    }
+
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    #card6 .card-title {
+      color: #FFFFFF;
+      text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
+      animation: glitch2 1.8s ease-in-out infinite;
+    }
+
+    @keyframes glitch2 {
+      0%, 100% {
+        text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
+        transform: translateX(0);
+      }
+      7%, 18% {
+        text-shadow: 4px 0 0 #FF00FF, -4px 0 0 #00FFFF, 0 4px 0 #FFFF00;
+        transform: translateX(-5px) translateY(3px) skew(-4deg);
+      }
+      12%, 22% {
+        text-shadow: -4px 0 0 #FF00FF, 4px 0 0 #00FFFF, 0 -4px 0 #FFFF00;
+        transform: translateX(5px) translateY(-3px) skew(4deg);
+      }
+    }
+
+    #card6 .card-image img {
+      filter: blur(15px) saturate(2) contrast(1.5) hue-rotate(45deg);
+      animation: glitchImg2 1.5s ease-in-out infinite;
+    }
+
+    @keyframes glitchImg2 {
+      0%, 100% {
+        transform: translate(0, 0);
+        filter: blur(15px) saturate(2) contrast(1.5) hue-rotate(45deg);
+      }
+      8% {
+        transform: translate(-8px, 6px) skew(-5deg) rotate(-3deg);
+        filter: blur(18px) saturate(2.5) contrast(1.8) hue-rotate(80deg);
+      }
+      16% {
+        transform: translate(8px, -6px) skew(5deg) rotate(3deg);
+        filter: blur(12px) saturate(1.7) contrast(1.3) hue-rotate(20deg);
+      }
+    }
+
+    #card6 .card-image::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(255, 0, 255, 0.25) 0px,
+        rgba(255, 0, 255, 0.25) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+      animation: scanlinesFast 5s linear infinite;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    @keyframes scanlinesFast {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(12px); }
+    }
+
+    /* RGB Split */
+    #card6 .card-image::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg,
+        rgba(255, 0, 255, 0.4) 0%,
+        rgba(0, 255, 255, 0.4) 50%,
+        rgba(255, 255, 0, 0.4) 100%);
+      mix-blend-mode: screen;
+      animation: rgbSplit 2s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    @keyframes rgbSplit {
+      0%, 100% { transform: translateX(0); opacity: 0.3; }
+      25% { transform: translateX(-5px); opacity: 0.6; }
+      75% { transform: translateX(5px); opacity: 0.5; }
+    }
+
+    #card6 .card-text {
+      color: #FFFFFF;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    }
+
+    /* ================================================
+       УРОВЕНЬ 4: ПОЛНЫЙ ХАОС (Карточки 7-8)
+       ================================================ */
+
+    /* Карточка 7 */
+    #card7 .card {
+      background:
+        radial-gradient(circle at 20% 50%, rgba(255, 0, 255, 0.9) 0%, transparent 50%),
+        radial-gradient(circle at 80% 50%, rgba(0, 255, 255, 0.9) 0%, transparent 50%),
+        radial-gradient(circle at 50% 20%, rgba(255, 255, 0, 0.9) 0%, transparent 50%),
+        linear-gradient(135deg, #FF0066, #00FFFF, #FFFF00, #FF00FF);
+      background-size: 150% 150%, 150% 150%, 150% 150%, 200% 200%;
+      animation: chaosBack 4s ease infinite;
+    }
+
+    @keyframes chaosBack {
+      0% { background-position: 0% 0%, 100% 100%, 50% 0%, 0% 50%; }
+      50% { background-position: 100% 100%, 0% 0%, 0% 100%, 100% 50%; }
+      100% { background-position: 0% 0%, 100% 100%, 50% 0%, 0% 50%; }
+    }
+
+    #card7 .card-title {
+      color: #FFFFFF;
+      text-shadow:
+        4px 4px 0 #FF00FF,
+        -4px -4px 0 #00FFFF,
+        4px -4px 0 #FFFF00,
+        -4px 4px 0 #FF0000;
+      animation: chaosTitle 1.2s ease-in-out infinite;
+    }
+
+    @keyframes chaosTitle {
+      0%, 100% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+        text-shadow: 4px 4px 0 #FF00FF, -4px -4px 0 #00FFFF;
+      }
+      12% {
+        transform: translate(-6px, 4px) rotate(-4deg) scale(1.03);
+        text-shadow: 6px 0 0 #FF00FF, -6px 0 0 #00FFFF, 0 6px 0 #FFFF00;
+      }
+      25% {
+        transform: translate(6px, -4px) rotate(4deg) scale(0.97);
+        text-shadow: -6px 0 0 #FF00FF, 6px 0 0 #00FFFF, 0 -6px 0 #FF0000;
+      }
+      50% {
+        transform: translate(-5px, 3px) rotate(-3deg) scale(1.02);
+        text-shadow: 5px 5px 0 #00FFFF, -5px -5px 0 #FFFF00;
+      }
+    }
+
+    #card7 .card-image {
+      animation: imageRotate 5s ease-in-out infinite;
+    }
+
+    @keyframes imageRotate {
+      0%, 100% { transform: rotate(0deg) scale(1); }
+      25% { transform: rotate(-6deg) scale(1.06); }
+      50% { transform: rotate(6deg) scale(0.94); }
+      75% { transform: rotate(-4deg) scale(1.04); }
+    }
+
+    #card7 .card-image img {
+      filter: blur(20px) saturate(3) contrast(2) brightness(1.5) hue-rotate(90deg);
+      animation: chaosImg 1s ease-in-out infinite;
+    }
+
+    @keyframes chaosImg {
+      0%, 100% {
+        transform: translate(0, 0);
+        filter: blur(20px) saturate(3) contrast(2) hue-rotate(90deg);
+      }
+      14% {
+        transform: translate(-12px, 8px) skew(-6deg) rotate(-6deg);
+        filter: blur(26px) saturate(3.5) contrast(2.5) hue-rotate(130deg) brightness(1.8);
+      }
+      28% {
+        transform: translate(12px, -8px) skew(6deg) rotate(6deg);
+        filter: blur(16px) saturate(2.5) contrast(1.8) hue-rotate(50deg) brightness(1.3);
+      }
+      56% {
+        transform: translate(-10px, 6px) skew(-5deg);
+        filter: blur(23px) saturate(3.2) contrast(2.2) hue-rotate(110deg);
+      }
+    }
+
+    #card7 .card-image::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        repeating-linear-gradient(90deg, rgba(255, 0, 255, 0.35) 0px, transparent 2px, transparent 5px),
+        repeating-linear-gradient(0deg, rgba(0, 255, 255, 0.35) 0px, transparent 2px, transparent 5px);
+      animation: grid 2.5s linear infinite;
+      pointer-events: none;
+      z-index: 4;
+    }
+
+    @keyframes grid {
+      0% { transform: translate(0, 0); opacity: 0.7; }
+      50% { transform: translate(5px, 5px); opacity: 1; }
+      100% { transform: translate(0, 0); opacity: 0.7; }
+    }
+
+    #card7 .card-image::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg,
+        rgba(255, 0, 255, 0.6) 0%,
+        rgba(0, 255, 255, 0.6) 25%,
+        rgba(255, 255, 0, 0.6) 50%,
+        rgba(255, 0, 0, 0.6) 75%,
+        rgba(255, 0, 255, 0.6) 100%);
+      background-size: 200% 100%;
+      mix-blend-mode: difference;
+      animation: rgbChaos 2s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    @keyframes rgbChaos {
+      0%, 100% { transform: translateX(0); opacity: 0.6; }
+      25% { transform: translateX(-8px); opacity: 0.9; }
+      50% { transform: translateX(8px); opacity: 0.7; }
+      75% { transform: translateX(-6px); opacity: 0.8; }
+    }
+
+    #card7 .card-text {
+      color: #FFFFFF;
+      text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.9);
+      font-weight: 700;
+    }
+
+    /* Карточка 8 - МАКСИМАЛЬНЫЙ ХАОС */
+    #card8 .card {
+      background:
+        repeating-conic-gradient(from 0deg at 50% 50%,
+          #FF0066 0deg, #00FFFF 60deg, #FFFF00 120deg,
+          #FF00FF 180deg, #00FF66 240deg, #FF0066 300deg);
+      animation: kaleidoscope 8s linear infinite;
+      overflow: hidden;
+    }
+
+    @keyframes kaleidoscope {
+      0% { background-position: 0% 0%; }
+      100% { background-position: 100% 100%; }
+    }
+
+    #card8 .card-title {
+      color: #FFFFFF;
+      text-shadow:
+        0 0 15px #FF00FF,
+        0 0 25px #00FFFF,
+        0 0 35px #FFFF00,
+        4px 4px 8px rgba(0, 0, 0, 1);
+      animation: extremeTitle 0.7s ease-in-out infinite;
+      font-size: 30px;
+      letter-spacing: 4px;
+    }
+
+    @keyframes extremeTitle {
+      0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); filter: blur(0px); }
+      20% { transform: translate(-8px, 6px) rotate(-6deg) scale(1.06); filter: blur(3px) hue-rotate(130deg); }
+      40% { transform: translate(8px, -6px) rotate(6deg) scale(0.94); filter: blur(2px) hue-rotate(250deg); }
+      60% { transform: translate(-7px, 5px) rotate(-5deg) scale(1.04); filter: blur(3px) hue-rotate(0deg); }
+      80% { transform: translate(7px, -5px) rotate(5deg) scale(0.96); filter: blur(2px) hue-rotate(190deg); }
+    }
+
+    #card8 .card-image {
+      animation: extremeRotate 4s ease-in-out infinite;
+      transform-style: preserve-3d;
+    }
+
+    @keyframes extremeRotate {
+      0%, 100% { transform: rotate(0deg) scale(1) perspective(600px) rotateY(0deg); }
+      25% { transform: rotate(-12deg) scale(1.12) perspective(600px) rotateY(18deg); }
+      50% { transform: rotate(12deg) scale(0.88) perspective(600px) rotateY(-18deg); }
+      75% { transform: rotate(-8deg) scale(1.08) perspective(600px) rotateY(12deg); }
+    }
+
+    #card8 .card-image img {
+      filter: blur(25px) saturate(4) contrast(3) brightness(2) hue-rotate(180deg);
+      animation: ultimateChaos 0.6s ease-in-out infinite;
+      image-rendering: pixelated;
+    }
+
+    @keyframes ultimateChaos {
+      0%, 100% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+        filter: blur(25px) saturate(4) contrast(3) brightness(2) hue-rotate(180deg);
+      }
+      25% {
+        transform: translate(-14px, 10px) rotate(-10deg) scale(1.14) skew(-8deg);
+        filter: blur(32px) saturate(5) contrast(4) brightness(2.5) hue-rotate(250deg) invert(0.3);
+      }
+      50% {
+        transform: translate(14px, -10px) rotate(10deg) scale(0.86) skew(8deg);
+        filter: blur(22px) saturate(3.5) contrast(2.5) brightness(1.8) hue-rotate(110deg) invert(0.2);
+      }
+      75% {
+        transform: translate(-12px, 8px) rotate(-8deg) scale(1.1) skew(-6deg);
+        filter: blur(30px) saturate(4.5) contrast(3.5) brightness(2.3) hue-rotate(310deg) invert(0.25);
+      }
+    }
+
+    #card8 .card-image::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        repeating-linear-gradient(0deg, rgba(255, 0, 0, 0.5) 0px, transparent 1px, transparent 3px),
+        repeating-linear-gradient(90deg, rgba(0, 255, 0, 0.5) 0px, transparent 1px, transparent 3px),
+        repeating-linear-gradient(45deg, rgba(0, 0, 255, 0.5) 0px, transparent 1px, transparent 3px);
+      animation: extremeGrid 1.2s linear infinite;
+      pointer-events: none;
+      z-index: 6;
+      mix-blend-mode: screen;
+    }
+
+    @keyframes extremeGrid {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      25% { transform: translate(3px, -3px) rotate(90deg); }
+      50% { transform: translate(-3px, 3px) rotate(180deg); }
+      75% { transform: translate(3px, 3px) rotate(270deg); }
+      100% { transform: translate(0, 0) rotate(360deg); }
+    }
+
+    #card8 .card-image::after {
+      content: '';
+      position: absolute;
+      top: -60%;
+      left: -60%;
+      width: 220%;
+      height: 220%;
+      background:
+        radial-gradient(circle, rgba(255, 0, 255, 0.9) 0%, transparent 35%),
+        radial-gradient(circle, rgba(0, 255, 255, 0.9) 0%, transparent 35%),
+        radial-gradient(circle, rgba(255, 255, 0, 0.9) 0%, transparent 35%);
+      background-size: 60% 60%;
+      background-position: 0% 0%, 100% 100%, 50% 50%;
+      mix-blend-mode: difference;
+      animation: colorBurst 2.5s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 7;
+    }
+
+    @keyframes colorBurst {
+      0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 0.7; }
+      25% { transform: translate(-40px, 40px) rotate(90deg) scale(1.6); opacity: 1; }
+      50% { transform: translate(40px, -40px) rotate(180deg) scale(0.7); opacity: 0.85; }
+      75% { transform: translate(-30px, 30px) rotate(270deg) scale(1.4); opacity: 0.95; }
+    }
+
+    #card8 .card-text {
+      color: #FFFFFF;
+      text-shadow:
+        0 0 8px #FF00FF,
+        0 0 15px #00FFFF,
+        0 0 20px #FFFF00,
+        3px 3px 10px rgba(0, 0, 0, 1);
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: 3px;
+    }
+
+    /* ================================================
+       ФИНАЛЬНАЯ КНОПКА
+       ================================================ */
+    .finish-btn {
+      display: inline-block;
+      margin-top: 35px;
+      padding: 18px 45px;
+      background: rgba(255, 255, 255, 0.95);
+      color: #000000;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 16px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.9);
+      transition: all 0.3s ease;
+      z-index: 100;
+      position: relative;
+      animation: btnPulse 2.5s ease-in-out infinite;
+    }
+
+    @keyframes btnPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 25px rgba(255, 255, 255, 0.9); }
+      50% { transform: scale(1.06); box-shadow: 0 0 45px rgba(255, 255, 255, 1); }
+    }
+
+    .finish-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 60px rgba(255, 255, 255, 1);
+      background: #FFFFFF;
+    }
+
+    /* ================================================
+       АДАПТИВНЫЙ ДИЗАЙН
+       ================================================ */
+    @media (max-width: 480px) {
+      section { padding: 30px 15px; }
+      .card { padding: 35px 25px; max-width: 380px; }
+      .card-title { font-size: 22px; margin-bottom: 25px; }
+      .card-text { font-size: 14px; }
+      .card-image { max-width: 260px; }
+      .scroll-arrow { font-size: 32px; bottom: 25px; }
+      #card8 .card-title { font-size: 26px; }
+      .finish-btn { padding: 16px 35px; font-size: 15px; }
+    }
+
+    @media (max-width: 360px) {
+      .card { padding: 30px 20px; }
+      .card-title { font-size: 20px; }
+      .card-image { max-width: 240px; }
+    }
+
+    /* Доступность */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.2s !important;
+      }
+      body { scroll-behavior: auto; }
+      .scroll-arrow { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="nav-home" aria-label="Вернуться на главную">⌂</a>
+
+  <!-- Карточка 1: Античные философы (Уровень 1) -->
+  <section id="card1">
+    <div class="card">
+      <h2 class="card-title">Античные философы</h2>
+      <div class="card-image">
+        <img src="pic/Plato.png" alt="Платон" loading="lazy">
+      </div>
+      <p class="card-text">
+        Мир древних философов. Платон и Аристотель
+        считали зрение и слух «благородными чувствами»,
+        через которые человек познаёт истину.
+      </p>
+    </div>
+    <div class="scroll-arrow">⌄</div>
+  </section>
+
+  <!-- Карточка 2: Средневековье (Уровень 1) -->
+  <section id="card2">
+    <div class="card">
+      <h2 class="card-title">Средневековые философы</h2>
+      <div class="card-image">
+        <img src="pic/Piph.png" alt="Средневековье" loading="lazy">
+      </div>
+      <p class="card-text">
+        Средневековая традиция восприятия.
+        Границы чувственного познания.
+        Визуальная метафизика и богословие образа.
+      </p>
+    </div>
+    <div class="scroll-arrow">⌄</div>
+  </section>
+
+  <!-- Карточка 3: Немецкая философия (Уровень 2) -->
+  <section id="card3">
+    <div class="card">
+      <h2 class="card-title">Немецкая классическая философия</h2>
+      <div class="card-image">
+        <img src="pic/Arist.png" alt="Кант" loading="lazy">
+      </div>
+      <p class="card-text">
+        >> ЗЕС И СОЗЕРЦАТЕЛЬНОСТЬ
+        С появлением цифровых технологий
+        наше восприятие начало меняться.
+        Кант о формах чувственности.
+      </p>
+    </div>
+    <div class="scroll-arrow">⌄</div>
+  </section>
+
+  <!-- Карточка 4: Диалектика восприятия (Уровень 2) -->
+  <section id="card4">
+    <div class="card">
+      <h2 class="card-title">Диалектика восприятия</h2>
+      <div class="card-image">
+        <img src="pic/Plato.png" alt="Гегель" loading="lazy">
+      </div>
+      <p class="card-text">
+        Это есть то, которое связано с разумом.
+        Но Платон чувство зрения отдельно
+        ставил выше, потому что посредством
+        со страсти или состояния боли и пустоты.
+      </p>
+    </div>
+    <div class="scroll-arrow">⌄</div>
+  </section>
+
+  <!-- Карточка 5: ХХ век (Уровень 3) -->
+  <section id="card5">
+    <div class="card">
+      <h2 class="card-title">ХХ век</h2>
+      <div class="card-image">
+        <img src="pic/Piph.png" alt="Феноменология" loading="lazy">
+      </div>
+      <p class="card-text">
+        Феноменология восприятия.
+        Экзистенциальный опыт зрения.
+        Начало визуальных искажений.
+        Мир становится нестабильным.
+      </p>
+    </div>
+    <div class="scroll-arrow">⌄</div>
+  </section>
+
+  <!-- Карточка 6: Постмодернизм (Уровень 3) -->
+  <section id="card6">
+    <div class="card">
+      <h2 class="card-title">Деконструкция</h2>
+      <div class="card-image">
+        <img src="pic/Arist.png" alt="Постмодернизм" loading="lazy">
+      </div>
+      <p class="card-text">
+        ПОВЕРНИСЬ
+        Деконструкция зримого мира
+        ТРЕВОГА
+        Множество интерпретаций
+        Нет единой истины
+      </p>
+    </div>
+    <div class="scroll-arrow">⌄</div>
+  </section>
+
+  <!-- Карточка 7: Нейрофизиология (Уровень 4) -->
+  <section id="card7">
+    <div class="card">
+      <h2 class="card-title">Нейрофизиология</h2>
+      <div class="card-image">
+        <img src="pic/Plato.png" alt="Нейронауки" loading="lazy">
+      </div>
+      <p class="card-text">
+        МЕХАНИЗМЫ ЗРИТЕЛЬНОГО ВОСПРИЯТИЯ
+        Обработка визуальной информации
+        НИЧЕГО?
+        Связь восприятия и сознания
+        Хаос нейронных связей
+      </p>
+    </div>
+    <div class="scroll-arrow">⌄</div>
+  </section>
+
+  <!-- Карточка 8: Полный хаос (Уровень 4) -->
+  <section id="card8">
+    <div class="card">
+      <h2 class="card-title">ПЕРЕГРУЗ</h2>
+      <div class="card-image">
+        <img src="pic/Piph.png" alt="Визуальный хаос" loading="lazy">
+      </div>
+      <p class="card-text">
+        ВИЗУАЛЬНЫЙ ХАОС
+        НЕВОЗМОЖНО РАЗЛИЧИТЬ
+        АБСОЛЮТНЫЙ ПЕРЕГРУЗ
+        ЦИФРОВАЯ КАКОФОНИЯ
+        ТИШИНА...
+      </p>
+      <a href="quiet.html" class="finish-btn">Войти в тишину</a>
+    </div>
+  </section>
+
+  <script>
+    // ================================================
+    // INTERSECTION OBSERVER - Появление карточек
+    // ================================================
+    const cardObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const card = entry.target.querySelector('.card');
+          if (card) card.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.25 });
+
+    document.querySelectorAll('section').forEach(section => {
+      cardObserver.observe(section);
+    });
+
+    // ================================================
+    // НАВИГАЦИЯ ПО СТРЕЛКАМ
+    // ================================================
+    document.querySelectorAll('.scroll-arrow').forEach(arrow => {
+      arrow.addEventListener('click', () => {
+        const currentSection = arrow.closest('section');
+        const nextSection = currentSection.nextElementSibling;
+        if (nextSection && nextSection.tagName === 'SECTION') {
+          nextSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // ================================================
+    // ТАКТИЛЬНАЯ ОБРАТНАЯ СВЯЗЬ
+    // ================================================
+    if ('vibrate' in navigator) {
+      document.querySelectorAll('.scroll-arrow, .finish-btn').forEach(element => {
+        element.addEventListener('click', () => navigator.vibrate(15));
+      });
+    }
+
+    // ================================================
+    // ПРЕДЗАГРУЗКА СЛЕДУЮЩЕЙ СТРАНИЦЫ
+    // ================================================
+    const preload = document.createElement('link');
+    preload.rel = 'prefetch';
+    preload.href = 'quiet.html';
+    document.head.appendChild(preload);
+
+    // ================================================
+    // ОПТИМИЗАЦИЯ ПРОКРУТКИ
+    // ================================================
+    let scrolling = false;
+    window.addEventListener('scroll', () => {
+      if (!scrolling) {
+        window.requestAnimationFrame(() => { scrolling = false; });
+        scrolling = true;
+      }
+    }, { passive: true });
+
+    // ================================================
+    // СВАЙПЫ ДЛЯ МОБИЛЬНЫХ
+    // ================================================
+    let touchStartY = 0;
+    let touchEndY = 0;
+
+    document.addEventListener('touchstart', (e) => {
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    document.addEventListener('touchend', (e) => {
+      touchEndY = e.changedTouches[0].screenY;
+      const diff = touchStartY - touchEndY;
+      if (Math.abs(diff) > 50 && diff > 0) {
+        const sections = [...document.querySelectorAll('section')];
+        const current = sections.find(s => {
+          const rect = s.getBoundingClientRect();
+          return rect.top >= -100 && rect.top <= 100;
+        });
+        const next = current?.nextElementSibling;
+        if (next && next.tagName === 'SECTION') {
+          next.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    }, { passive: true });
+
+    // ================================================
+    // ОПТИМИЗАЦИЯ АНИМАЦИЙ
+    // ================================================
+    const animObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const card = entry.target.querySelector('.card');
+        if (card) {
+          card.style.animationPlayState = entry.isIntersecting ? 'running' : 'paused';
+        }
+      });
+    }, { threshold: 0 });
+
+    document.querySelectorAll('section').forEach(section => {
+      animObserver.observe(section);
+    });
+
+    console.log('Battle of Senses - Визуальная ветвь загружена');
+    console.log('Карточек:', document.querySelectorAll('section').length);
+  </script>
+</body>
+</html>
