@@ -2,212 +2,499 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-  />
-  <title>Зрение — мобильная</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Зрение — визуальная ветвь</title>
   <style>
-    /* Рамка «мобильного экрана» */
-    body { margin:0; display:flex; justify-content:center; background:#000; }
-    .phone-frame { width:393px; max-width:100%; background:#fff; overflow-x:hidden; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    section{
-      position:relative; height:100vh; overflow:hidden;
-      display:flex; flex-direction:column; align-items:center; padding:20px; text-align:center;
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      background: #000;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      overflow-x: hidden;
     }
 
-    h2{
-      font-size:1.2rem; margin:0 0 18px;
-      opacity:0; transform:translateY(24px);
-      transition:opacity .6s ease, transform .6s ease;
-    }
-    h2.visible{ opacity:1; transform:translateY(0); }
-
-    .gallery{ position:relative; flex:1; width:100%; }
-
-    /* Карточка изображения + подпись */
-    .placeholder{
-      position:absolute; width:140px; cursor:pointer; text-align:center;
-      filter:blur(8px);
-      transition:transform .6s ease, filter .6s ease;
-      will-change:transform, filter;
-    }
-    .placeholder img{
-      width:100%; height:auto; display:block; border-radius:6px; background:#ddd;
-    }
-    .caption{
-      font-size:.82rem; line-height:1.2rem; margin-top:6px;
-      opacity:0; transform:translateY(10px);
-      transition:opacity .6s ease, transform .6s ease;
+    .phone-frame {
+      width: 100%;
+      max-width: 428px;
+      background: #fff;
+      overflow-x: hidden;
+      position: relative;
     }
 
-    /* Половина за краем */
-    .left-half  { left:-70px; }
-    .right-half { right:-70px; }
-
-    /* Активация */
-    .placeholder.active{ filter:blur(0); transform:translateX(70px); }
-    .placeholder.right-half.active{ transform:translateX(-70px); }
-    .placeholder.active .caption{ opacity:1; transform:translateY(0); }
-
-    /* Стрелка вниз (межэкраневый переход, опционально) */
-    .arrow{
-      position:absolute; bottom:16px; left:50%; transform:translateX(-50%);
-      font-size:1.6rem; color:#000; text-decoration:none;
-      animation:bounce 1.5s infinite;
+    section {
+      position: relative;
+      min-height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      text-align: center;
     }
-    @keyframes bounce{ 0%,100%{ transform:translate(-50%,0) } 50%{ transform:translate(-50%,10px) } }
 
-    /* Фоны секций */
-    #antique{ background:#faf6ef; }
-    #middle { background:linear-gradient(to bottom,#f5f0e9,#cbb9d9); }
-    #german { background:linear-gradient(to bottom,#d2bdd8,#f5d9a6); }
-    #modern { background:#f7e1b5; }
-    #neuro  { background:#dbe6f3; }
+    h2 {
+      font-size: 1.4rem;
+      margin: 0 0 40px;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+      z-index: 10;
+      position: relative;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    h2.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .gallery {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 400px;
+    }
+
+    .placeholder {
+      position: absolute;
+      width: 160px;
+      cursor: pointer;
+      text-align: center;
+      opacity: 0;
+      transform: scale(0.8) translateY(20px);
+      transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+      will-change: transform, filter, opacity;
+    }
+
+    .placeholder.visible {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+
+    .placeholder img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      transition: all 0.3s ease;
+    }
+
+    .placeholder:hover img {
+      transform: scale(1.05);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+    }
+
+    .caption {
+      font-size: 0.85rem;
+      line-height: 1.3rem;
+      margin-top: 12px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
+      color: #333;
+    }
+
+    .placeholder.visible .caption {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Глитч-эффекты - нарастающая интенсивность */
+
+    /* Секция 1 - слабые эффекты */
+    #antique .placeholder:nth-child(odd) img {
+      filter: hue-rotate(5deg) saturate(1.1);
+    }
+
+    #antique .placeholder:nth-child(even) img {
+      filter: contrast(1.05) brightness(1.02);
+    }
+
+    /* Секция 2 - средние эффекты */
+    #middle .placeholder img {
+      filter: hue-rotate(10deg) saturate(1.2) contrast(1.1);
+      animation: subtle-glitch 3s ease-in-out infinite;
+    }
+
+    @keyframes subtle-glitch {
+      0%, 100% { filter: hue-rotate(10deg) saturate(1.2) contrast(1.1); }
+      50% { filter: hue-rotate(15deg) saturate(1.25) contrast(1.15); }
+    }
+
+    /* Секция 3 - усиленные эффекты */
+    #german .placeholder img {
+      filter: hue-rotate(20deg) saturate(1.3) contrast(1.2);
+      animation: medium-glitch 2.5s ease-in-out infinite;
+    }
+
+    @keyframes medium-glitch {
+      0%, 100% {
+        filter: hue-rotate(20deg) saturate(1.3) contrast(1.2);
+        transform: translateX(0);
+      }
+      25% {
+        filter: hue-rotate(25deg) saturate(1.4) contrast(1.25);
+        transform: translateX(-2px);
+      }
+      75% {
+        filter: hue-rotate(15deg) saturate(1.35) contrast(1.15);
+        transform: translateX(2px);
+      }
+    }
+
+    /* Секция 4 - сильные эффекты */
+    #modern .placeholder img {
+      filter: hue-rotate(30deg) saturate(1.5) contrast(1.3);
+      animation: strong-glitch 2s ease-in-out infinite;
+    }
+
+    @keyframes strong-glitch {
+      0%, 100% {
+        filter: hue-rotate(30deg) saturate(1.5) contrast(1.3);
+        transform: translateX(0) skew(0deg);
+      }
+      20% {
+        filter: hue-rotate(40deg) saturate(1.6) contrast(1.4) blur(0.5px);
+        transform: translateX(-3px) skew(-1deg);
+      }
+      40% {
+        filter: hue-rotate(20deg) saturate(1.55) contrast(1.35);
+        transform: translateX(3px) skew(1deg);
+      }
+      60% {
+        filter: hue-rotate(35deg) saturate(1.65) contrast(1.25);
+        transform: translateX(-2px) skew(-0.5deg);
+      }
+    }
+
+    /* Секция 5 - максимальные эффекты (хаос) */
+    #neuro .placeholder img {
+      filter: hue-rotate(45deg) saturate(1.7) contrast(1.5);
+      animation: chaos-glitch 1.5s ease-in-out infinite;
+    }
+
+    @keyframes chaos-glitch {
+      0%, 100% {
+        filter: hue-rotate(45deg) saturate(1.7) contrast(1.5);
+        transform: translateX(0) translateY(0) skew(0deg);
+      }
+      10% {
+        filter: hue-rotate(60deg) saturate(1.9) contrast(1.6) blur(1px);
+        transform: translateX(-4px) translateY(2px) skew(-2deg);
+      }
+      25% {
+        filter: hue-rotate(30deg) saturate(1.75) contrast(1.55) brightness(1.1);
+        transform: translateX(4px) translateY(-2px) skew(2deg);
+      }
+      45% {
+        filter: hue-rotate(50deg) saturate(1.85) contrast(1.45) blur(0.5px);
+        transform: translateX(-3px) translateY(1px) skew(-1deg);
+      }
+      70% {
+        filter: hue-rotate(40deg) saturate(1.8) contrast(1.7);
+        transform: translateX(3px) translateY(-1px) skew(1.5deg);
+      }
+    }
+
+    /* RGB Split эффект при наведении */
+    .placeholder:hover img {
+      animation: rgb-split 0.3s ease-in-out;
+    }
+
+    @keyframes rgb-split {
+      0%, 100% {
+        text-shadow: none;
+        transform: translateX(0);
+      }
+      33% {
+        transform: translateX(-2px);
+        filter: hue-rotate(180deg) saturate(2);
+      }
+      66% {
+        transform: translateX(2px);
+        filter: hue-rotate(-180deg) saturate(2);
+      }
+    }
+
+    /* Стрелка вниз */
+    .arrow {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2rem;
+      color: rgba(0,0,0,0.6);
+      text-decoration: none;
+      animation: bounce 2s infinite;
+      z-index: 10;
+      transition: color 0.3s ease;
+    }
+
+    .arrow:hover {
+      color: rgba(0,0,0,0.9);
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translate(-50%, 0); }
+      50% { transform: translate(-50%, 15px); }
+    }
+
+    /* Кнопка перехода в "Тихое место" */
+    .finish-btn {
+      display: inline-block;
+      margin-top: 40px;
+      padding: 16px 40px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 1rem;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    .finish-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+    }
+
+    .finish-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Фоны секций с градиентами */
+    #antique {
+      background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    }
+
+    #middle {
+      background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+    }
+
+    #german {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    #modern {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    #neuro {
+      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    }
+
+    /* Навигация */
+    .nav-home {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      width: 44px;
+      height: 44px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: #333;
+      font-size: 1.2rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      z-index: 1000;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .nav-home:hover {
+      background: rgba(255, 255, 255, 1);
+      transform: scale(1.1);
+    }
+
+    /* Адаптация для уменьшения анимаций */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="phone-frame">
+    <!-- Кнопка "Домой" -->
+    <a href="index.html" class="nav-home" aria-label="На главную">⌂</a>
+
     <section id="antique">
       <h2>АНТИЧНЫЕ ФИЛОСОФЫ</h2>
       <div class="gallery"></div>
-      <a class="arrow" href="#middle">⌄</a>
+      <a class="arrow" href="#middle" aria-label="Следующая секция">⌄</a>
     </section>
 
     <section id="middle">
       <h2>СРЕДНЕВЕКОВЫЕ И РАННИЕ СОВРЕМЕННЫЕ ФИЛОСОФЫ</h2>
       <div class="gallery"></div>
-      <a class="arrow" href="#german">⌄</a>
+      <a class="arrow" href="#german" aria-label="Следующая секция">⌄</a>
     </section>
 
     <section id="german">
       <h2>НЕМЕЦКАЯ КЛАССИЧЕСКАЯ ФИЛОСОФИЯ</h2>
       <div class="gallery"></div>
-      <a class="arrow" href="#modern">⌄</a>
+      <a class="arrow" href="#modern" aria-label="Следующая секция">⌄</a>
     </section>
 
     <section id="modern">
       <h2>ХХ ВЕК И СОВРЕМЕННОСТЬ</h2>
       <div class="gallery"></div>
-      <a class="arrow" href="#neuro">⌄</a>
+      <a class="arrow" href="#neuro" aria-label="Следующая секция">⌄</a>
     </section>
 
     <section id="neuro">
       <h2>НЕЙРОФИЗИОЛОГИ</h2>
       <div class="gallery"></div>
+      <a href="quiet.html" class="finish-btn">Войти в тишину</a>
     </section>
   </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      /* --- ДАННЫЕ --- */
-      const data = {
-        antique: [
-          { img: "pic/Plato.png", text: "Платон — называл зрение «солнцем души», а слух — проводником гармонии." },
-          { img: "pic/Piph.png",  text: "Пифагор — видел в музыке основу мира, а в зрении — инструмент постижения геометрии." },
-          { img: "pic/Arist.png", text: "Аристотель — выделял зрение и слух как «разумные» чувства, ведущие к знанию." }
-        ],
-        middle: [
-          { img: "pic/mid1.png", text: "Философ Средневековья 1 — подпись." },
-          { img: "pic/mid2.png", text: "Философ Средневековья 2 — подпись." },
-          { img: "pic/mid3.png", text: "Философ Средневековья 3 — подпись." }
-        ],
-        german: [
-          { img: "pic/germ1.png", text: "Немецкий философ 1 — подпись." },
-          { img: "pic/germ2.png", text: "Немецкий философ 2 — подпись." },
-          { img: "pic/germ3.png", text: "Немецкий философ 3 — подпись." }
-        ],
-        modern: [
-          { img: "pic/xx1.png", text: "Философ ХХ века 1 — подпись." },
-          { img: "pic/xx2.png", text: "Философ ХХ века 2 — подпись." },
-          { img: "pic/xx3.png", text: "Философ ХХ века 3 — подпись." }
-        ],
-        neuro: [
-          { img: "pic/neuro1.png", text: "Нейрофизиолог 1 — подпись." },
-          { img: "pic/neuro2.png", text: "Нейрофизиолог 2 — подпись." },
-          { img: "pic/neuro3.png", text: "Нейрофизиолог 3 — подпись." }
-        ]
-      };
+    // Данные изображений и подписей
+    const data = {
+      antique: [
+        { img: "pic/Plato.png", text: "Платон — называл зрение «солнцем души», а слух — проводником гармонии." },
+        { img: "pic/Piph.png",  text: "Пифагор — видел в музыке основу мира, а в зрении — инструмент постижения геометрии." },
+        { img: "pic/Arist.png", text: "Аристотель — выделял зрение и слух как «разумные» чувства, ведущие к знанию." }
+      ],
+      middle: [
+        { img: "pic/Plato.png", text: "Средневековые философы продолжали традицию изучения чувственного восприятия." },
+        { img: "pic/Piph.png", text: "Ранние современные мыслители исследовали границы восприятия." },
+        { img: "pic/Arist.png", text: "Философы эпохи Возрождения открывали новые горизонты познания." }
+      ],
+      german: [
+        { img: "pic/Plato.png", text: "Кант анализировал формы чувственности как основу опыта." },
+        { img: "pic/Piph.png", text: "Гегель рассматривал восприятие в диалектике духа." },
+        { img: "pic/Arist.png", text: "Шопенгауэр исследовал волю и представление через призму чувств." }
+      ],
+      modern: [
+        { img: "pic/Plato.png", text: "Феноменология ХХ века открыла новые измерения восприятия." },
+        { img: "pic/Piph.png", text: "Экзистенциализм поставил под вопрос природу чувственного опыта." },
+        { img: "pic/Arist.png", text: "Постмодернизм деконструировал традиционные представления о восприятии." }
+      ],
+      neuro: [
+        { img: "pic/Plato.png", text: "Нейронауки раскрывают механизмы зрительного восприятия." },
+        { img: "pic/Piph.png", text: "Когнитивные исследования показывают, как мозг обрабатывает визуальную информацию." },
+        { img: "pic/Arist.png", text: "Нейрофизиология объясняет связь между восприятием и сознанием." }
+      ]
+    };
 
-      /* --- ПОДСТРАХОВОЧНАЯ ЗАГЛУШКА SVG, если файл не найден --- */
-      const fallbackDataURI = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(
-        `<svg xmlns="http://www.w3.org/2000/svg" width="140" height="180">
-          <rect width="100%" height="100%" fill="#ddd"/>
-          <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
-                font-family="Arial" font-size="12" fill="#666">no image</text>
-        </svg>`
-      );
+    // SVG заглушка для отсутствующих изображений
+    const fallbackDataURI = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="160" height="200">
+        <rect width="100%" height="100%" fill="#ddd"/>
+        <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+              font-family="Arial" font-size="14" fill="#666">изображение загружается...</text>
+      </svg>`
+    );
 
-      /* --- генерация 3 случайных вертикальных позиций без наложений --- */
-      function generatePositions(count){
-        const min = 10, max = 80, minGap = 24; // проценты
-        const out = [];
-        let guard = 0;
-        while(out.length < count && guard < 200){
-          guard++;
-          const cand = Math.floor(Math.random()*(max-min))+min;
-          if(out.every(x => Math.abs(x - cand) >= minGap)) out.push(cand);
-        }
-        // если вдруг не хватило из-за ограничений — заполним равномерно
-        while(out.length < count){
-          out.push(min + (out.length * ((max-min)/(count+1))));
-        }
-        // Немного перемешаем чтобы интервалы были «неравномерные»
-        return out.sort(() => Math.random() - 0.5);
+    // Генерация случайных позиций для карточек
+    function generatePositions(count) {
+      const positions = [];
+      const angles = [
+        { x: -30, y: -20, rotate: -8 },
+        { x: 0, y: 0, rotate: 0 },
+        { x: 30, y: -15, rotate: 5 }
+      ];
+
+      for (let i = 0; i < count; i++) {
+        positions.push(angles[i] || { x: 0, y: 0, rotate: 0 });
       }
 
-      /* --- рендер секций --- */
-      Object.entries(data).forEach(([id, items]) => {
-        const gallery = document.querySelector(`#${id} .gallery`);
-        if(!gallery) return;
+      return positions;
+    }
 
-        const tops = generatePositions(items.length);
-        items.forEach((item, i) => {
-          const card = document.createElement("div");
-          card.className = "placeholder " + (i % 2 === 0 ? "left-half" : "right-half");
-          card.style.top = tops[i] + "%";
+    // Рендер карточек для всех секций
+    Object.entries(data).forEach(([id, items]) => {
+      const gallery = document.querySelector(`#${id} .gallery`);
+      if (!gallery) return;
 
-          const img = document.createElement("img");
-          img.src = item.img;
-          img.alt = item.text.slice(0, 40);
-          img.onerror = () => { img.src = fallbackDataURI; };
+      const positions = generatePositions(items.length);
 
-          const cap = document.createElement("div");
-          cap.className = "caption";
-          cap.textContent = item.text;
+      items.forEach((item, i) => {
+        const card = document.createElement("div");
+        card.className = "placeholder";
+        const pos = positions[i];
+        card.style.transform = `translate(${pos.x}px, ${pos.y}px) rotate(${pos.rotate}deg) scale(0.8)`;
 
-          card.appendChild(img);
-          card.appendChild(cap);
-          gallery.appendChild(card);
-        });
+        const img = document.createElement("img");
+        img.src = item.img;
+        img.alt = item.text.slice(0, 50);
+        img.loading = "lazy";
+        img.onerror = () => { img.src = fallbackDataURI; };
+
+        const cap = document.createElement("div");
+        cap.className = "caption";
+        cap.textContent = item.text;
+
+        card.appendChild(img);
+        card.appendChild(cap);
+        gallery.appendChild(card);
       });
+    });
 
-      /* --- клики: одна активная, повторный клик снимает --- */
-      document.querySelectorAll(".gallery").forEach(gal => {
-        gal.addEventListener("click", e => {
-          const target = e.target.closest(".placeholder");
-          if(!target) return;
-          if(target.classList.contains("active")){
-            target.classList.remove("active");
-          } else {
-            gal.querySelectorAll(".placeholder").forEach(p => p.classList.remove("active"));
-            target.classList.add("active");
-          }
-        });
+    // Intersection Observer для анимации появления элементов
+    const observerOptions = {
+      threshold: 0.2,
+      rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
       });
+    }, observerOptions);
 
-      /* --- анимация заголовков --- */
-      const io = new IntersectionObserver(entries=>{
-        entries.forEach(en => { if(en.isIntersecting) en.target.classList.add("visible"); });
-      }, {threshold: .35});
-      document.querySelectorAll("h2").forEach(h => io.observe(h));
+    // Наблюдаем за всеми заголовками и карточками
+    document.querySelectorAll('h2, .placeholder').forEach(el => {
+      observer.observe(el);
+    });
+
+    // Плавный скролл для якорей
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // Trigger animation on scroll
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          ticking = false;
+        });
+        ticking = true;
+      }
     });
   </script>
 </body>
 </html>
-
-
-
-
-
