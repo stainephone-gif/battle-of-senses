@@ -194,7 +194,7 @@
 
     /* Состояние: проявлен */
     .philosopher.revealed .philosopher-image img {
-      filter: blur(0px) brightness(1);
+      filter: blur(0px) brightness(1) !important;
     }
 
     .philosopher.revealed .philosopher-image {
@@ -1159,46 +1159,61 @@
         // Добавляем класс "revealed" для проявления
         this.classList.add('revealed');
 
-        // Перемещаем картинку на экран, если была частично скрыта
-        const container = document.querySelector('.philosophers-container');
-        const containerWidth = container.clientWidth;
-        const containerHeight = container.clientHeight;
+        // ВАЖНО: Убираем inline стили filter, чтобы CSS класс сработал
+        const img = this.querySelector('.philosopher-image img');
+        img.style.filter = '';
 
-        const image = this.querySelector('.philosopher-image');
-        const imageWidth = image.offsetWidth;
-        const imageHeight = image.offsetHeight;
+        // Даём время текста появиться, затем проверяем позицию
+        setTimeout(() => {
+          const container = document.querySelector('.philosophers-container');
+          const containerWidth = container.clientWidth;
+          const containerHeight = container.clientHeight;
 
-        const currentLeft = parseFloat(this.style.left) || 0;
-        const currentTop = parseFloat(this.style.top) || 0;
+          const image = this.querySelector('.philosopher-image');
+          const imageWidth = image.offsetWidth;
+          const imageHeight = image.offsetHeight;
 
-        const margin = 20; // Отступ от края экрана
-        let newLeft = currentLeft;
-        let newTop = currentTop;
-        let needsRepositioning = false;
+          const textBlock = this.querySelector('.philosopher-text');
+          const textHeight = textBlock.offsetHeight;
 
-        // Проверяем и корректируем позицию по X
-        if (currentLeft < 0) {
-          newLeft = margin;
-          needsRepositioning = true;
-        } else if (currentLeft + imageWidth > containerWidth) {
-          newLeft = containerWidth - imageWidth - margin;
-          needsRepositioning = true;
-        }
+          const currentLeft = parseFloat(this.style.left) || 0;
+          const currentTop = parseFloat(this.style.top) || 0;
 
-        // Проверяем и корректируем позицию по Y
-        if (currentTop < 0) {
-          newTop = margin;
-          needsRepositioning = true;
-        } else if (currentTop + imageHeight + 100 > containerHeight) {
-          newTop = containerHeight - imageHeight - 120;
-          needsRepositioning = true;
-        }
+          const margin = 20; // Отступ от края экрана
+          const totalHeight = imageHeight + textHeight + 15; // +15 для margin-top
+          let newLeft = currentLeft;
+          let newTop = currentTop;
+          let needsRepositioning = false;
 
-        // Применяем новую позицию, если нужно
-        if (needsRepositioning) {
-          this.style.left = `${newLeft}px`;
-          this.style.top = `${newTop}px`;
-        }
+          // Проверяем и корректируем позицию по X
+          if (currentLeft < 0) {
+            newLeft = margin;
+            needsRepositioning = true;
+          } else if (currentLeft + imageWidth > containerWidth) {
+            newLeft = containerWidth - imageWidth - margin;
+            needsRepositioning = true;
+          }
+
+          // Проверяем и корректируем позицию по Y с учетом текста
+          if (currentTop < 0) {
+            newTop = margin;
+            needsRepositioning = true;
+          } else if (currentTop + totalHeight > containerHeight - margin) {
+            // Текст выходит за границы - двигаем вверх
+            newTop = containerHeight - totalHeight - margin;
+            // Если даже так не помещается, ставим с отступом сверху
+            if (newTop < margin) {
+              newTop = margin;
+            }
+            needsRepositioning = true;
+          }
+
+          // Применяем новую позицию, если нужно
+          if (needsRepositioning) {
+            this.style.left = `${newLeft}px`;
+            this.style.top = `${newTop}px`;
+          }
+        }, 100); // Небольшая задержка для получения реального размера текста
 
         // Вибрация на мобильных
         if ('vibrate' in navigator) {
