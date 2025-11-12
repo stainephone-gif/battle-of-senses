@@ -152,7 +152,7 @@
 
     /* Контейнер для философов */
     #card1 {
-      background: #000000;
+      background: linear-gradient(135deg, #E8E5E0 0%, #F5F2ED 50%, #E5E5DD 100%);
     }
 
     .philosophers-container {
@@ -166,7 +166,7 @@
     .philosopher {
       position: absolute;
       cursor: pointer;
-      transition: transform 0.3s ease;
+      transition: transform 0.3s ease, left 0.6s ease, top 0.6s ease;
     }
 
     .philosopher:hover {
@@ -1065,6 +1065,7 @@
       const containerWidth = container.clientWidth;
       const containerHeight = container.clientHeight;
       const positions = [];
+      const isMobile = window.innerWidth < 768;
 
       // Функция проверки пересечения двух прямоугольников
       function checkOverlap(rect1, rect2) {
@@ -1087,10 +1088,21 @@
         while (!positioned && attempts < 100) {
           attempts++;
 
-          // Случайная позиция (может быть частично за пределами экрана)
-          // Допускаем от -30% до 110% по ширине и от 5% до 80% по высоте
-          const x = Math.random() * (containerWidth * 1.4) - (containerWidth * 0.3);
-          const y = Math.random() * (containerHeight * 0.75) + (containerHeight * 0.05);
+          let x, y;
+
+          if (isMobile) {
+            // На мобильных: картинки должны быть хотя бы частично видны
+            // Допускаем от -40% до 100% по ширине (минимум 60% видно)
+            x = Math.random() * (containerWidth * 1.4) - (imageWidth * 0.4);
+            y = Math.random() * (containerHeight * 0.7) + (containerHeight * 0.05);
+
+            // Гарантируем что хотя бы 60% картинки видно
+            x = Math.max(-(imageWidth * 0.4), Math.min(x, containerWidth - (imageWidth * 0.6)));
+          } else {
+            // На десктопе: могут быть частично скрыты
+            x = Math.random() * (containerWidth * 1.4) - (containerWidth * 0.3);
+            y = Math.random() * (containerHeight * 0.75) + (containerHeight * 0.05);
+          }
 
           const newRect = {
             left: x,
@@ -1112,6 +1124,8 @@
             // Позиция подходит
             philosopher.style.left = `${x}px`;
             philosopher.style.top = `${y}px`;
+            philosopher.dataset.originalX = x;
+            philosopher.dataset.originalY = y;
             positions.push(newRect);
             positioned = true;
           }
@@ -1127,6 +1141,8 @@
           const fallback = fallbackPositions[index] || fallbackPositions[0];
           philosopher.style.left = `${fallback.x}px`;
           philosopher.style.top = `${fallback.y}px`;
+          philosopher.dataset.originalX = fallback.x;
+          philosopher.dataset.originalY = fallback.y;
         }
       });
     }
@@ -1142,6 +1158,47 @@
       philosopher.addEventListener('click', function(e) {
         // Добавляем класс "revealed" для проявления
         this.classList.add('revealed');
+
+        // Перемещаем картинку на экран, если была частично скрыта
+        const container = document.querySelector('.philosophers-container');
+        const containerWidth = container.clientWidth;
+        const containerHeight = container.clientHeight;
+
+        const image = this.querySelector('.philosopher-image');
+        const imageWidth = image.offsetWidth;
+        const imageHeight = image.offsetHeight;
+
+        const currentLeft = parseFloat(this.style.left) || 0;
+        const currentTop = parseFloat(this.style.top) || 0;
+
+        const margin = 20; // Отступ от края экрана
+        let newLeft = currentLeft;
+        let newTop = currentTop;
+        let needsRepositioning = false;
+
+        // Проверяем и корректируем позицию по X
+        if (currentLeft < 0) {
+          newLeft = margin;
+          needsRepositioning = true;
+        } else if (currentLeft + imageWidth > containerWidth) {
+          newLeft = containerWidth - imageWidth - margin;
+          needsRepositioning = true;
+        }
+
+        // Проверяем и корректируем позицию по Y
+        if (currentTop < 0) {
+          newTop = margin;
+          needsRepositioning = true;
+        } else if (currentTop + imageHeight + 100 > containerHeight) {
+          newTop = containerHeight - imageHeight - 120;
+          needsRepositioning = true;
+        }
+
+        // Применяем новую позицию, если нужно
+        if (needsRepositioning) {
+          this.style.left = `${newLeft}px`;
+          this.style.top = `${newTop}px`;
+        }
 
         // Вибрация на мобильных
         if ('vibrate' in navigator) {
