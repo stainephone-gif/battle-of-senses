@@ -25,6 +25,16 @@
       color: #000;
       overflow-x: hidden;
       padding: 20px;
+      animation: themeChange 8s ease-in-out infinite;
+    }
+
+    @keyframes themeChange {
+      0%, 100% {
+        background: #000000;
+      }
+      50% {
+        background: #FFFFFF;
+      }
     }
 
     /* Карточка стартового экрана */
@@ -37,7 +47,19 @@
       text-align: center;
       opacity: 0;
       transform: scale(0.95);
-      animation: fadeInScale 0.5s ease-out forwards;
+      animation: fadeInScale 0.5s ease-out forwards, cardThemeChange 8s ease-in-out infinite;
+      animation-delay: 0s, 0.5s;
+    }
+
+    @keyframes cardThemeChange {
+      0%, 100% {
+        background: #E5E5E5;
+        color: #000000;
+      }
+      50% {
+        background: #1A1A1A;
+        color: #FFFFFF;
+      }
     }
 
     @keyframes fadeInScale {
@@ -54,6 +76,8 @@
       color: #000000;
       margin-bottom: 35px;
       text-align: center;
+      animation: textThemeChange 8s ease-in-out infinite;
+      animation-delay: 0.5s;
     }
 
     /* Философский текст */
@@ -64,6 +88,8 @@
       line-height: 1.6;
       text-align: center;
       margin-bottom: 45px;
+      animation: descriptionThemeChange 8s ease-in-out infinite;
+      animation-delay: 0.5s;
     }
 
     /* Вопрос */
@@ -73,6 +99,26 @@
       color: #000000;
       text-align: center;
       margin-bottom: 25px;
+      animation: textThemeChange 8s ease-in-out infinite;
+      animation-delay: 0.5s;
+    }
+
+    @keyframes textThemeChange {
+      0%, 100% {
+        color: #000000;
+      }
+      50% {
+        color: #FFFFFF;
+      }
+    }
+
+    @keyframes descriptionThemeChange {
+      0%, 100% {
+        color: #333333;
+      }
+      50% {
+        color: #CCCCCC;
+      }
     }
 
     /* Контейнер для кнопок */
@@ -98,10 +144,52 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: background 0.2s ease;
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
+    }
+
+    /* Первая кнопка - движение вверх-вниз */
+    .choice-button:nth-child(1) {
+      animation: buttonFloat1 4s ease-in-out infinite, buttonThemeChange 8s ease-in-out infinite;
+      animation-delay: 0.5s, 0.5s;
+    }
+
+    /* Вторая кнопка - движение вниз-вверх (противоположное) */
+    .choice-button:nth-child(2) {
+      animation: buttonFloat2 4s ease-in-out infinite, buttonThemeChange 8s ease-in-out infinite;
+      animation-delay: 0.5s, 0.5s;
+    }
+
+    @keyframes buttonFloat1 {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-15px);
+      }
+    }
+
+    @keyframes buttonFloat2 {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(15px);
+      }
+    }
+
+    @keyframes buttonThemeChange {
+      0%, 100% {
+        background: #D0D0D0;
+        color: #000000;
+      }
+      50% {
+        background: #3A3A3A;
+        color: #FFFFFF;
+      }
     }
 
     .choice-button:hover {
