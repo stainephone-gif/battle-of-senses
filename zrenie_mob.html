@@ -194,7 +194,7 @@
 
     /* Состояние: проявлен */
     .philosopher.revealed .philosopher-image img {
-      filter: blur(0px) brightness(1) !important;
+      filter: none !important;
     }
 
     .philosopher.revealed .philosopher-image {
@@ -1163,6 +1163,12 @@
         const img = this.querySelector('.philosopher-image img');
         img.style.filter = '';
 
+        // Принудительно убираем blur несколько раз для надежности
+        setTimeout(() => { img.style.filter = ''; }, 50);
+        setTimeout(() => { img.style.filter = ''; }, 150);
+        setTimeout(() => { img.style.filter = ''; }, 300);
+        setTimeout(() => { img.style.filter = ''; }, 600);
+
         // Даём время текста появиться, затем проверяем позицию
         setTimeout(() => {
           const container = document.querySelector('.philosophers-container');
@@ -1229,6 +1235,10 @@
         if (!this.classList.contains('revealed')) {
           const img = this.querySelector('.philosopher-image img');
           img.style.filter = 'blur(12px) brightness(0.8)';
+        } else {
+          // Если уже revealed, гарантируем отсутствие blur
+          const img = this.querySelector('.philosopher-image img');
+          img.style.filter = '';
         }
       });
 
@@ -1236,6 +1246,10 @@
         if (!this.classList.contains('revealed')) {
           const img = this.querySelector('.philosopher-image img');
           img.style.filter = 'blur(15px) brightness(0.7)';
+        } else {
+          // Если уже revealed, гарантируем отсутствие blur
+          const img = this.querySelector('.philosopher-image img');
+          img.style.filter = '';
         }
       });
     });
