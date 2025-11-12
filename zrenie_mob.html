@@ -147,25 +147,120 @@
     }
 
     /* ================================================
-       УРОВЕНЬ 1: ЛЕГКОЕ РАЗМЫТИЕ (Карточки 1-2)
+       УРОВЕНЬ 1: ИНТЕРАКТИВНЫЕ ФИЛОСОФЫ (Карточка 1)
        ================================================ */
 
-    /* Карточка 1 */
-    #card1 .card {
-      background: #E5E5DD;
+    /* Контейнер для философов */
+    #card1 {
+      background: #000000;
     }
 
-    #card1 .card-title {
+    .philosophers-container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Философ (картинка + текст) */
+    .philosopher {
+      position: absolute;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .philosopher:hover {
+      transform: scale(1.05);
+      z-index: 10;
+    }
+
+    /* Изображение философа */
+    .philosopher-image {
+      width: 200px;
+      height: 200px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      transition: all 0.5s ease;
+    }
+
+    .philosopher-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: blur(15px) brightness(0.7);
+      transition: filter 0.6s ease;
+    }
+
+    /* Состояние: проявлен */
+    .philosopher.revealed .philosopher-image img {
+      filter: blur(0px) brightness(1);
+    }
+
+    .philosopher.revealed .philosopher-image {
+      box-shadow: 0 12px 36px rgba(229, 229, 221, 0.4);
+    }
+
+    /* Текст под философом */
+    .philosopher-text {
+      margin-top: 15px;
+      padding: 15px 20px;
+      background: rgba(229, 229, 221, 0.95);
+      border-radius: 8px;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.5s ease;
+      pointer-events: none;
+      max-width: 250px;
+    }
+
+    .philosopher.revealed .philosopher-text {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .philosopher-text h3 {
+      font-size: 18px;
+      font-weight: 700;
       color: #000000;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
-    #card1 .card-image img {
-      filter: blur(3px) opacity(0.92);
-    }
-
-    #card1 .card-text {
+    .philosopher-text p {
+      font-size: 13px;
+      font-weight: 400;
       color: #333333;
+      line-height: 1.5;
+      margin: 0;
     }
+
+    /* Адаптация для маленьких экранов */
+    @media (max-width: 480px) {
+      .philosopher-image {
+        width: 150px;
+        height: 150px;
+      }
+
+      .philosopher-text {
+        max-width: 200px;
+        padding: 12px 15px;
+      }
+
+      .philosopher-text h3 {
+        font-size: 16px;
+      }
+
+      .philosopher-text p {
+        font-size: 12px;
+      }
+    }
+
+    /* ================================================
+       УРОВЕНЬ 1: ЛЕГКОЕ РАЗМЫТИЕ (Карточка 2)
+       ================================================ */
 
     /* Карточка 2 */
     #card2 .card {
@@ -799,16 +894,39 @@
 
   <!-- Карточка 1: Античные философы (Уровень 1) -->
   <section id="card1">
-    <div class="card">
-      <h2 class="card-title">Античные философы</h2>
-      <div class="card-image">
-        <img src="pic/Plato.png" alt="Платон" loading="lazy">
+    <div class="philosophers-container">
+      <!-- Философ 1: Платон -->
+      <div class="philosopher" data-philosopher="plato">
+        <div class="philosopher-image">
+          <img src="pic/Plato.png" alt="Платон" loading="lazy">
+        </div>
+        <div class="philosopher-text">
+          <h3>Платон</h3>
+          <p>Зрение — важнейшее из чувств, через него познаётся истина и красота идей.</p>
+        </div>
       </div>
-      <p class="card-text">
-        Мир древних философов. Платон и Аристотель
-        считали зрение и слух «благородными чувствами»,
-        через которые человек познаёт истину.
-      </p>
+
+      <!-- Философ 2: Аристотель -->
+      <div class="philosopher" data-philosopher="aristotle">
+        <div class="philosopher-image">
+          <img src="pic/Arist.png" alt="Аристотель" loading="lazy">
+        </div>
+        <div class="philosopher-text">
+          <h3>Аристотель</h3>
+          <p>Видение даёт наибольшее знание о мире, открывая различия между вещами.</p>
+        </div>
+      </div>
+
+      <!-- Философ 3: Пифагор -->
+      <div class="philosopher" data-philosopher="pythagoras">
+        <div class="philosopher-image">
+          <img src="pic/Piph.png" alt="Пифагор" loading="lazy">
+        </div>
+        <div class="philosopher-text">
+          <h3>Пифагор</h3>
+          <p>Через созерцание геометрических форм разум постигает гармонию космоса.</p>
+        </div>
+      </div>
     </div>
     <div class="scroll-arrow">⌄</div>
   </section>
@@ -935,6 +1053,121 @@
   </section>
 
   <script>
+    // ================================================
+    // СЛУЧАЙНОЕ ПОЗИЦИОНИРОВАНИЕ ФИЛОСОФОВ
+    // ================================================
+    function positionPhilosophers() {
+      const container = document.querySelector('.philosophers-container');
+      const philosophers = document.querySelectorAll('.philosopher');
+
+      if (!container || philosophers.length === 0) return;
+
+      const containerWidth = container.clientWidth;
+      const containerHeight = container.clientHeight;
+      const positions = [];
+
+      // Функция проверки пересечения двух прямоугольников
+      function checkOverlap(rect1, rect2) {
+        return !(rect1.right < rect2.left ||
+                 rect1.left > rect2.right ||
+                 rect1.bottom < rect2.top ||
+                 rect1.top > rect2.bottom);
+      }
+
+      // Позиционирование каждого философа
+      philosophers.forEach((philosopher, index) => {
+        const imageWidth = philosopher.querySelector('.philosopher-image').offsetWidth;
+        const imageHeight = philosopher.querySelector('.philosopher-image').offsetHeight;
+        const textHeight = 100; // Примерная высота текста
+        const totalHeight = imageHeight + textHeight;
+
+        let attempts = 0;
+        let positioned = false;
+
+        while (!positioned && attempts < 100) {
+          attempts++;
+
+          // Случайная позиция (может быть частично за пределами экрана)
+          // Допускаем от -30% до 110% по ширине и от 5% до 80% по высоте
+          const x = Math.random() * (containerWidth * 1.4) - (containerWidth * 0.3);
+          const y = Math.random() * (containerHeight * 0.75) + (containerHeight * 0.05);
+
+          const newRect = {
+            left: x,
+            top: y,
+            right: x + imageWidth,
+            bottom: y + totalHeight
+          };
+
+          // Проверяем пересечение с уже размещенными философами
+          let hasOverlap = false;
+          for (let pos of positions) {
+            if (checkOverlap(newRect, pos)) {
+              hasOverlap = true;
+              break;
+            }
+          }
+
+          if (!hasOverlap) {
+            // Позиция подходит
+            philosopher.style.left = `${x}px`;
+            philosopher.style.top = `${y}px`;
+            positions.push(newRect);
+            positioned = true;
+          }
+        }
+
+        // Если не удалось найти позицию без перекрытий, используем фиксированную
+        if (!positioned) {
+          const fallbackPositions = [
+            { x: containerWidth * 0.1, y: containerHeight * 0.15 },
+            { x: containerWidth * 0.5, y: containerHeight * 0.45 },
+            { x: containerWidth * 0.7, y: containerHeight * 0.25 }
+          ];
+          const fallback = fallbackPositions[index] || fallbackPositions[0];
+          philosopher.style.left = `${fallback.x}px`;
+          philosopher.style.top = `${fallback.y}px`;
+        }
+      });
+    }
+
+    // Запускаем позиционирование после загрузки
+    window.addEventListener('load', positionPhilosophers);
+    window.addEventListener('resize', positionPhilosophers);
+
+    // ================================================
+    // ОБРАБОТКА КЛИКОВ - Проявление философов
+    // ================================================
+    document.querySelectorAll('.philosopher').forEach(philosopher => {
+      philosopher.addEventListener('click', function(e) {
+        // Добавляем класс "revealed" для проявления
+        this.classList.add('revealed');
+
+        // Вибрация на мобильных
+        if ('vibrate' in navigator) {
+          navigator.vibrate(20);
+        }
+
+        // Предотвращаем всплытие события
+        e.stopPropagation();
+      });
+
+      // Hover эффект для десктопа
+      philosopher.addEventListener('mouseenter', function() {
+        if (!this.classList.contains('revealed')) {
+          const img = this.querySelector('.philosopher-image img');
+          img.style.filter = 'blur(12px) brightness(0.8)';
+        }
+      });
+
+      philosopher.addEventListener('mouseleave', function() {
+        if (!this.classList.contains('revealed')) {
+          const img = this.querySelector('.philosopher-image img');
+          img.style.filter = 'blur(15px) brightness(0.7)';
+        }
+      });
+    });
+
     // ================================================
     // INTERSECTION OBSERVER - Появление карточек
     // ================================================
