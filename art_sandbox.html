@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>Интерактивная арт-песочница — Battle of Senses</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg1: #f6d365;
+      --bg2: #fda085;
+    }
+    html,body{
+      height:100%;
+      margin:0;
+    }
+    body {
+      background: linear-gradient(to bottom, var(--bg1), var(--bg2));
+      overflow:hidden;
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      position:relative;
+      font-family: 'Space Mono', 'Courier New', monospace;
+    }
+
+    /* Навигация домой */
+    .nav-home {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      width: 48px;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: #fff;
+      font-size: 24px;
+      z-index: 10000;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .nav-home:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(1.1);
+    }
+
+    /* базовый стиль для всех объектов (div + img) */
+    .shape {
+      position: absolute;
+      left: 0;
+      top: 0;
+      transform: translate(-50%,-50%) rotate(var(--rotation,0deg)) scale(0);
+      will-change: transform, opacity;
+      pointer-events: none;
+      opacity: 0.95;
+      transition: opacity 1s ease, transform 0.9s ease;
+    }
+
+    /* появление (поп) — анимируется через JS/animation */
+    @keyframes pop {
+      from { transform: translate(-50%,-50%) rotate(var(--rotation,0deg)) scale(0); opacity:0; }
+      to   { transform: translate(-50%,-50%) rotate(var(--rotation,0deg)) scale(1); opacity:0.95; }
+    }
+
+    .pop {
+      animation: pop 220ms cubic-bezier(.2,.8,.2,1) forwards;
+    }
+
+    /* плавное исчезание */
+    .fade-out {
+      opacity: 0;
+      transform: translate(-50%,-50%) rotate(var(--rotation,0deg)) scale(0.4);
+    }
+
+    /* картинки */
+    img.shape {
+      object-fit: cover;
+      border-radius: 12px;
+      display:block;
+    }
+
+    /* Инструкция */
+    .hint{
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 24px;
+      font-size: 13px;
+      backdrop-filter: blur(10px);
+      z-index: 9999;
+      letter-spacing: 0.5px;
+      border: 1px solid rgba(255,255,255,0.3);
+      font-weight: 400;
+      text-align: center;
+      max-width: 200px;
+      opacity: 0;
+      animation: fadeInHint 1s ease forwards 0.5s;
+    }
+
+    @keyframes fadeInHint {
+      to { opacity: 1; }
+    }
+
+    /* Кнопка "Войти в тишину" */
+    .finish-btn {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 18px 45px;
+      background: rgba(255, 255, 255, 0.25);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 15px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(15px);
+      transition: all 0.3s ease;
+      z-index: 9999;
+      opacity: 0;
+      animation: fadeInBtn 1s ease forwards 2s;
+      font-family: 'Space Mono', 'Courier New', monospace;
+    }
+
+    @keyframes fadeInBtn {
+      to { opacity: 1; }
+    }
+
+    .finish-btn:hover {
+      background: rgba(255, 255, 255, 0.35);
+      transform: translateX(-50%) scale(1.05);
+      box-shadow: 0 8px 32px rgba(255, 255, 255, 0.3);
+    }
+
+    .finish-btn:active {
+      transform: translateX(-50%) scale(0.98);
+    }
+
+    /* z-index для элементов */
+    .shape { z-index: 1; }
+
+    /* Адаптация для мобильных */
+    @media (max-width: 480px) {
+      .hint {
+        top: auto;
+        bottom: 100px;
+        right: 50%;
+        transform: translateX(50%);
+        max-width: calc(100% - 40px);
+        font-size: 12px;
+        padding: 10px 16px;
+      }
+
+      .finish-btn {
+        padding: 16px 35px;
+        font-size: 14px;
+        bottom: 20px;
+      }
+
+      .nav-home {
+        width: 44px;
+        height: 44px;
+        font-size: 22px;
+      }
+    }
+
+    /* Доступность */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.2s !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="nav-home" aria-label="Вернуться на главную">⌂</a>
+
+  <div class="hint">Рисуйте касанием или кликом</div>
+
+  <a href="quiet.html" class="finish-btn">Войти в тишину</a>
+
+  <script>
+    /***** Конфигурация *****/
+    const CLEAR_DELAY = 5000; // ms бездействия -> очистка
+    const MIN_SIZE = 30;
+    const MAX_SIZE = 140;
+    const MOVE_THROTTLE_MS = 40; // как часто при движении добавляем объекты
+    const MOVE_MIN_DIST = 8; // мин. расстояние между точками при рисовании
+
+    // список картинок (используем изображения философов из проекта)
+    const images = [
+      "pic/Plato.png",
+      "pic/Arist.png",
+      "pic/Piph.png"
+    ];
+
+    /***** Служебные переменные *****/
+    let clearTimer = null;
+    let isDrawing = false;
+    let lastMoveTime = 0;
+    let lastPos = { x: -9999, y: -9999 };
+
+    /***** Утилиты *****/
+    function randInt(min, max){ return Math.floor(Math.random()*(max-min+1))+min; }
+    function randFloat(min, max){ return Math.random()*(max-min)+min; }
+    function randColor(){ return `hsl(${randInt(0,360)}, ${randInt(60,100)}%, ${randInt(40,65)}%)`; }
+    function randGradient(){
+      const a = randColor();
+      const b = randColor();
+      const ang = randInt(0,360);
+      return `linear-gradient(${ang}deg, ${a}, ${b})`;
+    }
+
+    function scheduleClear(){
+      if (clearTimer) clearTimeout(clearTimer);
+      clearTimer = setTimeout(()=> {
+        const all = document.querySelectorAll('.shape');
+        all.forEach(el => {
+          // добавить fade а затем удалить
+          el.classList.add('fade-out');
+          setTimeout(()=> el.remove(), 1000);
+        });
+      }, CLEAR_DELAY);
+    }
+
+    /***** Создание фигуры/картинки *****/
+    function createShapeAt(x,y){
+      // небольшой шанс — картинка, иначе фигура
+      const useImage = Math.random() > 0.5 && images.length>0;
+      const el = useImage ? document.createElement('img') : document.createElement('div');
+      el.classList.add('shape');
+
+      const size = randInt(MIN_SIZE, MAX_SIZE);
+      el.style.width = size + 'px';
+      el.style.height = size + 'px';
+
+      // рандомный поворот
+      const rotationDeg = randInt(0,360) + 'deg';
+      el.style.setProperty('--rotation', rotationDeg);
+
+      // позиционирование (центрируем через translate(-50%,-50%))
+      el.style.left = x + 'px';
+      el.style.top = y + 'px';
+
+      if (useImage){
+        el.src = images[randInt(0, images.length-1)];
+        el.style.objectFit = 'cover';
+        el.onload = ()=> {
+          // после загрузки можно добавить pop
+        };
+      } else {
+        // случайная форма
+        const shapeKind = randInt(1,5);
+        if (shapeKind === 1) el.style.borderRadius = '50%'; // круг
+        else if (shapeKind === 2) el.style.borderRadius = '6px'; // скругленый прямоугольник
+        else if (shapeKind === 3) el.style.clipPath = 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)'; // звезда
+        else if (shapeKind === 4) el.style.borderRadius = '18%';
+        else el.style.borderRadius = '0';
+
+        // назначаем градиент либо однотонный фон (вариативность)
+        if (Math.random() > 0.35) el.style.background = randGradient();
+        else el.style.background = randColor();
+      }
+
+      // добавляем эффект появления
+      document.body.appendChild(el);
+      requestAnimationFrame(()=> {
+        el.classList.add('pop');
+      });
+
+      // по истечении долгого времени — постепенно исчезать (защитный механизм)
+      setTimeout(()=>{
+        if (el.parentElement) {
+          el.classList.add('fade-out');
+          setTimeout(()=> el.remove(), 1000);
+        }
+      }, CLEAR_DELAY + 2000);
+
+      scheduleClear();
+      return el;
+    }
+
+    /***** Обработка ввода: Pointer Events *****/
+    function handlePointerDown(e){
+      if (e.cancelable) e.preventDefault();
+
+      isDrawing = true;
+      lastMoveTime = 0;
+      lastPos.x = -9999; lastPos.y = -9999;
+      const {x,y} = getXY(e);
+      createShapeAt(x,y);
+      scheduleClear();
+
+      // Вибрация на мобильных
+      if ('vibrate' in navigator) {
+        navigator.vibrate(10);
+      }
+    }
+
+    function handlePointerMove(e){
+      if (!isDrawing) return;
+      const now = performance.now();
+      if (now - lastMoveTime < MOVE_THROTTLE_MS) return;
+
+      const {x,y} = getXY(e);
+      const dx = x - lastPos.x;
+      const dy = y - lastPos.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < MOVE_MIN_DIST) return;
+
+      lastMoveTime = now;
+      lastPos.x = x; lastPos.y = y;
+      createShapeAt(x,y);
+    }
+
+    function handlePointerUp(e){
+      isDrawing = false;
+    }
+
+    function getXY(e){
+      // PointerEvent -> clientX/clientY
+      if ('clientX' in e && 'clientY' in e){
+        return { x: e.clientX, y: e.clientY };
+      }
+      // TouchEvent fallback
+      if (e.touches && e.touches[0]){
+        return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      }
+      if (e.changedTouches && e.changedTouches[0]){
+        return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+      }
+      return { x: window.innerWidth/2, y: window.innerHeight/2 };
+    }
+
+    // attach pointer events
+    if (window.PointerEvent){
+      document.addEventListener('pointerdown', handlePointerDown, {passive:false});
+      document.addEventListener('pointermove', handlePointerMove, {passive:false});
+      document.addEventListener('pointerup', handlePointerUp, {passive:true});
+      document.addEventListener('pointercancel', handlePointerUp, {passive:true});
+    } else {
+      // Fallback для старых браузеров
+      document.addEventListener('touchstart', (e)=>{ if (e.cancelable) e.preventDefault(); handlePointerDown(e); }, {passive:false});
+      document.addEventListener('touchmove', (e)=>{ if (e.cancelable) e.preventDefault(); handlePointerMove(e); }, {passive:false});
+      document.addEventListener('touchend', handlePointerUp, {passive:true});
+      document.addEventListener('mousedown', (e)=>{ handlePointerDown(e); }, {passive:false});
+      document.addEventListener('mousemove', (e)=>{ handlePointerMove(e); }, {passive:true});
+      document.addEventListener('mouseup', handlePointerUp, {passive:true});
+    }
+
+    // Инициализация: очистка при старте
+    scheduleClear();
+
+    // Вибрация при клике на кнопку
+    document.querySelector('.finish-btn').addEventListener('click', () => {
+      if ('vibrate' in navigator) {
+        navigator.vibrate(15);
+      }
+    });
+
+    // Предзагрузка следующей страницы
+    const preload = document.createElement('link');
+    preload.rel = 'prefetch';
+    preload.href = 'quiet.html';
+    document.head.appendChild(preload);
+
+    console.log('Battle of Senses - Интерактивная арт-песочница загружена');
+  </script>
+</body>
+</html>
