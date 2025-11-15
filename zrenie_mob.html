@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
     /* ================================================
-       БАЗОВЫЕ СТИЛИ И СБРОС
+       БАЗОВЫЕ СТИЛИ
        ================================================ */
     * {
       margin: 0;
@@ -17,109 +17,38 @@
       box-sizing: border-box;
     }
 
-    body {
-      font-family: 'Space Mono', 'Courier New', monospace;
-      background: #000000;
-      color: #000000;
-      overflow-x: hidden;
-      overflow-y: scroll;
-      scroll-snap-type: y mandatory;
-      scroll-behavior: smooth;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    /* ================================================
-       СЕКЦИИ С SNAP-SCROLLING
-       ================================================ */
-    section {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 40px 20px;
-      scroll-snap-align: start;
-      scroll-snap-stop: always;
-      position: relative;
-    }
-
-    /* ================================================
-       КАРТОЧКА - БАЗОВЫЕ СТИЛИ
-       ================================================ */
-    .card {
-      width: 90%;
-      max-width: 450px;
-      padding: 50px 40px;
-      border-radius: 0;
-      text-align: center;
-      position: relative;
-      opacity: 0;
-      transform: scale(0.95);
-      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-    }
-
-    .card.visible {
-      opacity: 1;
-      transform: scale(1);
-    }
-
-    .card-title {
-      font-size: 26px;
-      font-weight: 700;
-      margin-bottom: 30px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-
-    .card-image {
+    html, body {
+      height: 100%;
       width: 100%;
-      max-width: 300px;
-      margin: 0 auto 25px;
+      overflow: hidden;
+      font-family: 'Space Mono', 'Courier New', monospace;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ================================================
+       КОНТЕЙНЕР ЭКРАНОВ
+       ================================================ */
+    #screens-container {
+      height: 100vh;
+      width: 100%;
       position: relative;
       overflow: hidden;
-      border-radius: 8px;
     }
 
-    .card-image img {
-      width: 100%;
-      height: auto;
-      display: block;
-      border-radius: 8px;
-    }
-
-    .card-text {
-      font-size: 15px;
-      font-weight: 400;
-      line-height: 1.6;
-    }
-
-    /* ================================================
-       СТРЕЛКА ВНИЗ (ИНДИКАТОР ПРОКРУТКИ)
-       ================================================ */
-    .scroll-arrow {
+    .screen {
       position: absolute;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 36px;
-      color: rgba(255, 255, 255, 0.6);
-      cursor: pointer;
-      animation: bounce 2s ease-in-out infinite;
-      z-index: 100;
-      user-select: none;
-      transition: color 0.3s ease;
-    }
-
-    .scroll-arrow:hover {
-      color: rgba(255, 255, 255, 0.9);
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translate(-50%, 0); }
-      50% { transform: translate(-50%, 12px); }
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
     }
 
     /* ================================================
-       НАВИГАЦИЯ ДОМОЙ
+       НАВИГАЦИЯ
        ================================================ */
     .nav-home {
       position: fixed;
@@ -127,8 +56,8 @@
       left: 20px;
       width: 48px;
       height: 48px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 2px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.15);
+      border: 2px solid rgba(255, 255, 255, 0.4);
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -136,22 +65,44 @@
       text-decoration: none;
       color: #fff;
       font-size: 24px;
-      z-index: 1000;
+      z-index: 10000;
       transition: all 0.3s ease;
       backdrop-filter: blur(10px);
     }
 
     .nav-home:hover {
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.25);
       transform: scale(1.1);
     }
 
-    /* ================================================
-       УРОВЕНЬ 1: ИНТЕРАКТИВНЫЕ ФИЛОСОФЫ (Карточка 1)
-       ================================================ */
+    /* Индикатор экранов */
+    .screen-indicator {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 9999;
+    }
 
-    /* Контейнер для философов */
-    #card1 {
+    .screen-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .screen-dot.active {
+      background: rgba(255, 255, 255, 0.9);
+      transform: scale(1.3);
+    }
+
+    /* ================================================
+       ЭКРАН 1: ФИЛОСОФЫ
+       ================================================ */
+    #screen1 {
       background: linear-gradient(135deg, #E8E5E0 0%, #F5F2ED 50%, #E5E5DD 100%);
     }
 
@@ -162,7 +113,6 @@
       overflow: hidden;
     }
 
-    /* Философ (картинка + текст) */
     .philosopher {
       position: absolute;
       cursor: pointer;
@@ -174,7 +124,6 @@
       z-index: 10;
     }
 
-    /* Изображение философа */
     .philosopher-image {
       width: 200px;
       height: 200px;
@@ -192,7 +141,6 @@
       transition: filter 0.6s ease;
     }
 
-    /* Состояние: проявлен */
     .philosopher.revealed .philosopher-image img {
       filter: blur(0px) brightness(1) !important;
     }
@@ -201,7 +149,6 @@
       box-shadow: 0 12px 36px rgba(229, 229, 221, 0.4);
     }
 
-    /* Текст под философом */
     .philosopher-text {
       margin-top: 15px;
       padding: 15px 20px;
@@ -237,7 +184,6 @@
       margin: 0;
     }
 
-    /* Адаптация для маленьких экранов */
     @media (max-width: 480px) {
       .philosopher-image {
         width: 150px;
@@ -259,802 +205,397 @@
     }
 
     /* ================================================
-       УРОВЕНЬ 1: ЛЕГКОЕ РАЗМЫТИЕ (Карточка 2)
+       ЭКРАН 2: АРТ-ПЕСОЧНИЦА
        ================================================ */
-
-    /* Карточка 2 */
-    #card2 .card {
-      background: #E8E5E0;
+    #screen2 {
+      background: linear-gradient(to bottom, #f6d365, #fda085);
     }
 
-    #card2 .card-title {
-      color: #000000;
+    .shape {
+      position: absolute;
+      left: 0;
+      top: 0;
+      transform: translate(-50%,-50%) rotate(var(--rotation,0deg)) scale(0);
+      will-change: transform, opacity;
+      pointer-events: none;
+      opacity: 0.95;
+      transition: opacity 1s ease, transform 0.9s ease;
+      z-index: 1;
     }
 
-    #card2 .card-image img {
-      filter: blur(5px) opacity(0.88);
+    @keyframes pop {
+      from { transform: translate(-50%,-50%) rotate(var(--rotation,0deg)) scale(0); opacity:0; }
+      to   { transform: translate(-50%,-50%) rotate(var(--rotation,0deg)) scale(1); opacity:0.95; }
     }
 
-    #card2 .card-text {
-      color: #333333;
+    .pop {
+      animation: pop 220ms cubic-bezier(.2,.8,.2,1) forwards;
+    }
+
+    .fade-out {
+      opacity: 0;
+      transform: translate(-50%,-50%) rotate(var(--rotation,0deg)) scale(0.4);
+    }
+
+    img.shape {
+      object-fit: cover;
+      border-radius: 12px;
+      display:block;
+    }
+
+    .hint {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 24px;
+      font-size: 13px;
+      backdrop-filter: blur(10px);
+      z-index: 9998;
+      letter-spacing: 0.5px;
+      border: 1px solid rgba(255,255,255,0.3);
+      font-weight: 400;
+      text-align: center;
+      max-width: 200px;
     }
 
     /* ================================================
-       УРОВЕНЬ 2: ГРАДИЕНТЫ (Карточки 3-4)
+       ЭКРАН 3: ГИПЕРТЕКСТ-ЛОВУШКА
        ================================================ */
-
-    /* Карточка 3 */
-    #card3 .card {
-      background: linear-gradient(180deg, #E8B4D9 0%, #F2D4A8 100%);
+    #screen3 {
+      background: linear-gradient(135deg,#ff3cac,#784ba0,#2b86c5,#ffcc70,#ff8177);
+      background-size: 500% 500%;
+      animation: bgshift 10s ease infinite;
+      color: white;
+      text-align: center;
     }
 
-    #card3 .card-title {
-      color: #000000;
-      animation: shake 5s ease-in-out infinite;
+    @keyframes bgshift {
+      0%{background-position:0% 50%;}
+      50%{background-position:100% 50%;}
+      100%{background-position:0% 50%;}
     }
 
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      2% { transform: translateX(-1px); }
-      4% { transform: translateX(1px); }
-    }
-
-    #card3 .card-image img {
-      filter: blur(7px) saturate(1.3) opacity(0.85);
-    }
-
-    #card3 .card-image::after {
-      content: '';
+    .btn {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(180deg, rgba(232, 180, 217, 0.3) 0%, rgba(242, 212, 168, 0.3) 100%);
-      mix-blend-mode: multiply;
-      pointer-events: none;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      padding: 20px 35px;
+      background: #fff;
+      color: #000;
+      border-radius: 20px;
+      font-size: 26px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 0 25px #fff, 0 0 50px #ff00ff;
+      animation: blink 1s infinite;
+      z-index: 10;
+      border: none;
+      font-family: 'Space Mono', 'Courier New', monospace;
     }
 
-    #card3 .card-text {
-      color: #222222;
+    @keyframes blink {
+      0%,100% {opacity:1; transform:translate(-50%,-50%) scale(1);}
+      50% {opacity:0.3; transform:translate(-50%,-50%) scale(1.1);}
     }
 
-    /* Карточка 4 */
-    #card4 .card {
-      background: linear-gradient(180deg, #D4A5F4 0%, #F4D4A5 100%);
-      animation: breathe 6s ease-in-out infinite;
-    }
-
-    @keyframes breathe {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.005); }
-    }
-
-    #card4 .card-title {
-      color: #000000;
-      animation: wave 4s ease-in-out infinite;
-    }
-
-    @keyframes wave {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-2px); }
-    }
-
-    #card4 .card-image img {
-      filter: blur(10px) saturate(1.4) opacity(0.82);
-      animation: float 5s ease-in-out infinite;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
-    }
-
-    #card4 .card-image::after {
-      content: '';
+    .message {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(180deg, rgba(212, 165, 244, 0.4) 0%, rgba(244, 212, 165, 0.4) 100%);
-      mix-blend-mode: screen;
-      pointer-events: none;
+      top: 20%; left: 50%;
+      transform: translateX(-50%);
+      font-size: 22px;
+      font-weight: 700;
+      text-shadow: 0 0 10px #000;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 9;
     }
 
-    #card4 .card-text {
-      color: #222222;
-    }
-
-    /* ================================================
-       УРОВЕНЬ 3: ГЛИТЧ-ЭФФЕКТЫ (Карточки 5-6)
-       ================================================ */
-
-    /* Карточка 5 */
-    #card5 .card {
-      background: linear-gradient(135deg, #FF6B9D 0%, #FFA06B 50%, #FFD96B 100%);
-      animation: pulse 3s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.02); }
-    }
-
-    #card5 .card-title {
-      color: #000000;
-      animation: glitch1 2.5s ease-in-out infinite;
-    }
-
-    @keyframes glitch1 {
-      0%, 100% {
-        text-shadow: 0 0 0 transparent;
-        transform: translateX(0);
-      }
-      5%, 12% {
-        text-shadow: 3px 0 0 #FF00FF, -3px 0 0 #00FFFF;
-        transform: translateX(-4px) skew(-2deg);
-      }
-      8%, 15% {
-        text-shadow: -3px 0 0 #FF00FF, 3px 0 0 #00FFFF;
-        transform: translateX(4px) skew(2deg);
-      }
-    }
-
-    #card5 .card-image img {
-      filter: blur(12px) saturate(1.8) contrast(1.3) hue-rotate(20deg);
-      animation: glitchImg1 2s ease-in-out infinite;
-    }
-
-    @keyframes glitchImg1 {
-      0%, 100% { transform: translate(0, 0); }
-      6% { transform: translate(-6px, 4px) skew(-3deg); }
-      12% { transform: translate(6px, -4px) skew(3deg); }
-      18% { transform: translate(-4px, 2px); }
-    }
-
-    /* Scanlines */
-    #card5 .card-image::before {
-      content: '';
+    .garbage, .text-frag {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: repeating-linear-gradient(
-        0deg,
-        rgba(0, 0, 0, 0.15) 0px,
-        rgba(0, 0, 0, 0.15) 2px,
-        transparent 2px,
-        transparent 4px
-      );
-      animation: scanlines 10s linear infinite;
-      pointer-events: none;
+      animation: fall 6s linear forwards;
       z-index: 2;
     }
 
-    @keyframes scanlines {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(20px); }
+    .garbage img {
+      border-radius: 10px;
     }
 
-    #card5 .card-text {
-      color: #111111;
+    .text-frag {
+      color: #fff;
+      font-weight: 600;
+      text-shadow: 0 0 10px #000;
     }
 
-    /* Карточка 6 */
-    #card6 .card {
-      background: linear-gradient(135deg,
-        #FF3366 0%, #9933FF 25%, #33FFFF 50%, #FFFF33 75%, #FF3366 100%);
-      background-size: 200% 200%;
-      animation: gradientMove 6s ease infinite;
+    @keyframes fall {
+      from {transform:translateY(-10vh) rotate(0);}
+      to {transform:translateY(120vh) rotate(360deg);}
     }
 
-    @keyframes gradientMove {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    #card6 .card-title {
-      color: #FFFFFF;
-      text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
-      animation: glitch2 1.8s ease-in-out infinite;
-    }
-
-    @keyframes glitch2 {
-      0%, 100% {
-        text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
-        transform: translateX(0);
-      }
-      7%, 18% {
-        text-shadow: 4px 0 0 #FF00FF, -4px 0 0 #00FFFF, 0 4px 0 #FFFF00;
-        transform: translateX(-5px) translateY(3px) skew(-4deg);
-      }
-      12%, 22% {
-        text-shadow: -4px 0 0 #FF00FF, 4px 0 0 #00FFFF, 0 -4px 0 #FFFF00;
-        transform: translateX(5px) translateY(-3px) skew(4deg);
-      }
-    }
-
-    #card6 .card-image img {
-      filter: blur(15px) saturate(2) contrast(1.5) hue-rotate(45deg);
-      animation: glitchImg2 1.5s ease-in-out infinite;
-    }
-
-    @keyframes glitchImg2 {
-      0%, 100% {
-        transform: translate(0, 0);
-        filter: blur(15px) saturate(2) contrast(1.5) hue-rotate(45deg);
-      }
-      8% {
-        transform: translate(-8px, 6px) skew(-5deg) rotate(-3deg);
-        filter: blur(18px) saturate(2.5) contrast(1.8) hue-rotate(80deg);
-      }
-      16% {
-        transform: translate(8px, -6px) skew(5deg) rotate(3deg);
-        filter: blur(12px) saturate(1.7) contrast(1.3) hue-rotate(20deg);
-      }
-    }
-
-    #card6 .card-image::before {
-      content: '';
+    #philosopherOverlay {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: repeating-linear-gradient(
-        0deg,
-        rgba(255, 0, 255, 0.25) 0px,
-        rgba(255, 0, 255, 0.25) 1px,
-        transparent 1px,
-        transparent 2px
-      );
-      animation: scanlinesFast 5s linear infinite;
-      pointer-events: none;
-      z-index: 2;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      display: none;
     }
 
-    @keyframes scanlinesFast {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(12px); }
+    #philosopherOverlay img {
+      max-width: 60%;
+      max-height: 60%;
+      margin-bottom: 20px;
+      border-radius: 15px;
+      transition: opacity 0.3s ease;
+      opacity: 0;
     }
 
-    /* RGB Split */
-    #card6 .card-image::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg,
-        rgba(255, 0, 255, 0.4) 0%,
-        rgba(0, 255, 255, 0.4) 50%,
-        rgba(255, 255, 0, 0.4) 100%);
-      mix-blend-mode: screen;
-      animation: rgbSplit 2s ease-in-out infinite;
-      pointer-events: none;
-      z-index: 3;
+    #philosopherOverlay img.active {
+      opacity: 1;
     }
 
-    @keyframes rgbSplit {
-      0%, 100% { transform: translateX(0); opacity: 0.3; }
-      25% { transform: translateX(-5px); opacity: 0.6; }
-      75% { transform: translateX(5px); opacity: 0.5; }
-    }
-
-    #card6 .card-text {
-      color: #FFFFFF;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-    }
-
-    /* ================================================
-       УРОВЕНЬ 4: ПОЛНЫЙ ХАОС (Карточки 7-8)
-       ================================================ */
-
-    /* Карточка 7 */
-    #card7 .card {
-      background:
-        radial-gradient(circle at 20% 50%, rgba(255, 0, 255, 0.9) 0%, transparent 50%),
-        radial-gradient(circle at 80% 50%, rgba(0, 255, 255, 0.9) 0%, transparent 50%),
-        radial-gradient(circle at 50% 20%, rgba(255, 255, 0, 0.9) 0%, transparent 50%),
-        linear-gradient(135deg, #FF0066, #00FFFF, #FFFF00, #FF00FF);
-      background-size: 150% 150%, 150% 150%, 150% 150%, 200% 200%;
-      animation: chaosBack 4s ease infinite;
-    }
-
-    @keyframes chaosBack {
-      0% { background-position: 0% 0%, 100% 100%, 50% 0%, 0% 50%; }
-      50% { background-position: 100% 100%, 0% 0%, 0% 100%, 100% 50%; }
-      100% { background-position: 0% 0%, 100% 100%, 50% 0%, 0% 50%; }
-    }
-
-    #card7 .card-title {
-      color: #FFFFFF;
-      text-shadow:
-        4px 4px 0 #FF00FF,
-        -4px -4px 0 #00FFFF,
-        4px -4px 0 #FFFF00,
-        -4px 4px 0 #FF0000;
-      animation: chaosTitle 1.2s ease-in-out infinite;
-    }
-
-    @keyframes chaosTitle {
-      0%, 100% {
-        transform: translate(0, 0) rotate(0deg) scale(1);
-        text-shadow: 4px 4px 0 #FF00FF, -4px -4px 0 #00FFFF;
-      }
-      12% {
-        transform: translate(-6px, 4px) rotate(-4deg) scale(1.03);
-        text-shadow: 6px 0 0 #FF00FF, -6px 0 0 #00FFFF, 0 6px 0 #FFFF00;
-      }
-      25% {
-        transform: translate(6px, -4px) rotate(4deg) scale(0.97);
-        text-shadow: -6px 0 0 #FF00FF, 6px 0 0 #00FFFF, 0 -6px 0 #FF0000;
-      }
-      50% {
-        transform: translate(-5px, 3px) rotate(-3deg) scale(1.02);
-        text-shadow: 5px 5px 0 #00FFFF, -5px -5px 0 #FFFF00;
-      }
-    }
-
-    #card7 .card-image {
-      animation: imageRotate 5s ease-in-out infinite;
-    }
-
-    @keyframes imageRotate {
-      0%, 100% { transform: rotate(0deg) scale(1); }
-      25% { transform: rotate(-6deg) scale(1.06); }
-      50% { transform: rotate(6deg) scale(0.94); }
-      75% { transform: rotate(-4deg) scale(1.04); }
-    }
-
-    #card7 .card-image img {
-      filter: blur(20px) saturate(3) contrast(2) brightness(1.5) hue-rotate(90deg);
-      animation: chaosImg 1s ease-in-out infinite;
-    }
-
-    @keyframes chaosImg {
-      0%, 100% {
-        transform: translate(0, 0);
-        filter: blur(20px) saturate(3) contrast(2) hue-rotate(90deg);
-      }
-      14% {
-        transform: translate(-12px, 8px) skew(-6deg) rotate(-6deg);
-        filter: blur(26px) saturate(3.5) contrast(2.5) hue-rotate(130deg) brightness(1.8);
-      }
-      28% {
-        transform: translate(12px, -8px) skew(6deg) rotate(6deg);
-        filter: blur(16px) saturate(2.5) contrast(1.8) hue-rotate(50deg) brightness(1.3);
-      }
-      56% {
-        transform: translate(-10px, 6px) skew(-5deg);
-        filter: blur(23px) saturate(3.2) contrast(2.2) hue-rotate(110deg);
-      }
-    }
-
-    #card7 .card-image::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background:
-        repeating-linear-gradient(90deg, rgba(255, 0, 255, 0.35) 0px, transparent 2px, transparent 5px),
-        repeating-linear-gradient(0deg, rgba(0, 255, 255, 0.35) 0px, transparent 2px, transparent 5px);
-      animation: grid 2.5s linear infinite;
-      pointer-events: none;
-      z-index: 4;
-    }
-
-    @keyframes grid {
-      0% { transform: translate(0, 0); opacity: 0.7; }
-      50% { transform: translate(5px, 5px); opacity: 1; }
-      100% { transform: translate(0, 0); opacity: 0.7; }
-    }
-
-    #card7 .card-image::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg,
-        rgba(255, 0, 255, 0.6) 0%,
-        rgba(0, 255, 255, 0.6) 25%,
-        rgba(255, 255, 0, 0.6) 50%,
-        rgba(255, 0, 0, 0.6) 75%,
-        rgba(255, 0, 255, 0.6) 100%);
-      background-size: 200% 100%;
-      mix-blend-mode: difference;
-      animation: rgbChaos 2s ease-in-out infinite;
-      pointer-events: none;
-      z-index: 5;
-    }
-
-    @keyframes rgbChaos {
-      0%, 100% { transform: translateX(0); opacity: 0.6; }
-      25% { transform: translateX(-8px); opacity: 0.9; }
-      50% { transform: translateX(8px); opacity: 0.7; }
-      75% { transform: translateX(-6px); opacity: 0.8; }
-    }
-
-    #card7 .card-text {
-      color: #FFFFFF;
-      text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.9);
+    #quote {
+      color: white;
+      font-size: 28px;
       font-weight: 700;
-    }
-
-    /* Карточка 8 - МАКСИМАЛЬНЫЙ ХАОС */
-    #card8 .card {
-      background:
-        repeating-conic-gradient(from 0deg at 50% 50%,
-          #FF0066 0deg, #00FFFF 60deg, #FFFF00 120deg,
-          #FF00FF 180deg, #00FF66 240deg, #FF0066 300deg);
-      animation: kaleidoscope 8s linear infinite;
-      overflow: hidden;
-    }
-
-    @keyframes kaleidoscope {
-      0% { background-position: 0% 0%; }
-      100% { background-position: 100% 100%; }
-    }
-
-    #card8 .card-title {
-      color: #FFFFFF;
-      text-shadow:
-        0 0 15px #FF00FF,
-        0 0 25px #00FFFF,
-        0 0 35px #FFFF00,
-        4px 4px 8px rgba(0, 0, 0, 1);
-      animation: extremeTitle 0.7s ease-in-out infinite;
-      font-size: 30px;
-      letter-spacing: 4px;
-    }
-
-    @keyframes extremeTitle {
-      0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); filter: blur(0px); }
-      20% { transform: translate(-8px, 6px) rotate(-6deg) scale(1.06); filter: blur(3px) hue-rotate(130deg); }
-      40% { transform: translate(8px, -6px) rotate(6deg) scale(0.94); filter: blur(2px) hue-rotate(250deg); }
-      60% { transform: translate(-7px, 5px) rotate(-5deg) scale(1.04); filter: blur(3px) hue-rotate(0deg); }
-      80% { transform: translate(7px, -5px) rotate(5deg) scale(0.96); filter: blur(2px) hue-rotate(190deg); }
-    }
-
-    #card8 .card-image {
-      animation: extremeRotate 4s ease-in-out infinite;
-      transform-style: preserve-3d;
-    }
-
-    @keyframes extremeRotate {
-      0%, 100% { transform: rotate(0deg) scale(1) perspective(600px) rotateY(0deg); }
-      25% { transform: rotate(-12deg) scale(1.12) perspective(600px) rotateY(18deg); }
-      50% { transform: rotate(12deg) scale(0.88) perspective(600px) rotateY(-18deg); }
-      75% { transform: rotate(-8deg) scale(1.08) perspective(600px) rotateY(12deg); }
-    }
-
-    #card8 .card-image img {
-      filter: blur(25px) saturate(4) contrast(3) brightness(2) hue-rotate(180deg);
-      animation: ultimateChaos 0.6s ease-in-out infinite;
-      image-rendering: pixelated;
-    }
-
-    @keyframes ultimateChaos {
-      0%, 100% {
-        transform: translate(0, 0) rotate(0deg) scale(1);
-        filter: blur(25px) saturate(4) contrast(3) brightness(2) hue-rotate(180deg);
-      }
-      25% {
-        transform: translate(-14px, 10px) rotate(-10deg) scale(1.14) skew(-8deg);
-        filter: blur(32px) saturate(5) contrast(4) brightness(2.5) hue-rotate(250deg) invert(0.3);
-      }
-      50% {
-        transform: translate(14px, -10px) rotate(10deg) scale(0.86) skew(8deg);
-        filter: blur(22px) saturate(3.5) contrast(2.5) brightness(1.8) hue-rotate(110deg) invert(0.2);
-      }
-      75% {
-        transform: translate(-12px, 8px) rotate(-8deg) scale(1.1) skew(-6deg);
-        filter: blur(30px) saturate(4.5) contrast(3.5) brightness(2.3) hue-rotate(310deg) invert(0.25);
-      }
-    }
-
-    #card8 .card-image::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background:
-        repeating-linear-gradient(0deg, rgba(255, 0, 0, 0.5) 0px, transparent 1px, transparent 3px),
-        repeating-linear-gradient(90deg, rgba(0, 255, 0, 0.5) 0px, transparent 1px, transparent 3px),
-        repeating-linear-gradient(45deg, rgba(0, 0, 255, 0.5) 0px, transparent 1px, transparent 3px);
-      animation: extremeGrid 1.2s linear infinite;
-      pointer-events: none;
-      z-index: 6;
-      mix-blend-mode: screen;
-    }
-
-    @keyframes extremeGrid {
-      0% { transform: translate(0, 0) rotate(0deg); }
-      25% { transform: translate(3px, -3px) rotate(90deg); }
-      50% { transform: translate(-3px, 3px) rotate(180deg); }
-      75% { transform: translate(3px, 3px) rotate(270deg); }
-      100% { transform: translate(0, 0) rotate(360deg); }
-    }
-
-    #card8 .card-image::after {
-      content: '';
-      position: absolute;
-      top: -60%;
-      left: -60%;
-      width: 220%;
-      height: 220%;
-      background:
-        radial-gradient(circle, rgba(255, 0, 255, 0.9) 0%, transparent 35%),
-        radial-gradient(circle, rgba(0, 255, 255, 0.9) 0%, transparent 35%),
-        radial-gradient(circle, rgba(255, 255, 0, 0.9) 0%, transparent 35%);
-      background-size: 60% 60%;
-      background-position: 0% 0%, 100% 100%, 50% 50%;
-      mix-blend-mode: difference;
-      animation: colorBurst 2.5s ease-in-out infinite;
-      pointer-events: none;
-      z-index: 7;
-    }
-
-    @keyframes colorBurst {
-      0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 0.7; }
-      25% { transform: translate(-40px, 40px) rotate(90deg) scale(1.6); opacity: 1; }
-      50% { transform: translate(40px, -40px) rotate(180deg) scale(0.7); opacity: 0.85; }
-      75% { transform: translate(-30px, 30px) rotate(270deg) scale(1.4); opacity: 0.95; }
-    }
-
-    #card8 .card-text {
-      color: #FFFFFF;
-      text-shadow:
-        0 0 8px #FF00FF,
-        0 0 15px #00FFFF,
-        0 0 20px #FFFF00,
-        3px 3px 10px rgba(0, 0, 0, 1);
-      font-weight: 700;
-      font-size: 16px;
-      letter-spacing: 3px;
+      text-align: center;
+      max-width: 80%;
+      line-height: 1.4;
     }
 
     /* ================================================
        ФИНАЛЬНАЯ КНОПКА
        ================================================ */
     .finish-btn {
-      display: inline-block;
-      margin-top: 35px;
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
       padding: 18px 45px;
-      background: rgba(255, 255, 255, 0.95);
-      color: #000000;
+      background: rgba(255, 255, 255, 0.25);
+      color: #fff;
       text-decoration: none;
-      border-radius: 8px;
+      border-radius: 50px;
       font-weight: 700;
-      font-size: 16px;
+      font-size: 15px;
       text-transform: uppercase;
       letter-spacing: 2px;
-      box-shadow: 0 0 25px rgba(255, 255, 255, 0.9);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(15px);
       transition: all 0.3s ease;
-      z-index: 100;
-      position: relative;
-      animation: btnPulse 2.5s ease-in-out infinite;
+      z-index: 9999;
+      font-family: 'Space Mono', 'Courier New', monospace;
+      display: none;
     }
 
-    @keyframes btnPulse {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 25px rgba(255, 255, 255, 0.9); }
-      50% { transform: scale(1.06); box-shadow: 0 0 45px rgba(255, 255, 255, 1); }
+    .finish-btn.visible {
+      display: block;
     }
 
     .finish-btn:hover {
-      transform: scale(1.1);
-      box-shadow: 0 0 60px rgba(255, 255, 255, 1);
-      background: #FFFFFF;
+      background: rgba(255, 255, 255, 0.35);
+      transform: translateX(-50%) scale(1.05);
     }
 
     /* ================================================
-       АДАПТИВНЫЙ ДИЗАЙН
+       АДАПТИВНОСТЬ
        ================================================ */
     @media (max-width: 480px) {
-      section { padding: 30px 15px; }
-      .card { padding: 35px 25px; max-width: 380px; }
-      .card-title { font-size: 22px; margin-bottom: 25px; }
-      .card-text { font-size: 14px; }
-      .card-image { max-width: 260px; }
-      .scroll-arrow { font-size: 32px; bottom: 25px; }
-      #card8 .card-title { font-size: 26px; }
-      .finish-btn { padding: 16px 35px; font-size: 15px; }
+      .hint {
+        top: auto;
+        bottom: 100px;
+        right: 50%;
+        transform: translateX(50%);
+        max-width: calc(100% - 40px);
+        font-size: 12px;
+        padding: 10px 16px;
+      }
+
+      .finish-btn {
+        padding: 16px 35px;
+        font-size: 14px;
+        bottom: 20px;
+      }
+
+      .nav-home {
+        width: 44px;
+        height: 44px;
+        font-size: 22px;
+      }
+
+      #quote {
+        font-size: 20px;
+      }
     }
 
-    @media (max-width: 360px) {
-      .card { padding: 30px 20px; }
-      .card-title { font-size: 20px; }
-      .card-image { max-width: 240px; }
-    }
-
-    /* Доступность */
+    /* ================================================
+       ДОСТУПНОСТЬ
+       ================================================ */
     @media (prefers-reduced-motion: reduce) {
       * {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.2s !important;
       }
-      body { scroll-behavior: auto; }
-      .scroll-arrow { animation: none; }
     }
   </style>
 </head>
 <body>
   <a href="index.html" class="nav-home" aria-label="Вернуться на главную">⌂</a>
 
-  <!-- Карточка 1: Античные философы (Уровень 1) -->
-  <section id="card1">
-    <div class="philosophers-container">
-      <!-- Философ 1: Платон -->
-      <div class="philosopher" data-philosopher="plato">
-        <div class="philosopher-image">
-          <img src="pic/Plato.png" alt="Платон" loading="lazy">
+  <!-- Индикатор экранов -->
+  <div class="screen-indicator">
+    <div class="screen-dot active"></div>
+    <div class="screen-dot"></div>
+    <div class="screen-dot"></div>
+  </div>
+
+  <!-- Контейнер экранов -->
+  <div id="screens-container">
+    <!-- ЭКРАН 1: ФИЛОСОФЫ -->
+    <div class="screen" id="screen1" data-screen="0">
+      <div class="philosophers-container">
+        <div class="philosopher" data-philosopher="plato">
+          <div class="philosopher-image">
+            <img src="pic/Plato.png" alt="Платон" loading="lazy">
+          </div>
+          <div class="philosopher-text">
+            <h3>Платон</h3>
+            <p>Зрение — важнейшее из чувств, через него познаётся истина и красота идей.</p>
+          </div>
         </div>
-        <div class="philosopher-text">
-          <h3>Платон</h3>
-          <p>Зрение — важнейшее из чувств, через него познаётся истина и красота идей.</p>
-        </div>
-      </div>
 
-      <!-- Философ 2: Аристотель -->
-      <div class="philosopher" data-philosopher="aristotle">
-        <div class="philosopher-image">
-          <img src="pic/Arist.png" alt="Аристотель" loading="lazy">
+        <div class="philosopher" data-philosopher="aristotle">
+          <div class="philosopher-image">
+            <img src="pic/Arist.png" alt="Аристотель" loading="lazy">
+          </div>
+          <div class="philosopher-text">
+            <h3>Аристотель</h3>
+            <p>Видение даёт наибольшее знание о мире, открывая различия между вещами.</p>
+          </div>
         </div>
-        <div class="philosopher-text">
-          <h3>Аристотель</h3>
-          <p>Видение даёт наибольшее знание о мире, открывая различия между вещами.</p>
-        </div>
-      </div>
 
-      <!-- Философ 3: Пифагор -->
-      <div class="philosopher" data-philosopher="pythagoras">
-        <div class="philosopher-image">
-          <img src="pic/Piph.png" alt="Пифагор" loading="lazy">
-        </div>
-        <div class="philosopher-text">
-          <h3>Пифагор</h3>
-          <p>Через созерцание геометрических форм разум постигает гармонию космоса.</p>
+        <div class="philosopher" data-philosopher="pythagoras">
+          <div class="philosopher-image">
+            <img src="pic/Piph.png" alt="Пифагор" loading="lazy">
+          </div>
+          <div class="philosopher-text">
+            <h3>Пифагор</h3>
+            <p>Через созерцание геометрических форм разум постигает гармонию космоса.</p>
+          </div>
         </div>
       </div>
     </div>
-    <div class="scroll-arrow">⌄</div>
-  </section>
 
-  <!-- Карточка 2: Средневековье (Уровень 1) -->
-  <section id="card2">
-    <div class="card">
-      <h2 class="card-title">Средневековые философы</h2>
-      <div class="card-image">
-        <img src="pic/Piph.png" alt="Средневековье" loading="lazy">
-      </div>
-      <p class="card-text">
-        Средневековая традиция восприятия.
-        Границы чувственного познания.
-        Визуальная метафизика и богословие образа.
-      </p>
+    <!-- ЭКРАН 2: АРТ-ПЕСОЧНИЦА -->
+    <div class="screen" id="screen2" data-screen="1">
+      <div class="hint">Рисуйте касанием или кликом</div>
     </div>
-    <div class="scroll-arrow">⌄</div>
-  </section>
 
-  <!-- Карточка 3: Немецкая философия (Уровень 2) -->
-  <section id="card3">
-    <div class="card">
-      <h2 class="card-title">Немецкая классическая философия</h2>
-      <div class="card-image">
-        <img src="pic/Arist.png" alt="Кант" loading="lazy">
-      </div>
-      <p class="card-text">
-        >> ЗЕС И СОЗЕРЦАТЕЛЬНОСТЬ
-        С появлением цифровых технологий
-        наше восприятие начало меняться.
-        Кант о формах чувственности.
-      </p>
-    </div>
-    <div class="scroll-arrow">⌄</div>
-  </section>
+    <!-- ЭКРАН 3: ГИПЕРТЕКСТ-ЛОВУШКА -->
+    <div class="screen" id="screen3" data-screen="2">
+      <div class="btn" id="startBtn">НЕ НАЖИМАЙ СЮДА</div>
 
-  <!-- Карточка 4: Диалектика восприятия (Уровень 2) -->
-  <section id="card4">
-    <div class="card">
-      <h2 class="card-title">Диалектика восприятия</h2>
-      <div class="card-image">
-        <img src="pic/Plato.png" alt="Гегель" loading="lazy">
+      <div id="philosopherOverlay">
+        <img id="philo1" src="pic/Arist.png">
+        <img id="philo2" src="pic/Plato.png">
+        <img id="philo3" src="pic/Piph.png">
+        <div id="quote"></div>
       </div>
-      <p class="card-text">
-        Это есть то, которое связано с разумом.
-        Но Платон чувство зрения отдельно
-        ставил выше, потому что посредством
-        со страсти или состояния боли и пустоты.
-      </p>
     </div>
-    <div class="scroll-arrow">⌄</div>
-  </section>
+  </div>
 
-  <!-- Карточка 5: ХХ век (Уровень 3) -->
-  <section id="card5">
-    <div class="card">
-      <h2 class="card-title">ХХ век</h2>
-      <div class="card-image">
-        <img src="pic/Piph.png" alt="Феноменология" loading="lazy">
-      </div>
-      <p class="card-text">
-        Феноменология восприятия.
-        Экзистенциальный опыт зрения.
-        Начало визуальных искажений.
-        Мир становится нестабильным.
-      </p>
-    </div>
-    <div class="scroll-arrow">⌄</div>
-  </section>
-
-  <!-- Карточка 6: Постмодернизм (Уровень 3) -->
-  <section id="card6">
-    <div class="card">
-      <h2 class="card-title">Деконструкция</h2>
-      <div class="card-image">
-        <img src="pic/Arist.png" alt="Постмодернизм" loading="lazy">
-      </div>
-      <p class="card-text">
-        ПОВЕРНИСЬ
-        Деконструкция зримого мира
-        ТРЕВОГА
-        Множество интерпретаций
-        Нет единой истины
-      </p>
-    </div>
-    <div class="scroll-arrow">⌄</div>
-  </section>
-
-  <!-- Карточка 7: Нейрофизиология (Уровень 4) -->
-  <section id="card7">
-    <div class="card">
-      <h2 class="card-title">Нейрофизиология</h2>
-      <div class="card-image">
-        <img src="pic/Plato.png" alt="Нейронауки" loading="lazy">
-      </div>
-      <p class="card-text">
-        МЕХАНИЗМЫ ЗРИТЕЛЬНОГО ВОСПРИЯТИЯ
-        Обработка визуальной информации
-        НИЧЕГО?
-        Связь восприятия и сознания
-        Хаос нейронных связей
-      </p>
-    </div>
-    <div class="scroll-arrow">⌄</div>
-  </section>
-
-  <!-- Карточка 8: Полный хаос (Уровень 4) -->
-  <section id="card8">
-    <div class="card">
-      <h2 class="card-title">ПЕРЕГРУЗ</h2>
-      <div class="card-image">
-        <img src="pic/Piph.png" alt="Визуальный хаос" loading="lazy">
-      </div>
-      <p class="card-text">
-        ВИЗУАЛЬНЫЙ ХАОС
-        НЕВОЗМОЖНО РАЗЛИЧИТЬ
-        АБСОЛЮТНЫЙ ПЕРЕГРУЗ
-        ЦИФРОВАЯ КАКОФОНИЯ
-        ТИШИНА...
-      </p>
-      <a href="art_sandbox.html" class="finish-btn">Продолжить</a>
-    </div>
-  </section>
+  <!-- Финальная кнопка -->
+  <a href="quiet.html" class="finish-btn" id="finishBtn">Войти в тишину</a>
 
   <script>
     // ================================================
-    // СЛУЧАЙНОЕ ПОЗИЦИОНИРОВАНИЕ ФИЛОСОФОВ
+    // СИСТЕМА НАВИГАЦИИ МЕЖДУ ЭКРАНАМИ
+    // ================================================
+    let currentScreen = 0;
+    const totalScreens = 3;
+    const screensContainer = document.getElementById('screens-container');
+    const screens = document.querySelectorAll('.screen');
+    const dots = document.querySelectorAll('.screen-dot');
+    const finishBtn = document.getElementById('finishBtn');
+
+    let touchStartY = 0;
+    let touchEndY = 0;
+    let isTransitioning = false;
+
+    function updateScreens() {
+      screens.forEach((screen, index) => {
+        const offset = (index - currentScreen) * 100;
+        screen.style.transform = `translateY(${offset}%)`;
+      });
+
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentScreen);
+      });
+
+      // Показываем финальную кнопку на последнем экране
+      if (currentScreen === totalScreens - 1) {
+        finishBtn.classList.add('visible');
+      } else {
+        finishBtn.classList.remove('visible');
+      }
+    }
+
+    function goToScreen(screenIndex) {
+      if (isTransitioning) return;
+      if (screenIndex < 0 || screenIndex >= totalScreens) return;
+
+      isTransitioning = true;
+      currentScreen = screenIndex;
+      updateScreens();
+
+      setTimeout(() => {
+        isTransitioning = false;
+      }, 500);
+    }
+
+    // Touch события для свайпов
+    document.addEventListener('touchstart', (e) => {
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    document.addEventListener('touchend', (e) => {
+      touchEndY = e.changedTouches[0].screenY;
+      handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+      const diff = touchStartY - touchEndY;
+      const threshold = 50;
+
+      if (Math.abs(diff) > threshold) {
+        if (diff > 0) {
+          // Свайп вверх - следующий экран
+          goToScreen(currentScreen + 1);
+        } else {
+          // Свайп вниз - предыдущий экран
+          goToScreen(currentScreen - 1);
+        }
+      }
+    }
+
+    // Клавиатура для тестирования
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') goToScreen(currentScreen + 1);
+      if (e.key === 'ArrowUp') goToScreen(currentScreen - 1);
+    });
+
+    // Инициализация
+    updateScreens();
+
+    // ================================================
+    // ЭКРАН 1: ФИЛОСОФЫ
     // ================================================
     function positionPhilosophers() {
       const container = document.querySelector('.philosophers-container');
@@ -1067,7 +608,6 @@
       const positions = [];
       const isMobile = window.innerWidth < 768;
 
-      // Функция проверки пересечения двух прямоугольников
       function checkOverlap(rect1, rect2) {
         return !(rect1.right < rect2.left ||
                  rect1.left > rect2.right ||
@@ -1075,11 +615,10 @@
                  rect1.top > rect2.bottom);
       }
 
-      // Позиционирование каждого философа
       philosophers.forEach((philosopher, index) => {
         const imageWidth = philosopher.querySelector('.philosopher-image').offsetWidth;
         const imageHeight = philosopher.querySelector('.philosopher-image').offsetHeight;
-        const textHeight = 100; // Примерная высота текста
+        const textHeight = 100;
         const totalHeight = imageHeight + textHeight;
 
         let attempts = 0;
@@ -1091,15 +630,10 @@
           let x, y;
 
           if (isMobile) {
-            // На мобильных: картинки должны быть хотя бы частично видны
-            // Допускаем от -40% до 100% по ширине (минимум 60% видно)
             x = Math.random() * (containerWidth * 1.4) - (imageWidth * 0.4);
             y = Math.random() * (containerHeight * 0.7) + (containerHeight * 0.05);
-
-            // Гарантируем что хотя бы 60% картинки видно
             x = Math.max(-(imageWidth * 0.4), Math.min(x, containerWidth - (imageWidth * 0.6)));
           } else {
-            // На десктопе: могут быть частично скрыты
             x = Math.random() * (containerWidth * 1.4) - (containerWidth * 0.3);
             y = Math.random() * (containerHeight * 0.75) + (containerHeight * 0.05);
           }
@@ -1111,7 +645,6 @@
             bottom: y + totalHeight
           };
 
-          // Проверяем пересечение с уже размещенными философами
           let hasOverlap = false;
           for (let pos of positions) {
             if (checkOverlap(newRect, pos)) {
@@ -1121,17 +654,13 @@
           }
 
           if (!hasOverlap) {
-            // Позиция подходит
             philosopher.style.left = `${x}px`;
             philosopher.style.top = `${y}px`;
-            philosopher.dataset.originalX = x;
-            philosopher.dataset.originalY = y;
             positions.push(newRect);
             positioned = true;
           }
         }
 
-        // Если не удалось найти позицию без перекрытий, используем фиксированную
         if (!positioned) {
           const fallbackPositions = [
             { x: containerWidth * 0.1, y: containerHeight * 0.15 },
@@ -1141,90 +670,26 @@
           const fallback = fallbackPositions[index] || fallbackPositions[0];
           philosopher.style.left = `${fallback.x}px`;
           philosopher.style.top = `${fallback.y}px`;
-          philosopher.dataset.originalX = fallback.x;
-          philosopher.dataset.originalY = fallback.y;
         }
       });
     }
 
-    // Запускаем позиционирование после загрузки
     window.addEventListener('load', positionPhilosophers);
     window.addEventListener('resize', positionPhilosophers);
 
-    // ================================================
-    // ОБРАБОТКА КЛИКОВ - Проявление философов
-    // ================================================
     document.querySelectorAll('.philosopher').forEach(philosopher => {
       philosopher.addEventListener('click', function(e) {
-        // Добавляем класс "revealed" для проявления
         this.classList.add('revealed');
-
-        // ВАЖНО: Убираем inline стили filter, чтобы CSS класс сработал
         const img = this.querySelector('.philosopher-image img');
         img.style.filter = '';
 
-        // Даём время текста появиться, затем проверяем позицию
-        setTimeout(() => {
-          const container = document.querySelector('.philosophers-container');
-          const containerWidth = container.clientWidth;
-          const containerHeight = container.clientHeight;
-
-          const image = this.querySelector('.philosopher-image');
-          const imageWidth = image.offsetWidth;
-          const imageHeight = image.offsetHeight;
-
-          const textBlock = this.querySelector('.philosopher-text');
-          const textHeight = textBlock.offsetHeight;
-
-          const currentLeft = parseFloat(this.style.left) || 0;
-          const currentTop = parseFloat(this.style.top) || 0;
-
-          const margin = 20; // Отступ от края экрана
-          const totalHeight = imageHeight + textHeight + 15; // +15 для margin-top
-          let newLeft = currentLeft;
-          let newTop = currentTop;
-          let needsRepositioning = false;
-
-          // Проверяем и корректируем позицию по X
-          if (currentLeft < 0) {
-            newLeft = margin;
-            needsRepositioning = true;
-          } else if (currentLeft + imageWidth > containerWidth) {
-            newLeft = containerWidth - imageWidth - margin;
-            needsRepositioning = true;
-          }
-
-          // Проверяем и корректируем позицию по Y с учетом текста
-          if (currentTop < 0) {
-            newTop = margin;
-            needsRepositioning = true;
-          } else if (currentTop + totalHeight > containerHeight - margin) {
-            // Текст выходит за границы - двигаем вверх
-            newTop = containerHeight - totalHeight - margin;
-            // Если даже так не помещается, ставим с отступом сверху
-            if (newTop < margin) {
-              newTop = margin;
-            }
-            needsRepositioning = true;
-          }
-
-          // Применяем новую позицию, если нужно
-          if (needsRepositioning) {
-            this.style.left = `${newLeft}px`;
-            this.style.top = `${newTop}px`;
-          }
-        }, 100); // Небольшая задержка для получения реального размера текста
-
-        // Вибрация на мобильных
         if ('vibrate' in navigator) {
           navigator.vibrate(20);
         }
 
-        // Предотвращаем всплытие события
         e.stopPropagation();
       });
 
-      // Hover эффект для десктопа
       philosopher.addEventListener('mouseenter', function() {
         if (!this.classList.contains('revealed')) {
           const img = this.querySelector('.philosopher-image img');
@@ -1241,106 +706,258 @@
     });
 
     // ================================================
-    // INTERSECTION OBSERVER - Появление карточек
+    // ЭКРАН 2: АРТ-ПЕСОЧНИЦА
     // ================================================
-    const cardObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const card = entry.target.querySelector('.card');
-          if (card) card.classList.add('visible');
+    const CLEAR_DELAY = 5000;
+    const MIN_SIZE = 30;
+    const MAX_SIZE = 140;
+    const MOVE_THROTTLE_MS = 40;
+    const MOVE_MIN_DIST = 8;
+
+    const images = ["pic/Plato.png", "pic/Arist.png", "pic/Piph.png"];
+
+    let clearTimer = null;
+    let isDrawing = false;
+    let lastMoveTime = 0;
+    let lastPos = { x: -9999, y: -9999 };
+
+    function randInt(min, max){ return Math.floor(Math.random()*(max-min+1))+min; }
+    function randColor(){ return `hsl(${randInt(0,360)}, ${randInt(60,100)}%, ${randInt(40,65)}%)`; }
+    function randGradient(){
+      const a = randColor();
+      const b = randColor();
+      const ang = randInt(0,360);
+      return `linear-gradient(${ang}deg, ${a}, ${b})`;
+    }
+
+    function scheduleClear(){
+      if (clearTimer) clearTimeout(clearTimer);
+      clearTimer = setTimeout(()=> {
+        const all = document.querySelectorAll('.shape');
+        all.forEach(el => {
+          el.classList.add('fade-out');
+          setTimeout(()=> el.remove(), 1000);
+        });
+      }, CLEAR_DELAY);
+    }
+
+    function createShapeAt(x,y){
+      const useImage = Math.random() > 0.5 && images.length>0;
+      const el = useImage ? document.createElement('img') : document.createElement('div');
+      el.classList.add('shape');
+
+      const size = randInt(MIN_SIZE, MAX_SIZE);
+      el.style.width = size + 'px';
+      el.style.height = size + 'px';
+
+      const rotationDeg = randInt(0,360) + 'deg';
+      el.style.setProperty('--rotation', rotationDeg);
+
+      el.style.left = x + 'px';
+      el.style.top = y + 'px';
+
+      if (useImage){
+        el.src = images[randInt(0, images.length-1)];
+        el.style.objectFit = 'cover';
+      } else {
+        const shapeKind = randInt(1,5);
+        if (shapeKind === 1) el.style.borderRadius = '50%';
+        else if (shapeKind === 2) el.style.borderRadius = '6px';
+        else if (shapeKind === 3) el.style.clipPath = 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)';
+        else if (shapeKind === 4) el.style.borderRadius = '18%';
+        else el.style.borderRadius = '0';
+
+        if (Math.random() > 0.35) el.style.background = randGradient();
+        else el.style.background = randColor();
+      }
+
+      document.getElementById('screen2').appendChild(el);
+      requestAnimationFrame(()=> {
+        el.classList.add('pop');
+      });
+
+      setTimeout(()=>{
+        if (el.parentElement) {
+          el.classList.add('fade-out');
+          setTimeout(()=> el.remove(), 1000);
         }
-      });
-    }, { threshold: 0.25 });
+      }, CLEAR_DELAY + 2000);
 
-    document.querySelectorAll('section').forEach(section => {
-      cardObserver.observe(section);
-    });
+      scheduleClear();
+      return el;
+    }
 
-    // ================================================
-    // НАВИГАЦИЯ ПО СТРЕЛКАМ
-    // ================================================
-    document.querySelectorAll('.scroll-arrow').forEach(arrow => {
-      arrow.addEventListener('click', () => {
-        const currentSection = arrow.closest('section');
-        const nextSection = currentSection.nextElementSibling;
-        if (nextSection && nextSection.tagName === 'SECTION') {
-          nextSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      });
-    });
+    function handlePointerDown(e){
+      if (currentScreen !== 1) return; // Только на экране 2
+      if (e.cancelable) e.preventDefault();
 
-    // ================================================
-    // ТАКТИЛЬНАЯ ОБРАТНАЯ СВЯЗЬ
-    // ================================================
-    if ('vibrate' in navigator) {
-      document.querySelectorAll('.scroll-arrow, .finish-btn').forEach(element => {
-        element.addEventListener('click', () => navigator.vibrate(15));
-      });
+      isDrawing = true;
+      lastMoveTime = 0;
+      lastPos.x = -9999; lastPos.y = -9999;
+      const {x,y} = getXY(e);
+      createShapeAt(x,y);
+      scheduleClear();
+
+      if ('vibrate' in navigator) {
+        navigator.vibrate(10);
+      }
+    }
+
+    function handlePointerMove(e){
+      if (!isDrawing || currentScreen !== 1) return;
+      const now = performance.now();
+      if (now - lastMoveTime < MOVE_THROTTLE_MS) return;
+
+      const {x,y} = getXY(e);
+      const dx = x - lastPos.x;
+      const dy = y - lastPos.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < MOVE_MIN_DIST) return;
+
+      lastMoveTime = now;
+      lastPos.x = x; lastPos.y = y;
+      createShapeAt(x,y);
+    }
+
+    function handlePointerUp(e){
+      isDrawing = false;
+    }
+
+    function getXY(e){
+      if ('clientX' in e && 'clientY' in e){
+        return { x: e.clientX, y: e.clientY };
+      }
+      if (e.touches && e.touches[0]){
+        return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      }
+      if (e.changedTouches && e.changedTouches[0]){
+        return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+      }
+      return { x: window.innerWidth/2, y: window.innerHeight/2 };
+    }
+
+    if (window.PointerEvent){
+      document.addEventListener('pointerdown', handlePointerDown, {passive:false});
+      document.addEventListener('pointermove', handlePointerMove, {passive:false});
+      document.addEventListener('pointerup', handlePointerUp, {passive:true});
+      document.addEventListener('pointercancel', handlePointerUp, {passive:true});
+    } else {
+      document.addEventListener('touchstart', (e)=>{ if (e.cancelable) e.preventDefault(); handlePointerDown(e); }, {passive:false});
+      document.addEventListener('touchmove', (e)=>{ if (e.cancelable) e.preventDefault(); handlePointerMove(e); }, {passive:false});
+      document.addEventListener('touchend', handlePointerUp, {passive:true});
+      document.addEventListener('mousedown', (e)=>{ handlePointerDown(e); }, {passive:false});
+      document.addEventListener('mousemove', (e)=>{ handlePointerMove(e); }, {passive:true});
+      document.addEventListener('mouseup', handlePointerUp, {passive:true});
     }
 
     // ================================================
-    // ПРЕДЗАГРУЗКА СЛЕДУЮЩЕЙ СТРАНИЦЫ
+    // ЭКРАН 3: ГИПЕРТЕКСТ-ЛОВУШКА
     // ================================================
-    const preload = document.createElement('link');
-    preload.rel = 'prefetch';
-    preload.href = 'art_sandbox.html';
-    document.head.appendChild(preload);
+    const btn = document.getElementById('startBtn');
+    const warnings = ["Серьёзно, прекрати!","Это тебе не нужно","Ты правда хочешь это?","Ещё раз и назад дороги не будет","Стоп!"];
+    const texts = ["Благородные чувства…","Зрение — солнце души","Слух — проводник гармонии","Пифагор: музыка — математика мира","Познание идей через зрение","21 век: технологии и чувства","Искусство, наука, философия","Гармония света и звука"];
+    const philosophers = [
+      {name:'aristotel', src:'pic/Arist.png', quote:'«Счастье заключается в деятельности разума, согласной с добродетелью»'},
+      {name:'platon', src:'pic/Plato.png', quote:'«Идеи — это вечные образы всего сущего»'},
+      {name:'pifagor', src:'pic/Piph.png', quote:'«Все есть число»'}
+    ];
 
-    // ================================================
-    // ОПТИМИЗАЦИЯ ПРОКРУТКИ
-    // ================================================
-    let scrolling = false;
-    window.addEventListener('scroll', () => {
-      if (!scrolling) {
-        window.requestAnimationFrame(() => { scrolling = false; });
-        scrolling = true;
+    let clickCount = 0, chaosInterval, slideshowInterval, activeIndex=0;
+    const overlay = document.getElementById('philosopherOverlay');
+    const imagesArr = [document.getElementById('philo1'),document.getElementById('philo2'),document.getElementById('philo3')];
+
+    btn.addEventListener('click',()=>{
+      if(clickCount<warnings.length){
+        showMessage(warnings[clickCount]);
+        clickCount++;
+      } else {
+        spawnChaos();
       }
-    }, { passive: true });
-
-    // ================================================
-    // СВАЙПЫ ДЛЯ МОБИЛЬНЫХ
-    // ================================================
-    let touchStartY = 0;
-    let touchEndY = 0;
-
-    document.addEventListener('touchstart', (e) => {
-      touchStartY = e.changedTouches[0].screenY;
-    }, { passive: true });
-
-    document.addEventListener('touchend', (e) => {
-      touchEndY = e.changedTouches[0].screenY;
-      const diff = touchStartY - touchEndY;
-      if (Math.abs(diff) > 50 && diff > 0) {
-        const sections = [...document.querySelectorAll('section')];
-        const current = sections.find(s => {
-          const rect = s.getBoundingClientRect();
-          return rect.top >= -100 && rect.top <= 100;
-        });
-        const next = current?.nextElementSibling;
-        if (next && next.tagName === 'SECTION') {
-          next.scrollIntoView({ behavior: 'smooth' });
-        }
-      }
-    }, { passive: true });
-
-    // ================================================
-    // ОПТИМИЗАЦИЯ АНИМАЦИЙ
-    // ================================================
-    const animObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        const card = entry.target.querySelector('.card');
-        if (card) {
-          card.style.animationPlayState = entry.isIntersecting ? 'running' : 'paused';
-        }
-      });
-    }, { threshold: 0 });
-
-    document.querySelectorAll('section').forEach(section => {
-      animObserver.observe(section);
     });
 
+    function showMessage(text){
+      const msg=document.createElement('div');
+      msg.className='message';
+      msg.textContent=text;
+      document.getElementById('screen3').appendChild(msg);
+      setTimeout(()=>{ msg.style.opacity=1; },10);
+      setTimeout(()=>msg.remove(),3000);
+    }
+
+    function spawnChaos(){
+      btn.style.display='none';
+      chaosInterval = setInterval(()=>{
+        if(Math.random()>0.5){
+          const g=document.createElement('div');
+          g.className='garbage';
+          g.style.left=Math.random()*90+'%';
+          g.style.top='-10vh';
+          const img=document.createElement('img');
+          img.src=images[Math.floor(Math.random()*images.length)];
+          const size=40+Math.random()*60;
+          img.style.width=size+'px';
+          img.style.height=size+'px';
+          g.appendChild(img);
+          document.getElementById('screen3').appendChild(g);
+          setTimeout(()=>g.remove(),6000);
+        } else {
+          const t=document.createElement('div');
+          t.className='text-frag';
+          t.textContent=texts[Math.floor(Math.random()*texts.length)];
+          t.style.fontSize=(16+Math.random()*14)+'px';
+          t.style.left=Math.random()*80+'%';
+          t.style.top='-10vh';
+          t.style.animationDuration=(3+Math.random()*3)+'s';
+          document.getElementById('screen3').appendChild(t);
+          setTimeout(()=>t.remove(),6000);
+        }
+      },500);
+
+      setTimeout(()=>{
+        startSlideshow();
+      },10000);
+    }
+
+    function startSlideshow(){
+      overlay.style.display='flex';
+      let lastIndex=-1;
+
+      slideshowInterval=setInterval(()=>{
+        let idx;
+        do { idx=Math.floor(Math.random()*3); } while(idx===lastIndex);
+        imagesArr.forEach(img => img.classList.remove('active'));
+        imagesArr[idx].classList.add('active');
+        lastIndex = idx;
+        activeIndex = idx;
+      }, 150);
+
+      overlay.addEventListener('click', fixSlide);
+    }
+
+    function fixSlide(){
+      clearInterval(slideshowInterval);
+      imagesArr.forEach(img => img.classList.remove('active'));
+      imagesArr[activeIndex].classList.add('active');
+      const name = ['aristotel','platon','pifagor'][activeIndex];
+      document.getElementById('quote').textContent = philosophers.find(p => p.name === name).quote;
+      overlay.removeEventListener('click', fixSlide);
+    }
+
+    // Вибрация для финальной кнопки
+    finishBtn.addEventListener('click', () => {
+      if ('vibrate' in navigator) {
+        navigator.vibrate(15);
+      }
+    });
+
+    // Предзагрузка следующей страницы
+    const preload = document.createElement('link');
+    preload.rel = 'prefetch';
+    preload.href = 'quiet.html';
+    document.head.appendChild(preload);
+
     console.log('Battle of Senses - Визуальная ветвь загружена');
-    console.log('Карточек:', document.querySelectorAll('section').length);
+    console.log('Экранов:', totalScreens);
   </script>
 </body>
 </html>
