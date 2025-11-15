@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Подключите наушники</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #000;
+      font-family: 'Arial', sans-serif;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    .phone-frame {
+      width: 100%;
+      max-width: 428px;
+      min-height: 100vh;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 30px;
+      text-align: center;
+      position: relative;
+    }
+
+    .content {
+      max-width: 350px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeIn 1s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 300;
+      margin-bottom: 30px;
+      color: #fff;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .instruction-text {
+      font-size: 1rem;
+      line-height: 1.7;
+      margin-bottom: 40px;
+      color: #aaa;
+      font-weight: 300;
+    }
+
+    /* Иконка наушников */
+    .headphones-icon {
+      width: 120px;
+      height: 120px;
+      margin: 40px auto;
+      position: relative;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+      }
+    }
+
+    .headphones-icon svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
+    }
+
+    /* Статус подключения */
+    .connection-status {
+      margin: 30px 0;
+      padding: 15px 25px;
+      border-radius: 25px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 0.9rem;
+      color: #ccc;
+      transition: all 0.5s ease;
+    }
+
+    .connection-status.connected {
+      background: rgba(76, 175, 80, 0.2);
+      border-color: rgba(76, 175, 80, 0.5);
+      color: #4CAF50;
+    }
+
+    .connection-status.checking {
+      animation: statusPulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes statusPulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    /* Кнопки */
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 40px;
+      width: 100%;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 16px 32px;
+      text-decoration: none;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-primary {
+      background: #fff;
+      color: #000;
+      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 255, 255, 0.5);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #aaa;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Навигация */
+    .nav-home {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      width: 44px;
+      height: 44px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: #fff;
+      font-size: 1.2rem;
+      z-index: 1000;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .nav-home:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.1);
+    }
+
+    /* Дополнительная информация */
+    .hint {
+      margin-top: 30px;
+      font-size: 0.85rem;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    /* Адаптация */
+    @media (max-width: 380px) {
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      .instruction-text {
+        font-size: 0.9rem;
+      }
+
+      .headphones-icon {
+        width: 100px;
+        height: 100px;
+      }
+
+      .btn {
+        font-size: 0.9rem;
+        padding: 14px 28px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="phone-frame">
+    <!-- Кнопка "Домой" -->
+    <a href="index.html" class="nav-home" aria-label="На главную">⌂</a>
+
+    <div class="content">
+      <h1>Подключите наушники</h1>
+
+      <div class="instruction-text">
+        Для полного погружения в звуковое путешествие рекомендуется использовать наушники.
+      </div>
+
+      <!-- Иконка наушников -->
+      <div class="headphones-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 3C7.58172 3 4 6.58172 4 11V17C4 18.1046 4.89543 19 6 19H7C7.55228 19 8 18.5523 8 18V13C8 12.4477 7.55228 12 7 12H6V11C6 7.68629 8.68629 5 12 5C15.3137 5 18 7.68629 18 11V12H17C16.4477 12 16 12.4477 16 13V18C16 18.5523 16.4477 19 17 19H18C19.1046 19 20 18.1046 20 17V11C20 6.58172 16.4183 3 12 3Z"
+            stroke="#ffffff"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <!-- Статус подключения -->
+      <div class="connection-status" id="status">
+        Проверка устройств...
+      </div>
+
+      <!-- Кнопки -->
+      <div class="button-group">
+        <a href="sluh.html" class="btn btn-primary" id="continueBtn">
+          Продолжить
+        </a>
+        <button class="btn btn-secondary" id="skipBtn">
+          Пропустить (не рекомендуется)
+        </button>
+      </div>
+
+      <div class="hint">
+        Система автоматически определит подключение наушников
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const statusElement = document.getElementById('status');
+    const continueBtn = document.getElementById('continueBtn');
+    const skipBtn = document.getElementById('skipBtn');
+    let headphonesConnected = false;
+    let autoRedirectTimer = null;
+
+    // Функция проверки наушников
+    async function checkHeadphones() {
+      try {
+        // Проверяем доступность Media Devices API
+        if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+          statusElement.textContent = 'Готово к продолжению';
+          statusElement.classList.remove('checking');
+          return;
+        }
+
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const audioOutputs = devices.filter(device => device.kind === 'audiooutput');
+
+        // Проверяем наличие аудио устройств (кроме встроенных динамиков)
+        const hasHeadphones = audioOutputs.some(device => {
+          const label = device.label.toLowerCase();
+          return label.includes('headphone') ||
+                 label.includes('headset') ||
+                 label.includes('earphone') ||
+                 label.includes('bluetooth') ||
+                 label.includes('airpod') ||
+                 label.includes('наушник');
+        });
+
+        if (hasHeadphones && !headphonesConnected) {
+          headphonesConnected = true;
+          statusElement.textContent = '✓ Наушники подключены';
+          statusElement.classList.add('connected');
+          statusElement.classList.remove('checking');
+
+          // Автоматический переход через 2 секунды
+          autoRedirectTimer = setTimeout(() => {
+            window.location.href = 'sluh.html';
+          }, 2000);
+        } else if (!hasHeadphones && headphonesConnected) {
+          headphonesConnected = false;
+          statusElement.textContent = 'Наушники отключены';
+          statusElement.classList.remove('connected');
+          statusElement.classList.add('checking');
+
+          if (autoRedirectTimer) {
+            clearTimeout(autoRedirectTimer);
+            autoRedirectTimer = null;
+          }
+        } else if (!hasHeadphones) {
+          statusElement.textContent = 'Ожидание подключения наушников';
+          statusElement.classList.add('checking');
+        }
+      } catch (error) {
+        console.log('Не удалось проверить устройства:', error);
+        statusElement.textContent = 'Готово к продолжению';
+        statusElement.classList.remove('checking');
+      }
+    }
+
+    // Обработчик кнопки "Пропустить"
+    skipBtn.addEventListener('click', () => {
+      if (confirm('Вы уверены? Звуковое путешествие лучше воспринимается в наушниках.')) {
+        window.location.href = 'sluh.html';
+      }
+    });
+
+    // Первоначальная проверка
+    checkHeadphones();
+
+    // Периодическая проверка каждые 2 секунды
+    const checkInterval = setInterval(checkHeadphones, 2000);
+
+    // Обработчик изменения устройств (если поддерживается)
+    if (navigator.mediaDevices && navigator.mediaDevices.addEventListener) {
+      navigator.mediaDevices.addEventListener('devicechange', () => {
+        checkHeadphones();
+      });
+    }
+
+    // Очистка при уходе со страницы
+    window.addEventListener('beforeunload', () => {
+      clearInterval(checkInterval);
+      if (autoRedirectTimer) {
+        clearTimeout(autoRedirectTimer);
+      }
+    });
+  </script>
+</body>
+</html>
