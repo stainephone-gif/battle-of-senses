@@ -1048,12 +1048,8 @@
         dot.classList.toggle('active', index === currentScreen);
       });
 
-      // Показываем финальную кнопку на последнем экране
-      if (currentScreen === totalScreens - 1) {
-        finishBtn.classList.add('visible');
-      } else {
-        finishBtn.classList.remove('visible');
-      }
+      // Финальная кнопка появится только после поворота на экране 5
+      // (логика перенесена в checkOrientation)
     }
 
     function goToScreen(screenIndex) {
@@ -1543,6 +1539,9 @@
     const exhibitionMap = document.getElementById('exhibitionMap');
     const mapClose = document.getElementById('mapClose');
 
+    // Флаг для отслеживания поворота устройства
+    let hasRotated = false;
+
     function checkOrientation() {
       if (currentScreen !== 4) return; // Только на экране 5
 
@@ -1552,6 +1551,12 @@
         // Горизонтальная ориентация
         portraitContent.classList.add('hidden');
         landscapeContent.classList.add('active');
+
+        // Показываем кнопку "Войти в тишину" при первом повороте
+        if (!hasRotated) {
+          hasRotated = true;
+          finishBtn.classList.add('visible');
+        }
       } else {
         // Вертикальная ориентация
         portraitContent.classList.remove('hidden');
