@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Звуковая выставка</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            background: #000;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        .phone-frame {
+            width: 100%;
+            max-width: 428px;
+            height: 100vh;
+            background: #000;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #exhibition-space {
+            position: absolute;
+            width: 5000px;
+            height: 5000px;
+            transform-origin: 0 0;
+            transition: transform 0.5s ease;
+            cursor: grab;
+        }
+
+        #exhibition-space:active {
+            cursor: grabbing;
+        }
+
+        .bookmark {
+            position: absolute;
+            width: 80px;
+            height: 120px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+        }
+
+        .bookmark:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .bookmark.exhibit {
+            /* Стиль для экспонатов */
+            border-top: 40px solid #333;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            height: 0;
+            width: 40px;
+        }
+
+        .bookmark.exhibit::after {
+            content: '';
+            position: absolute;
+            top: -50px;
+            left: -20px;
+            width: 80px;
+            height: 60px;
+            background-size: cover;
+            background-position: center;
+            filter: grayscale(100%) contrast(130%);
+            z-index: -1;
+        }
+
+        .bookmark.decoy {
+            /* Стиль для обманок */
+            width: 30px;
+            height: 50px;
+            background: repeating-linear-gradient(
+                45deg,
+                #666,
+                #666 5px,
+                #333 5px,
+                #333 10px
+            );
+            transform: rotate(15deg);
+        }
+
+        .exhibit-panel {
+            position: fixed;
+            bottom: -400px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            background: rgba(30, 30, 30, 0.95);
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+            transition: bottom 0.5s ease;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .exhibit-panel.active {
+            bottom: 0;
+        }
+
+        .exhibit-panel img {
+            width: 100%;
+            height: auto;
+            filter: grayscale(100%);
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        .exhibit-panel h2 {
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .exhibit-panel p {
+            margin-bottom: 15px;
+            line-height: 1.5;
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .audio-controls button {
+            background: #444;
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .audio-controls button:hover {
+            background: #555;
+        }
+
+        .audio-controls progress {
+            flex-grow: 1;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .navigation-info {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            z-index: 1000;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            max-width: 90%;
+        }
+
+        .zoom-controls {
+            position: fixed;
+            right: 20px;
+            bottom: 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 999;
+        }
+
+        .zoom-controls button {
+            background: rgba(30, 30, 30, 0.8);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .zoom-controls button:hover {
+            background: rgba(50, 50, 50, 0.9);
+            transform: scale(1.1);
+        }
+
+        /* Навигация */
+        .nav-home {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: #fff;
+            font-size: 1.2rem;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-home:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        /* Кнопка финиша */
+        .finish-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 14px 30px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #000;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1001;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            backdrop-filter: blur(10px);
+        }
+
+        .finish-btn:hover {
+            transform: translateX(-50%) translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .finish-btn:active {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Адаптация для маленьких экранов */
+        @media (max-width: 380px) {
+            .navigation-info {
+                font-size: 11px;
+                padding: 8px 15px;
+            }
+
+            .exhibit-panel h2 {
+                font-size: 1.1rem;
+            }
+
+            .exhibit-panel p {
+                font-size: 0.85rem;
+            }
+
+            .finish-btn {
+                font-size: 0.9rem;
+                padding: 12px 25px;
+            }
+        }
+
+        /* Адаптация для уменьшения анимаций */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-frame">
+        <!-- Кнопка "Домой" -->
+        <a href="index.html" class="nav-home" aria-label="На главную">⌂</a>
+
+        <div id="exhibition-space"></div>
+
+        <div class="exhibit-panel" id="exhibit-panel">
+            <img id="exhibit-img" src="" alt="">
+            <h2 id="exhibit-title"></h2>
+            <p id="exhibit-description"></p>
+            <div class="audio-controls">
+                <button id="play-btn">▶</button>
+                <button id="close-btn">✕</button>
+                <progress id="audio-progress" value="0" max="100"></progress>
+            </div>
+        </div>
+
+        <div class="navigation-info">
+            Перетаскивайте для навигации · Кликните на экспонат
+        </div>
+
+        <div class="zoom-controls">
+            <button id="zoom-in">+</button>
+            <button id="zoom-out">-</button>
+        </div>
+
+        <a href="quiet.html" class="finish-btn">Войти в тишину</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const exhibitionSpace = document.getElementById('exhibition-space');
+            const exhibitPanel = document.getElementById('exhibit-panel');
+            const exhibitImg = document.getElementById('exhibit-img');
+            const exhibitTitle = document.getElementById('exhibit-title');
+            const exhibitDescription = document.getElementById('exhibit-description');
+            const playBtn = document.getElementById('play-btn');
+            const closeBtn = document.getElementById('close-btn');
+            const audioProgress = document.getElementById('audio-progress');
+            const zoomInBtn = document.getElementById('zoom-in');
+            const zoomOutBtn = document.getElementById('zoom-out');
+
+            let currentAudio = null;
+            let isDragging = false;
+            let startX, startY;
+            let scrollLeft = 0;
+            let scrollTop = 0;
+            let scale = 0.6;
+            let posX = -1000;
+            let posY = -1000;
+
+            // Экспонаты (звуковые артефакты)
+            const exhibits = [
+                {
+                    id: 1,
+                    title: "Эхо древности",
+                    description: "Звуковой след античного храма. Слышите ли вы молитвы тысячелетней давности?",
+                    x: 500,
+                    y: 700,
+                    image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='60'%3E%3Crect fill='%23444' width='80' height='60'/%3E%3Ctext x='50%25' y='50%25' fill='%23fff' font-size='10' text-anchor='middle' dy='.3em'%3E🏛️%3C/text%3E%3C/svg%3E",
+                    audioType: 'ambient'
+                },
+                {
+                    id: 2,
+                    title: "Механический вальс",
+                    description: "Шестерёнки времени вращаются в такт забытой мелодии.",
+                    x: 1500,
+                    y: 1200,
+                    image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='60'%3E%3Crect fill='%23444' width='80' height='60'/%3E%3Ctext x='50%25' y='50%25' fill='%23fff' font-size='10' text-anchor='middle' dy='.3em'%3E⚙️%3C/text%3E%3C/svg%3E",
+                    audioType: 'rhythmic'
+                },
+                {
+                    id: 3,
+                    title: "Шёпот природы",
+                    description: "Листья, ветер, капли дождя — симфония без композитора.",
+                    x: 800,
+                    y: 2000,
+                    image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='60'%3E%3Crect fill='%23444' width='80' height='60'/%3E%3Ctext x='50%25' y='50%25' fill='%23fff' font-size='10' text-anchor='middle' dy='.3em'%3E🍃%3C/text%3E%3C/svg%3E",
+                    audioType: 'nature'
+                },
+                {
+                    id: 4,
+                    title: "Голоса города",
+                    description: "Мегаполис никогда не спит, его пульс бьётся в ритме миллионов жизней.",
+                    x: 2200,
+                    y: 800,
+                    image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='60'%3E%3Crect fill='%23444' width='80' height='60'/%3E%3Ctext x='50%25' y='50%25' fill='%23fff' font-size='10' text-anchor='middle' dy='.3em'%3E🌆%3C/text%3E%3C/svg%3E",
+                    audioType: 'urban'
+                },
+                {
+                    id: 5,
+                    title: "Космическая тишина",
+                    description: "Звуки межзвёздного пространства, записанные зондами. Вакуум говорит.",
+                    x: 3000,
+                    y: 1500,
+                    image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='60'%3E%3Crect fill='%23444' width='80' height='60'/%3E%3Ctext x='50%25' y='50%25' fill='%23fff' font-size='10' text-anchor='middle' dy='.3em'%3E🌌%3C/text%3E%3C/svg%3E",
+                    audioType: 'cosmic'
+                },
+                {
+                    id: 6,
+                    title: "Пульс времени",
+                    description: "Метроном вечности отсчитывает мгновения между прошлым и будущим.",
+                    x: 1200,
+                    y: 2800,
+                    image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='60'%3E%3Crect fill='%23444' width='80' height='60'/%3E%3Ctext x='50%25' y='50%25' fill='%23fff' font-size='10' text-anchor='middle' dy='.3em'%3E⏱️%3C/text%3E%3C/svg%3E",
+                    audioType: 'metronome'
+                }
+            ];
+
+            // Создание экспонатов
+            exhibits.forEach(exhibit => {
+                const bookmark = document.createElement('div');
+                bookmark.className = 'bookmark exhibit';
+                bookmark.style.left = exhibit.x + 'px';
+                bookmark.style.top = exhibit.y + 'px';
+                bookmark.dataset.id = exhibit.id;
+
+                exhibitionSpace.appendChild(bookmark);
+
+                // Обработчик клика на экспонат
+                bookmark.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    showExhibitPanel(exhibit);
+                });
+            });
+
+            // Создание звуковых обманок (20 штук)
+            for (let i = 0; i < 20; i++) {
+                const decoy = document.createElement('div');
+                decoy.className = 'bookmark decoy';
+                decoy.style.left = Math.random() * 4500 + 'px';
+                decoy.style.top = Math.random() * 4500 + 'px';
+
+                exhibitionSpace.appendChild(decoy);
+
+                // Обработчик клика на обманку
+                decoy.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    playRandomSound();
+                });
+            }
+
+            // Функция показа панели экспоната
+            function showExhibitPanel(exhibit) {
+                // Останавливаем текущее аудио, если играет
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio = null;
+                }
+
+                exhibitImg.src = exhibit.image;
+                exhibitTitle.textContent = exhibit.title;
+                exhibitDescription.textContent = exhibit.description;
+
+                // Создаем синтезированное аудио на основе типа
+                createAudioForExhibit(exhibit.audioType);
+
+                exhibitPanel.classList.add('active');
+
+                // Приближаемся к экспонату
+                zoomTo(exhibit.x, exhibit.y, 1.5);
+            }
+
+            // Создание аудио с Web Audio API
+            function createAudioForExhibit(type) {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+                const configs = {
+                    ambient: { freq: 110, type: 'sine', detune: 0 },
+                    rhythmic: { freq: 220, type: 'square', detune: 5 },
+                    nature: { freq: 330, type: 'triangle', detune: -10 },
+                    urban: { freq: 440, type: 'sawtooth', detune: 15 },
+                    cosmic: { freq: 165, type: 'sine', detune: 30 },
+                    metronome: { freq: 880, type: 'square', detune: 0 }
+                };
+
+                const config = configs[type] || configs.ambient;
+
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.type = config.type;
+                oscillator.frequency.setValueAtTime(config.freq, audioContext.currentTime);
+                oscillator.detune.setValueAtTime(config.detune, audioContext.currentTime);
+
+                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                currentAudio = { oscillator, gainNode, context: audioContext, playing: false };
+            }
+
+            // Функция воспроизведения случайного звука
+            function playRandomSound() {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.frequency.setValueAtTime(Math.random() * 1000 + 100, audioContext.currentTime);
+                oscillator.type = ['sine', 'square', 'triangle', 'sawtooth'][Math.floor(Math.random() * 4)];
+
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.5);
+            }
+
+            // Обработчик кнопки воспроизведения
+            playBtn.addEventListener('click', function() {
+                if (currentAudio && currentAudio.oscillator) {
+                    if (!currentAudio.playing) {
+                        currentAudio.oscillator.start();
+                        currentAudio.playing = true;
+                        playBtn.textContent = '❚❚';
+                    } else {
+                        currentAudio.oscillator.stop();
+                        currentAudio.playing = false;
+                        playBtn.textContent = '▶';
+                        // Пересоздаем аудио для повторного воспроизведения
+                        const type = Array.from(exhibits).find(e => e.title === exhibitTitle.textContent)?.audioType;
+                        if (type) createAudioForExhibit(type);
+                    }
+                }
+            });
+
+            // Обработчик кнопки закрытия
+            closeBtn.addEventListener('click', function() {
+                exhibitPanel.classList.remove('active');
+                if (currentAudio && currentAudio.oscillator && currentAudio.playing) {
+                    currentAudio.oscillator.stop();
+                    currentAudio.playing = false;
+                }
+                playBtn.textContent = '▶';
+                audioProgress.value = 0;
+            });
+
+            // Обработчики для навигации перетаскиванием
+            exhibitionSpace.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                startX = e.pageX;
+                startY = e.pageY;
+                scrollLeft = posX;
+                scrollTop = posY;
+            });
+
+            exhibitionSpace.addEventListener('touchstart', function(e) {
+                isDragging = true;
+                startX = e.touches[0].pageX;
+                startY = e.touches[0].pageY;
+                scrollLeft = posX;
+                scrollTop = posY;
+            });
+
+            document.addEventListener('mouseup', function() {
+                isDragging = false;
+            });
+
+            document.addEventListener('touchend', function() {
+                isDragging = false;
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+                const x = e.pageX;
+                const y = e.pageY;
+                const walkX = (x - startX) * 2;
+                const walkY = (y - startY) * 2;
+                posX = scrollLeft + walkX;
+                posY = scrollTop + walkY;
+                updateTransform();
+            });
+
+            document.addEventListener('touchmove', function(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+                const x = e.touches[0].pageX;
+                const y = e.touches[0].pageY;
+                const walkX = (x - startX) * 2;
+                const walkY = (y - startY) * 2;
+                posX = scrollLeft + walkX;
+                posY = scrollTop + walkY;
+                updateTransform();
+            }, { passive: false });
+
+            // Обработчики масштабирования
+            zoomInBtn.addEventListener('click', function() {
+                scale = Math.min(scale * 1.2, 3);
+                updateTransform();
+            });
+
+            zoomOutBtn.addEventListener('click', function() {
+                scale = Math.max(scale / 1.2, 0.3);
+                updateTransform();
+            });
+
+            // Функция масштабирования к определенной точке
+            function zoomTo(x, y, newScale) {
+                const centerX = window.innerWidth / 2;
+                const centerY = window.innerHeight / 2;
+
+                posX = centerX - x * newScale;
+                posY = centerY - y * newScale;
+                scale = newScale;
+
+                updateTransform();
+            }
+
+            // Обновление трансформации пространства выставки
+            function updateTransform() {
+                exhibitionSpace.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+            }
+
+            // Инициализация
+            updateTransform();
+        });
+    </script>
+</body>
+</html>
