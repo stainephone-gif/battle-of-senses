@@ -722,9 +722,31 @@
       display: none;
       z-index: 2;
       overflow: hidden;
-      background: linear-gradient(135deg, #7B2CBF 0%, #E0AAFF 50%, #FF6EC4 100%);
-      background-size: 400% 400%;
+      background:
+        url('pic/gallery-plan.png') center center / contain no-repeat,
+        linear-gradient(135deg, #7B2CBF 0%, #E0AAFF 50%, #FF6EC4 100%);
+      background-size: contain, 400% 400%;
       animation: gradientShift 15s ease infinite;
+    }
+
+    /* Полупрозрачный оверлей для лучшей видимости элементов коллажа */
+    .landscape-content::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(123, 44, 191, 0.3);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    #collageContainer {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
     }
 
     .landscape-content.active {
@@ -1059,7 +1081,6 @@
         <div class="swipe-arrow"></div>
         <div class="swipe-arrow"></div>
         <div class="swipe-arrow"></div>
-        <div class="swipe-text">Свайп вниз</div>
       </div>
     </div>
 
@@ -1180,8 +1201,9 @@
         dot.classList.toggle('active', index === currentScreen);
       });
 
-      // Кнопка "Войти в тишину" показывается только на экране 5 после поворота
-      if (currentScreen === 4 && hasRotated) {
+      // Кнопка "Войти в тишину" показывается только на экране 5 в горизонтальной ориентации
+      const isLandscape = window.innerWidth > window.innerHeight;
+      if (currentScreen === 4 && hasRotated && isLandscape) {
         finishBtn.classList.add('visible');
       } else {
         finishBtn.classList.remove('visible');
@@ -1287,22 +1309,19 @@
         const textHeight = 100;
         const totalHeight = imageHeight + textHeight;
 
+        // Отступы от краев и снизу для индикатора свайпа
+        const padding = 20;
+        const bottomPadding = 100; // Место для индикатора свайпа
+
         let attempts = 0;
         let positioned = false;
 
         while (!positioned && attempts < 100) {
           attempts++;
 
-          let x, y;
-
-          if (isMobile) {
-            x = Math.random() * (containerWidth * 1.4) - (imageWidth * 0.4);
-            y = Math.random() * (containerHeight * 0.7) + (containerHeight * 0.05);
-            x = Math.max(-(imageWidth * 0.4), Math.min(x, containerWidth - (imageWidth * 0.6)));
-          } else {
-            x = Math.random() * (containerWidth * 1.4) - (containerWidth * 0.3);
-            y = Math.random() * (containerHeight * 0.75) + (containerHeight * 0.05);
-          }
+          // Генерируем позицию полностью внутри видимой области
+          const x = padding + Math.random() * (containerWidth - imageWidth - padding * 2);
+          const y = padding + Math.random() * (containerHeight - totalHeight - bottomPadding - padding);
 
           const newRect = {
             left: x,
@@ -1328,10 +1347,11 @@
         }
 
         if (!positioned) {
+          // Fallback позиции также полностью внутри экрана
           const fallbackPositions = [
             { x: containerWidth * 0.1, y: containerHeight * 0.15 },
-            { x: containerWidth * 0.5, y: containerHeight * 0.45 },
-            { x: containerWidth * 0.7, y: containerHeight * 0.25 }
+            { x: Math.max(padding, containerWidth * 0.5 - imageWidth / 2), y: containerHeight * 0.4 },
+            { x: Math.max(padding, containerWidth * 0.7 - imageWidth), y: containerHeight * 0.25 }
           ];
           const fallback = fallbackPositions[index] || fallbackPositions[0];
           philosopher.style.left = `${fallback.x}px`;
@@ -1928,6 +1948,9 @@
         landscapeContent.classList.remove('active');
         collageModal.classList.remove('visible'); // Скрываем модалку при переходе в портрет
       }
+
+      // Обновляем видимость кнопки при смене ориентации
+      updateScreens();
     }
 
     // Слушатель изменения ориентации
