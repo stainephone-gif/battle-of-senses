@@ -970,6 +970,76 @@
             <p>Через созерцание геометрических форм разум постигает гармонию космоса.</p>
           </div>
         </div>
+
+        <div class="philosopher" data-philosopher="descartes">
+          <div class="philosopher-image">
+            <img src="pic/descartes.jpg" alt="Рене Декарт" loading="lazy">
+          </div>
+          <div class="philosopher-text">
+            <h3>Рене Декарт</h3>
+            <p>В «Рассуждении о методе» называл зрение главным чувством для научного анализа.</p>
+          </div>
+        </div>
+
+        <div class="philosopher" data-philosopher="leibniz">
+          <div class="philosopher-image">
+            <img src="pic/leibniz.jpg" alt="Готфрид Лейбниц" loading="lazy">
+          </div>
+          <div class="philosopher-text">
+            <h3>Готфрид Лейбниц</h3>
+            <p>Считал музыку (слух) «скрытой арифметикой», а зрение — основой ясного восприятия.</p>
+          </div>
+        </div>
+
+        <div class="philosopher" data-philosopher="aquinas">
+          <div class="philosopher-image">
+            <img src="pic/aquinas.jpg" alt="Фома Аквинский" loading="lazy">
+          </div>
+          <div class="philosopher-text">
+            <h3>Фома Аквинский</h3>
+            <p>Вслед за Аристотелем утверждал приоритет зрения и слуха в познании Божественного порядка.</p>
+          </div>
+        </div>
+
+        <div class="philosopher" data-philosopher="mcluhan">
+          <div class="philosopher-image">
+            <img src="pic/mcluhan.jpg" alt="Маршалл Маклюэн" loading="lazy">
+          </div>
+          <div class="philosopher-text">
+            <h3>Маршалл Маклюэн</h3>
+            <p>В «Понимании медиа» писал, что технологии усиливают доминирование зрения и слуха (ТВ, радио).</p>
+          </div>
+        </div>
+
+        <div class="philosopher" data-philosopher="ranciere">
+          <div class="philosopher-image">
+            <img src="pic/ranciere.jpg" alt="Жак Рансьер" loading="lazy">
+          </div>
+          <div class="philosopher-text">
+            <h3>Жак Рансьер</h3>
+            <p>В «Эстетическом бессознательном» анализировал, как искусство эксплуатирует эти чувства для власти.</p>
+          </div>
+        </div>
+
+        <div class="philosopher" data-philosopher="hegel">
+          <div class="philosopher-image">
+            <img src="pic/hegel.jpg" alt="Гегель" loading="lazy">
+          </div>
+          <div class="philosopher-text">
+            <h3>Гегель</h3>
+            <p>Называл зрение и слух «теоретическими» чувствами, способными к созерцанию абсолютного.</p>
+          </div>
+        </div>
+
+        <div class="philosopher" data-philosopher="kant">
+          <div class="philosopher-image">
+            <img src="pic/kant.jpg" alt="Иммануил Кант" loading="lazy">
+          </div>
+          <div class="philosopher-text">
+            <h3>Иммануил Кант</h3>
+            <p>В «Критике способности суждения» разделял чувства на «высшие» (зрение, слух) и «низшие» (вкус, обоняние).</p>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -983,9 +1053,18 @@
       <div class="btn" id="startBtn">НЕ НАЖИМАЙ СЮДА</div>
 
       <div id="philosopherOverlay">
-        <img id="philo1" src="pic/Arist.png">
-        <img id="philo2" src="pic/Plato.png">
-        <img id="philo3" src="pic/Piph.png">
+        <img id="philo0" src="pic/Arist.png">
+        <img id="philo1" src="pic/Plato.png">
+        <img id="philo2" src="pic/Piph.png">
+        <img id="philo3" src="pic/descartes.jpg">
+        <img id="philo4" src="pic/leibniz.jpg">
+        <img id="philo5" src="pic/aquinas.jpg">
+        <img id="philo6" src="pic/mcluhan.jpg">
+        <img id="philo7" src="pic/ranciere.jpg">
+        <img id="philo8" src="pic/hegel.jpg">
+        <img id="philo9" src="pic/kant.jpg">
+        <img id="philo10" src="pic/image1.jpg">
+        <img id="philo11" src="pic/image2.jpg">
         <div id="quote"></div>
       </div>
     </div>
@@ -1165,9 +1244,34 @@
     // ================================================
     // ЭКРАН 1: ФИЛОСОФЫ
     // ================================================
+
+    // Случайный выбор 3 философов из 10
+    function selectRandomPhilosophers() {
+      const allPhilosophers = document.querySelectorAll('.philosopher');
+      const philosophersArray = Array.from(allPhilosophers);
+
+      // Скрываем всех философов
+      philosophersArray.forEach(phil => {
+        phil.style.display = 'none';
+      });
+
+      // Перемешиваем массив философов
+      const shuffled = philosophersArray.sort(() => Math.random() - 0.5);
+
+      // Выбираем первых 3
+      const selected = shuffled.slice(0, 3);
+
+      // Показываем выбранных
+      selected.forEach(phil => {
+        phil.style.display = 'block';
+      });
+
+      return selected;
+    }
+
     function positionPhilosophers() {
       const container = document.querySelector('.philosophers-container');
-      const philosophers = document.querySelectorAll('.philosopher');
+      const philosophers = document.querySelectorAll('.philosopher:not([style*="display: none"])');
 
       if (!container || philosophers.length === 0) return;
 
@@ -1242,7 +1346,10 @@
       });
     }
 
-    window.addEventListener('load', positionPhilosophers);
+    window.addEventListener('load', () => {
+      selectRandomPhilosophers();
+      positionPhilosophers();
+    });
     window.addEventListener('resize', positionPhilosophers);
 
     document.querySelectorAll('.philosopher').forEach(philosopher => {
@@ -1282,7 +1389,20 @@
     const MOVE_THROTTLE_MS = 40;
     const MOVE_MIN_DIST = 8;
 
-    const images = ["pic/Plato.png", "pic/Arist.png", "pic/Piph.png"];
+    const images = [
+      "pic/Plato.png",
+      "pic/Arist.png",
+      "pic/Piph.png",
+      "pic/descartes.jpg",
+      "pic/leibniz.jpg",
+      "pic/aquinas.jpg",
+      "pic/mcluhan.jpg",
+      "pic/ranciere.jpg",
+      "pic/hegel.jpg",
+      "pic/kant.jpg",
+      "pic/image1.jpg",
+      "pic/image2.jpg"
+    ];
 
     let clearTimer = null;
     let isDrawing = false;
@@ -1427,12 +1547,34 @@
     const philosophers = [
       {name:'aristotel', src:'pic/Arist.png', quote:'«Счастье заключается в деятельности разума, согласной с добродетелью»'},
       {name:'platon', src:'pic/Plato.png', quote:'«Идеи — это вечные образы всего сущего»'},
-      {name:'pifagor', src:'pic/Piph.png', quote:'«Все есть число»'}
+      {name:'pifagor', src:'pic/Piph.png', quote:'«Все есть число»'},
+      {name:'descartes', src:'pic/descartes.jpg', quote:'«Я мыслю, следовательно, существую»'},
+      {name:'leibniz', src:'pic/leibniz.jpg', quote:'«Музыка — это скрытое арифметическое упражнение души»'},
+      {name:'aquinas', src:'pic/aquinas.jpg', quote:'«Красота есть сияние истины»'},
+      {name:'mcluhan', src:'pic/mcluhan.jpg', quote:'«Средство коммуникации само является сообщением»'},
+      {name:'ranciere', src:'pic/ranciere.jpg', quote:'«Эстетика — это распределение чувственного»'},
+      {name:'hegel', src:'pic/hegel.jpg', quote:'«Истина есть целое»'},
+      {name:'kant', src:'pic/kant.jpg', quote:'«Красота — это символ нравственно доброго»'},
+      {name:'image1', src:'pic/image1.jpg', quote:'«Благородные чувства формируют наше восприятие мира»'},
+      {name:'image2', src:'pic/image2.jpg', quote:'«Зрение и слух — врата к познанию истины»'}
     ];
 
     let clickCount = 0, chaosInterval, slideshowInterval, activeIndex=0;
     const overlay = document.getElementById('philosopherOverlay');
-    const imagesArr = [document.getElementById('philo1'),document.getElementById('philo2'),document.getElementById('philo3')];
+    const imagesArr = [
+      document.getElementById('philo0'),
+      document.getElementById('philo1'),
+      document.getElementById('philo2'),
+      document.getElementById('philo3'),
+      document.getElementById('philo4'),
+      document.getElementById('philo5'),
+      document.getElementById('philo6'),
+      document.getElementById('philo7'),
+      document.getElementById('philo8'),
+      document.getElementById('philo9'),
+      document.getElementById('philo10'),
+      document.getElementById('philo11')
+    ];
 
     btn.addEventListener('click',()=>{
       if(clickCount<warnings.length){
@@ -1492,7 +1634,7 @@
 
       slideshowInterval=setInterval(()=>{
         let idx;
-        do { idx=Math.floor(Math.random()*3); } while(idx===lastIndex);
+        do { idx=Math.floor(Math.random()*12); } while(idx===lastIndex);
         imagesArr.forEach(img => img.classList.remove('active'));
         imagesArr[idx].classList.add('active');
         lastIndex = idx;
@@ -1506,8 +1648,7 @@
       clearInterval(slideshowInterval);
       imagesArr.forEach(img => img.classList.remove('active'));
       imagesArr[activeIndex].classList.add('active');
-      const name = ['aristotel','platon','pifagor'][activeIndex];
-      document.getElementById('quote').textContent = philosophers.find(p => p.name === name).quote;
+      document.getElementById('quote').textContent = philosophers[activeIndex].quote;
       overlay.removeEventListener('click', fixSlide);
     }
 
