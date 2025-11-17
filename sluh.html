@@ -289,6 +289,55 @@
       letter-spacing: 1px;
     }
 
+    /* Иконка поворота экрана */
+    .rotate-hint {
+      margin-top: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      opacity: 0;
+      animation: fadeInRotate 2s ease-in-out 1s forwards;
+    }
+
+    @keyframes fadeInRotate {
+      to {
+        opacity: 1;
+      }
+    }
+
+    .rotate-icon {
+      animation: rotateIcon 3s ease-in-out infinite;
+    }
+
+    @keyframes rotateIcon {
+      0%, 100% {
+        transform: rotate(0deg);
+      }
+      25% {
+        transform: rotate(15deg);
+      }
+      75% {
+        transform: rotate(-15deg);
+      }
+    }
+
+    .rotate-text {
+      font-size: 0.9rem;
+      color: #aaa;
+      letter-spacing: 1px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+
     /* Адаптация для уменьшения анимаций */
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
@@ -381,22 +430,25 @@
         <button class="control-btn secondary" onclick="audioManager.stop(5)">⏸</button>
       </div>
       <div class="volume-indicator">Уровень: <span id="level5">максимальный</span></div>
-      <a class="arrow" href="#stage6" aria-label="Следующий этап">⌄</a>
-    </section>
 
-    <!-- Этап 6 - Переход к выставке -->
-    <section id="stage6" data-stage="6">
-      <h2>Звуковая выставка</h2>
-      <div class="audio-text">
-        После хаоса какофонии откройте для себя кураторское пространство звуковых артефактов.
-        Исследуйте закладки истории, найдите экспонаты среди обманок.
+      <!-- Иконка поворота экрана -->
+      <div class="rotate-hint" id="rotateHint">
+        <div class="rotate-icon">
+          <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 15 L15 30 L30 30" stroke="#ffffff" stroke-width="2" fill="none"/>
+            <path d="M45 45 L45 30 L30 30" stroke="#ffffff" stroke-width="2" fill="none"/>
+            <circle cx="30" cy="30" r="18" stroke="#ffffff" stroke-width="2" fill="none" stroke-dasharray="5,3"/>
+            <path d="M48 30 C48 39.9 39.9 48 30 48" stroke="#ffffff" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            <path d="M12 30 C12 20.1 20.1 12 30 12" stroke="#ffffff" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            <defs>
+              <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                <polygon points="0 0, 10 5, 0 10" fill="#ffffff"/>
+              </marker>
+            </defs>
+          </svg>
+        </div>
+        <div class="rotate-text">Поверните экран</div>
       </div>
-      <div class="audio-text">
-        Каждый экспонат хранит свою звуковую историю — от эха древних храмов до космической тишины.
-      </div>
-      <a href="sound-exhibition.html" class="finish-btn">Исследовать выставку</a>
-      <div style="height: 20px;"></div>
-      <a href="quiet.html" class="finish-btn" style="background: rgba(255, 255, 255, 0.3); margin-top: 20px;">Войти в тишину</a>
     </section>
   </div>
 
@@ -551,6 +603,72 @@
     window.addEventListener('beforeunload', () => {
       [1, 2, 3, 4, 5].forEach(stage => audioManager.stop(stage));
     });
+
+    // ========== ОБРАБОТКА ПОВОРОТА ЭКРАНА ==========
+    let isOnStage5 = false;
+    let rotationDetected = false;
+
+    // Определяем, находимся ли мы на stage5
+    const stage5Observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.target.id === 'stage5') {
+          isOnStage5 = entry.isIntersecting;
+        }
+      });
+    }, { threshold: 0.5 });
+
+    const stage5 = document.getElementById('stage5');
+    if (stage5) {
+      stage5Observer.observe(stage5);
+    }
+
+    // Функция для определения ориентации
+    function getOrientation() {
+      if (window.screen && window.screen.orientation) {
+        return window.screen.orientation.type;
+      }
+      // Fallback для старых браузеров
+      if (window.innerHeight > window.innerWidth) {
+        return 'portrait-primary';
+      }
+      return 'landscape-primary';
+    }
+
+    let previousOrientation = getOrientation();
+
+    // Обработчик изменения ориентации
+    function handleOrientationChange() {
+      const currentOrientation = getOrientation();
+
+      // Если мы на stage5 и ориентация изменилась на landscape
+      if (isOnStage5 && !rotationDetected) {
+        const isLandscape = currentOrientation.includes('landscape');
+        const wasPortrait = previousOrientation.includes('portrait');
+
+        if (isLandscape && wasPortrait) {
+          rotationDetected = true;
+
+          // Плавное затемнение
+          document.body.style.transition = 'opacity 0.5s ease';
+          document.body.style.opacity = '0';
+
+          setTimeout(() => {
+            window.location.href = 'sound-exhibition.html';
+          }, 500);
+        }
+      }
+
+      previousOrientation = currentOrientation;
+    }
+
+    // Слушаем изменение ориентации
+    if (window.screen && window.screen.orientation) {
+      window.screen.orientation.addEventListener('change', handleOrientationChange);
+    }
+
+    // Fallback для старых браузеров
+    window.addEventListener('orientationchange', handleOrientationChange);
+    window.addEventListener('resize', handleOrientationChange);
   </script>
 </body>
 </html>
