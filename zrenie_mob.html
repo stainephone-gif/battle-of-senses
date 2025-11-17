@@ -204,6 +204,55 @@
       }
     }
 
+    /* Индикатор свайпа вниз */
+    .swipe-indicator {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 100;
+      animation: bounceIndicator 2s ease-in-out infinite;
+    }
+
+    .swipe-arrow {
+      width: 0;
+      height: 0;
+      border-left: 15px solid transparent;
+      border-right: 15px solid transparent;
+      border-top: 20px solid rgba(0, 0, 0, 0.6);
+      filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.4));
+      margin-bottom: -8px;
+    }
+
+    .swipe-arrow:nth-child(2) {
+      opacity: 0.6;
+    }
+
+    .swipe-arrow:nth-child(3) {
+      opacity: 0.3;
+    }
+
+    .swipe-text {
+      margin-top: 10px;
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.7);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    @keyframes bounceIndicator {
+      0%, 100% {
+        transform: translateX(-50%) translateY(0);
+      }
+      50% {
+        transform: translateX(-50%) translateY(10px);
+      }
+    }
+
     /* ================================================
        ЭКРАН 2: АРТ-ПЕСОЧНИЦА
        ================================================ */
@@ -582,6 +631,87 @@
       animation: pulse 1.5s ease-in-out infinite;
     }
 
+    /* Индикатор поворота экрана */
+    .rotation-indicator {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100px;
+      height: 100px;
+      z-index: 10;
+    }
+
+    .rotation-ring {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 4px solid transparent;
+      border-top-color: #00FFFF;
+      border-right-color: #FF00FF;
+      border-radius: 50%;
+      animation: rotateRing 2s linear infinite, pulseRing 1.5s ease-in-out infinite;
+      box-shadow:
+        0 0 20px rgba(0, 255, 255, 0.6),
+        0 0 40px rgba(255, 0, 255, 0.4),
+        inset 0 0 20px rgba(0, 255, 255, 0.3);
+    }
+
+    .rotation-arrow {
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-style: solid;
+    }
+
+    .rotation-arrow.arrow-1 {
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 0 8px 12px 8px;
+      border-color: transparent transparent #00FFFF transparent;
+      filter: drop-shadow(0 0 8px #00FFFF);
+    }
+
+    .rotation-arrow.arrow-2 {
+      right: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-width: 8px 0 8px 12px;
+      border-color: transparent transparent transparent #FF00FF;
+      filter: drop-shadow(0 0 8px #FF00FF);
+    }
+
+    .rotation-text {
+      position: absolute;
+      top: 120px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.9);
+      text-shadow: 0 0 10px #00FFFF;
+      white-space: nowrap;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes rotateRing {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulseRing {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+      }
+    }
+
     /* Горизонтальная версия (ландшафт) */
     .landscape-content {
       position: absolute;
@@ -923,6 +1053,14 @@
           </div>
         </div>
       </div>
+
+      <!-- Индикатор свайпа вниз -->
+      <div class="swipe-indicator">
+        <div class="swipe-arrow"></div>
+        <div class="swipe-arrow"></div>
+        <div class="swipe-arrow"></div>
+        <div class="swipe-text">Свайп вниз</div>
+      </div>
     </div>
 
     <!-- ЭКРАН 2: АРТ-ПЕСОЧНИЦА -->
@@ -945,8 +1083,8 @@
         <img id="philo7" src="pic/ranciere.jpg">
         <img id="philo8" src="pic/hegel.jpg">
         <img id="philo9" src="pic/kant.jpg">
-        <img id="philo10" src="pic/image1.jpg">
-        <img id="philo11" src="pic/image2.jpg">
+        <img id="philo10" src="pic/image1.png">
+        <img id="philo11" src="pic/image2.png">
         <div id="quote"></div>
       </div>
     </div>
@@ -983,6 +1121,16 @@
             <div class="portrait-subtitle">Поверни</div>
           </div>
         </div>
+
+        <!-- Индикатор поворота экрана -->
+        <div class="rotation-indicator">
+          <div class="rotation-ring">
+            <div class="rotation-arrow arrow-1"></div>
+            <div class="rotation-arrow arrow-2"></div>
+          </div>
+          <div class="rotation-text">Поверни экран →</div>
+        </div>
+
         <div class="portrait-bottom-text">ПОВЕРНИ</div>
       </div>
 
@@ -1020,6 +1168,7 @@
     let touchStartY = 0;
     let touchEndY = 0;
     let isTransitioning = false;
+    let hasRotated = false; // Флаг для отслеживания поворота устройства
 
     function updateScreens() {
       screens.forEach((screen, index) => {
@@ -1031,8 +1180,12 @@
         dot.classList.toggle('active', index === currentScreen);
       });
 
-      // Финальная кнопка появится только после поворота на экране 5
-      // (логика перенесена в checkOrientation)
+      // Кнопка "Войти в тишину" показывается только на экране 5 после поворота
+      if (currentScreen === 4 && hasRotated) {
+        finishBtn.classList.add('visible');
+      } else {
+        finishBtn.classList.remove('visible');
+      }
     }
 
     function goToScreen(screenIndex) {
@@ -1187,6 +1340,46 @@
       });
     }
 
+    // Функция центрирования философа если он за границей экрана
+    function centerPhilosopherIfNeeded(philosopher) {
+      const container = document.querySelector('.philosophers-container');
+      const philosopherRect = philosopher.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+
+      // Проверяем, находится ли философ полностью в пределах экрана
+      const isOutOfBounds =
+        philosopherRect.left < containerRect.left ||
+        philosopherRect.right > containerRect.right ||
+        philosopherRect.top < containerRect.top ||
+        philosopherRect.bottom > containerRect.bottom;
+
+      if (isOutOfBounds) {
+        // Вычисляем текущую позицию философа относительно контейнера
+        const currentLeft = parseFloat(philosopher.style.left) || 0;
+        const currentTop = parseFloat(philosopher.style.top) || 0;
+
+        // Получаем размеры
+        const philosopherWidth = philosopher.offsetWidth;
+        const philosopherHeight = philosopher.offsetHeight;
+        const containerWidth = container.clientWidth;
+        const containerHeight = container.clientHeight;
+
+        // Вычисляем центральную позицию
+        const centerLeft = (containerWidth - philosopherWidth) / 2;
+        const centerTop = (containerHeight - philosopherHeight) / 2;
+
+        // Применяем новую позицию с плавной анимацией
+        philosopher.style.transition = 'left 0.6s ease, top 0.6s ease';
+        philosopher.style.left = `${centerLeft}px`;
+        philosopher.style.top = `${centerTop}px`;
+
+        // Возвращаем transition к исходному состоянию после анимации
+        setTimeout(() => {
+          philosopher.style.transition = 'transform 0.3s ease, left 0.6s ease, top 0.6s ease';
+        }, 600);
+      }
+    }
+
     window.addEventListener('load', () => {
       selectRandomPhilosophers();
       positionPhilosophers();
@@ -1202,6 +1395,9 @@
         if ('vibrate' in navigator) {
           navigator.vibrate(20);
         }
+
+        // Центрируем философа если он находится за границей экрана
+        centerPhilosopherIfNeeded(this);
 
         e.stopPropagation();
       });
@@ -1241,8 +1437,8 @@
       "pic/ranciere.jpg",
       "pic/hegel.jpg",
       "pic/kant.jpg",
-      "pic/image1.jpg",
-      "pic/image2.jpg"
+      "pic/image1.png",
+      "pic/image2.png"
     ];
 
     let clearTimer = null;
@@ -1396,8 +1592,8 @@
       {name:'ranciere', src:'pic/ranciere.jpg', quote:'«Эстетика — это распределение чувственного»'},
       {name:'hegel', src:'pic/hegel.jpg', quote:'«Истина есть целое»'},
       {name:'kant', src:'pic/kant.jpg', quote:'«Красота — это символ нравственно доброго»'},
-      {name:'image1', src:'pic/image1.jpg', quote:'«Благородные чувства формируют наше восприятие мира»'},
-      {name:'image2', src:'pic/image2.jpg', quote:'«Зрение и слух — врата к познанию истины»'}
+      {name:'image1', src:'pic/image1.png', quote:'«Благородные чувства формируют наше восприятие мира»'},
+      {name:'image2', src:'pic/image2.png', quote:'«Зрение и слух — врата к познанию истины»'}
     ];
 
     let clickCount = 0, chaosInterval, slideshowInterval, activeIndex=0;
@@ -1586,8 +1782,7 @@
     const collageModalText = document.getElementById('collageModalText');
     const closeCollageModal = document.getElementById('closeCollageModal');
 
-    // Флаг для отслеживания поворота устройства
-    let hasRotated = false;
+    // Флаги для коллажа
     let collageInitialized = false;
     let collageItems = [];
 
@@ -1603,8 +1798,8 @@
       { src: 'pic/ranciere.jpg', name: 'Жак Рансьер', desc: 'В «Эстетическом бессознательном» анализировал, как искусство эксплуатирует эти чувства для власти.' },
       { src: 'pic/hegel.jpg', name: 'Гегель', desc: 'Называл зрение и слух «теоретическими» чувствами, способными к созерцанию абсолютного.' },
       { src: 'pic/kant.jpg', name: 'Иммануил Кант', desc: 'В «Критике способности суждения» разделял чувства на «высшие» (зрение, слух) и «низшие».' },
-      { src: 'pic/image1.jpg', name: 'Благородные чувства', desc: 'Благородные чувства формируют наше восприятие мира' },
-      { src: 'pic/image2.jpg', name: 'Познание истины', desc: 'Зрение и слух — врата к познанию истины' }
+      { src: 'pic/image1.png', name: 'Благородные чувства', desc: 'Благородные чувства формируют наше восприятие мира' },
+      { src: 'pic/image2.png', name: 'Познание истины', desc: 'Зрение и слух — врата к познанию истины' }
     ];
 
     // Создание элементов random collage
@@ -1722,10 +1917,10 @@
           initCollage();
         }
 
-        // Показываем кнопку "Войти в тишину" при первом повороте
+        // Отмечаем что произошел поворот
         if (!hasRotated) {
           hasRotated = true;
-          finishBtn.classList.add('visible');
+          updateScreens(); // Обновляем экраны чтобы показать кнопку
         }
       } else {
         // Вертикальная ориентация
