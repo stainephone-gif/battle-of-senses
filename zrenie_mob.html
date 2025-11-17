@@ -1063,6 +1063,8 @@
         <img id="philo7" src="pic/ranciere.jpg">
         <img id="philo8" src="pic/hegel.jpg">
         <img id="philo9" src="pic/kant.jpg">
+        <img id="philo10" src="pic/image1.jpg">
+        <img id="philo11" src="pic/image2.jpg">
         <div id="quote"></div>
       </div>
     </div>
@@ -1397,7 +1399,9 @@
       "pic/mcluhan.jpg",
       "pic/ranciere.jpg",
       "pic/hegel.jpg",
-      "pic/kant.jpg"
+      "pic/kant.jpg",
+      "pic/image1.jpg",
+      "pic/image2.jpg"
     ];
 
     let clearTimer = null;
@@ -1550,7 +1554,9 @@
       {name:'mcluhan', src:'pic/mcluhan.jpg', quote:'«Средство коммуникации само является сообщением»'},
       {name:'ranciere', src:'pic/ranciere.jpg', quote:'«Эстетика — это распределение чувственного»'},
       {name:'hegel', src:'pic/hegel.jpg', quote:'«Истина есть целое»'},
-      {name:'kant', src:'pic/kant.jpg', quote:'«Красота — это символ нравственно доброго»'}
+      {name:'kant', src:'pic/kant.jpg', quote:'«Красота — это символ нравственно доброго»'},
+      {name:'image1', src:'pic/image1.jpg', quote:'«Благородные чувства формируют наше восприятие мира»'},
+      {name:'image2', src:'pic/image2.jpg', quote:'«Зрение и слух — врата к познанию истины»'}
     ];
 
     let clickCount = 0, chaosInterval, slideshowInterval, activeIndex=0;
@@ -1565,7 +1571,9 @@
       document.getElementById('philo6'),
       document.getElementById('philo7'),
       document.getElementById('philo8'),
-      document.getElementById('philo9')
+      document.getElementById('philo9'),
+      document.getElementById('philo10'),
+      document.getElementById('philo11')
     ];
 
     btn.addEventListener('click',()=>{
@@ -1626,7 +1634,7 @@
 
       slideshowInterval=setInterval(()=>{
         let idx;
-        do { idx=Math.floor(Math.random()*10); } while(idx===lastIndex);
+        do { idx=Math.floor(Math.random()*12); } while(idx===lastIndex);
         imagesArr.forEach(img => img.classList.remove('active'));
         imagesArr[idx].classList.add('active');
         lastIndex = idx;
