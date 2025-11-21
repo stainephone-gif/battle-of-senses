@@ -56,6 +56,8 @@
             cursor: pointer;
             transition: all 0.3s ease;
             transform-style: preserve-3d;
+            /* Увеличенная область нажатия для мобильных */
+            touch-action: manipulation;
         }
 
         .bookmark:hover {
@@ -69,6 +71,8 @@
             border-right: 20px solid transparent;
             height: 0;
             width: 40px;
+            /* Увеличенная зона клика */
+            padding: 10px;
         }
 
         .bookmark.exhibit::after {
@@ -96,6 +100,8 @@
                 #333 10px
             );
             transform: rotate(15deg);
+            /* Увеличенная зона клика */
+            padding: 8px;
         }
 
         .exhibit-panel {
@@ -181,6 +187,13 @@
             text-align: center;
             backdrop-filter: blur(10px);
             max-width: 90%;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .navigation-info.hidden {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-20px);
+            pointer-events: none;
         }
 
         .zoom-controls {
@@ -255,6 +268,14 @@
             z-index: 1001;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             backdrop-filter: blur(10px);
+            /* Увеличенная зона нажатия */
+            touch-action: manipulation;
+        }
+
+        .finish-btn.hidden {
+            opacity: 0;
+            transform: translateX(-50%) translateY(20px);
+            pointer-events: none;
         }
 
         .finish-btn:hover {
@@ -267,7 +288,76 @@
             transform: translateX(-50%) translateY(0);
         }
 
-        /* Адаптация для маленьких экранов */
+        /* Адаптация для мобильных устройств */
+        @media (max-width: 480px) {
+            .bookmark.exhibit {
+                /* Уменьшенные размеры для мобильных */
+                border-top-width: 30px;
+                border-left-width: 15px;
+                border-right-width: 15px;
+                width: 30px;
+            }
+
+            .bookmark.exhibit::after {
+                width: 60px;
+                height: 45px;
+                top: -40px;
+                left: -15px;
+            }
+
+            .bookmark.decoy {
+                width: 25px;
+                height: 40px;
+            }
+
+            .navigation-info {
+                font-size: 12px;
+                padding: 8px 16px;
+                top: 75px;
+            }
+
+            .exhibit-panel {
+                width: 95%;
+                padding: 18px;
+                max-height: 70vh;
+                overflow-y: auto;
+            }
+
+            .exhibit-panel h2 {
+                font-size: 1.2rem;
+            }
+
+            .exhibit-panel p {
+                font-size: 0.88rem;
+            }
+
+            .zoom-controls {
+                right: 15px;
+                bottom: 70px;
+            }
+
+            .zoom-controls button {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+
+            .nav-home {
+                width: 40px;
+                height: 40px;
+                top: 15px;
+                left: 15px;
+                font-size: 1.1rem;
+            }
+
+            .finish-btn {
+                font-size: 0.92rem;
+                padding: 13px 28px;
+                bottom: 15px;
+            }
+        }
+
+        /* Адаптация для очень маленьких экранов */
         @media (max-width: 380px) {
             .navigation-info {
                 font-size: 11px;
@@ -285,6 +375,49 @@
             .finish-btn {
                 font-size: 0.9rem;
                 padding: 12px 25px;
+            }
+
+            .audio-controls button {
+                padding: 7px 12px;
+                font-size: 0.95rem;
+            }
+        }
+
+        /* Адаптация для ландшафтной ориентации на мобильных */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .exhibit-panel {
+                max-height: 80vh;
+                padding: 15px;
+            }
+
+            .navigation-info {
+                top: 10px;
+                padding: 6px 12px;
+                font-size: 11px;
+            }
+
+            .nav-home {
+                top: 10px;
+                left: 10px;
+                width: 36px;
+                height: 36px;
+            }
+
+            .zoom-controls {
+                bottom: 60px;
+                right: 10px;
+            }
+
+            .zoom-controls button {
+                width: 36px;
+                height: 36px;
+                font-size: 16px;
+            }
+
+            .finish-btn {
+                padding: 10px 22px;
+                font-size: 0.88rem;
+                bottom: 10px;
             }
         }
 
@@ -340,15 +473,20 @@
             const audioProgress = document.getElementById('audio-progress');
             const zoomInBtn = document.getElementById('zoom-in');
             const zoomOutBtn = document.getElementById('zoom-out');
+            const navigationInfo = document.querySelector('.navigation-info');
+            const finishBtn = document.querySelector('.finish-btn');
 
             let currentAudio = null;
             let isDragging = false;
             let startX, startY;
             let scrollLeft = 0;
             let scrollTop = 0;
-            let scale = 0.6;
-            let posX = -1000;
-            let posY = -1000;
+
+            // Адаптивное начальное масштабирование
+            const isMobile = window.innerWidth <= 480;
+            let scale = isMobile ? 0.8 : 0.6;
+            let posX = isMobile ? -800 : -1000;
+            let posY = isMobile ? -800 : -1000;
 
             // Экспонаты (звуковые артефакты)
             const exhibits = [
@@ -458,8 +596,13 @@
 
                 exhibitPanel.classList.add('active');
 
+                // Скрываем кнопку финиша на мобильных
+                if (isMobile) {
+                    finishBtn.classList.add('hidden');
+                }
+
                 // Приближаемся к экспонату
-                zoomTo(exhibit.x, exhibit.y, 1.5);
+                zoomTo(exhibit.x, exhibit.y, isMobile ? 1.2 : 1.5);
             }
 
             // Создание аудио с Web Audio API
@@ -538,6 +681,9 @@
                 }
                 playBtn.textContent = '▶';
                 audioProgress.value = 0;
+
+                // Показываем кнопку финиша обратно
+                finishBtn.classList.remove('hidden');
             });
 
             // Обработчики для навигации перетаскиванием
@@ -619,6 +765,45 @@
 
             // Инициализация
             updateTransform();
+
+            // Скрытие подсказки навигации через 5 секунд
+            setTimeout(function() {
+                navigationInfo.classList.add('hidden');
+            }, 5000);
+
+            // Показываем подсказку при первом касании/клике
+            let firstInteraction = true;
+            exhibitionSpace.addEventListener('click', function() {
+                if (firstInteraction) {
+                    firstInteraction = false;
+                    navigationInfo.classList.remove('hidden');
+                    setTimeout(function() {
+                        navigationInfo.classList.add('hidden');
+                    }, 3000);
+                }
+            }, { once: true });
+
+            // Предотвращение случайного масштабирования на мобильных
+            document.addEventListener('gesturestart', function(e) {
+                e.preventDefault();
+            });
+
+            // Улучшение производительности на мобильных
+            if (isMobile) {
+                // Отключаем hover эффекты на мобильных
+                const style = document.createElement('style');
+                style.innerHTML = `
+                    @media (hover: none) {
+                        .bookmark:hover,
+                        .zoom-controls button:hover,
+                        .nav-home:hover,
+                        .finish-btn:hover {
+                            transform: none !important;
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
 
             // PWA: Регистрация Service Worker
             if ('serviceWorker' in navigator) {
