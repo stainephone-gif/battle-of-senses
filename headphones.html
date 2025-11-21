@@ -706,10 +706,18 @@
         }
 
         // Метод 3: Если больше 1 устройства (встроенный динамик + наушники)
-        if (!hasHeadphones && audioOutputs.length > 1 && permissionGranted) {
+        // Убираем требование permissionGranted - работает и без него
+        if (!hasHeadphones && audioOutputs.length > 1) {
           hasHeadphones = true;
           detectionMethod = `несколько устройств (${audioOutputs.length})`;
           console.log('✓ Метод 3: Обнаружено несколько аудио устройств');
+        }
+
+        // Метод 4: АГРЕССИВНЫЙ - если есть хоть одно устройство И начальный счетчик установлен
+        // Это означает что при загрузке был 1 динамик, сейчас что-то есть
+        if (!hasHeadphones && initialOutputCount > 0 && audioOutputs.length >= 1) {
+          // Даем пользователю возможность вручную подтвердить
+          console.log('⚠️ Обнаружено устройство, но не уверены что это наушники');
         }
 
         if (hasHeadphones && !headphonesConnected) {
