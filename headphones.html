@@ -573,6 +573,22 @@
     const skipBtn = document.getElementById('skipBtn');
     let headphonesConnected = false;
     let autoRedirectTimer = null;
+    let lightsTurnedOff = false;
+    let lightsConfig = null;
+
+    // Загрузка настроек освещения сразу
+    function loadLightsConfigEarly() {
+      const saved = localStorage.getItem('lights_config');
+      if (saved) {
+        try {
+          lightsConfig = JSON.parse(saved);
+        } catch (e) {
+          console.error('Ошибка загрузки настроек:', e);
+        }
+      }
+    }
+
+    loadLightsConfigEarly();
 
     // Функция проверки наушников
     async function checkHeadphones() {
@@ -603,6 +619,12 @@
           statusElement.textContent = '✓ Наушники подключены';
           statusElement.classList.add('connected');
           statusElement.classList.remove('checking');
+
+          // Выключаем свет если настроено
+          if (lightsConfig && !lightsTurnedOff) {
+            lightsTurnedOff = true;
+            turnOffLights().catch(err => console.error('Ошибка выключения света:', err));
+          }
 
           // Автоматический переход через 2 секунды
           autoRedirectTimer = setTimeout(() => {
@@ -678,8 +700,6 @@
     const tuyaClientIdInput = document.getElementById('tuyaClientId');
     const tuyaClientSecretInput = document.getElementById('tuyaClientSecret');
     const tuyaDeviceIdInput = document.getElementById('tuyaDeviceId');
-
-    let lightsConfig = null;
 
     // Загрузка сохраненных настроек
     function loadLightsConfig() {
@@ -1123,21 +1143,7 @@
       }
     }
 
-    // Модификация функции checkHeadphones для выключения света
-    const originalCheckHeadphones = checkHeadphones;
-    let lightsTurnedOff = false;
-
-    checkHeadphones = async function() {
-      await originalCheckHeadphones();
-
-      // Если наушники только что подключились и настроено освещение
-      if (headphonesConnected && lightsConfig && !lightsTurnedOff) {
-        lightsTurnedOff = true;
-        await turnOffLights();
-      }
-    };
-
-    // Загрузка сохраненных настроек при запуске
+    // Загрузка сохраненных настроек при запуске (отображение индикатора)
     loadLightsConfig();
   </script>
 </body>
