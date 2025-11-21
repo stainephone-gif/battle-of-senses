@@ -486,6 +486,9 @@
 
       <!-- Кнопки -->
       <div class="button-group">
+        <button class="btn btn-primary" id="enableDetectionBtn" style="display: none;">
+          Включить автоопределение
+        </button>
         <button class="btn btn-secondary" id="skipBtn">
           Пропустить (не рекомендуется)
         </button>
@@ -580,6 +583,7 @@
   <script>
     const statusElement = document.getElementById('status');
     const skipBtn = document.getElementById('skipBtn');
+    const enableDetectionBtn = document.getElementById('enableDetectionBtn');
     const debugInfo = document.getElementById('debugInfo');
     let headphonesConnected = false;
     let autoRedirectTimer = null;
@@ -587,6 +591,7 @@
     let lightsConfig = null;
     let permissionGranted = false;
     let initialOutputCount = 0;
+    let permissionAttempted = false;
 
     // Загрузка настроек освещения сразу
     function loadLightsConfigEarly() {
@@ -606,20 +611,37 @@
     async function requestPermission() {
       if (permissionGranted) return true;
 
+      permissionAttempted = true;
+
       try {
         // Запрашиваем доступ к аудио для получения меток устройств
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         // Сразу останавливаем поток - он нужен только для получения разрешения
         stream.getTracks().forEach(track => track.stop());
         permissionGranted = true;
+        enableDetectionBtn.style.display = 'none';
         console.log('✓ Разрешение на доступ к устройствам получено');
+        if (debugInfo) {
+          debugInfo.textContent = '✓ Разрешение получено, ожидание наушников...';
+        }
         return true;
       } catch (error) {
         console.log('Разрешение не получено, используем альтернативный метод:', error);
         permissionGranted = false;
+        // Показываем кнопку для повторной попытки
+        enableDetectionBtn.style.display = 'inline-block';
+        if (debugInfo) {
+          debugInfo.textContent = 'Нажмите кнопку выше для точного определения наушников';
+        }
         return false;
       }
     }
+
+    // Обработчик кнопки включения автоопределения
+    enableDetectionBtn.addEventListener('click', async () => {
+      await requestPermission();
+      checkHeadphones();
+    });
 
     // Функция проверки наушников
     async function checkHeadphones() {
@@ -631,15 +653,18 @@
           return;
         }
 
-        // Запрашиваем разрешение при первой проверке
-        if (!permissionGranted) {
+        // Запрашиваем разрешение при первой проверке (тихо, без показа кнопки)
+        if (!permissionGranted && !permissionAttempted) {
           await requestPermission();
         }
 
         const devices = await navigator.mediaDevices.enumerateDevices();
         const audioOutputs = devices.filter(device => device.kind === 'audiooutput');
 
-        console.log('Найдено аудио выходов:', audioOutputs.length);
+        console.log('🔍 Проверка устройств:');
+        console.log('  Найдено аудио выходов:', audioOutputs.length);
+        console.log('  Начальное количество:', initialOutputCount);
+        console.log('  Разрешение получено:', permissionGranted);
         audioOutputs.forEach((device, i) => {
           console.log(`  ${i + 1}. ${device.label || 'Неизвестное устройство'} (${device.deviceId.substring(0, 20)}...)`);
         });
@@ -647,13 +672,15 @@
         // Сохраняем начальное количество устройств при первой проверке
         if (initialOutputCount === 0 && audioOutputs.length > 0) {
           initialOutputCount = audioOutputs.length;
+          console.log('📝 Сохранено начальное количество устройств:', initialOutputCount);
         }
 
         let hasHeadphones = false;
+        let detectionMethod = '';
 
         // Метод 1: Проверка по меткам (работает если есть разрешение)
         if (permissionGranted) {
-          hasHeadphones = audioOutputs.some(device => {
+          const headphoneDevice = audioOutputs.find(device => {
             const label = device.label.toLowerCase();
             return label.includes('headphone') ||
                    label.includes('headset') ||
@@ -663,18 +690,26 @@
                    label.includes('наушник') ||
                    label.includes('buds');
           });
+
+          if (headphoneDevice) {
+            hasHeadphones = true;
+            detectionMethod = `по названию "${headphoneDevice.label}"`;
+            console.log('✓ Метод 1: Обнаружены наушники по названию:', headphoneDevice.label);
+          }
         }
 
         // Метод 2: Проверка по увеличению количества устройств
         if (!hasHeadphones && initialOutputCount > 0 && audioOutputs.length > initialOutputCount) {
           hasHeadphones = true;
-          console.log('✓ Обнаружено новое аудио устройство (вероятно наушники)');
+          detectionMethod = `новое устройство (${audioOutputs.length} из ${initialOutputCount})`;
+          console.log('✓ Метод 2: Обнаружено новое аудио устройство');
         }
 
         // Метод 3: Если больше 1 устройства (встроенный динамик + наушники)
-        if (!hasHeadphones && audioOutputs.length > 1) {
+        if (!hasHeadphones && audioOutputs.length > 1 && permissionGranted) {
           hasHeadphones = true;
-          console.log('✓ Обнаружено несколько аудио устройств');
+          detectionMethod = `несколько устройств (${audioOutputs.length})`;
+          console.log('✓ Метод 3: Обнаружено несколько аудио устройств');
         }
 
         if (hasHeadphones && !headphonesConnected) {
@@ -683,7 +718,12 @@
           statusElement.classList.add('connected');
           statusElement.classList.remove('checking');
 
-          console.log('🎧 Наушники подключены!');
+          console.log(`🎧 Наушники подключены! (определено ${detectionMethod})`);
+
+          // Показываем метод определения
+          if (debugInfo) {
+            debugInfo.textContent = `✓ Обнаружено ${detectionMethod}`;
+          }
 
           // Выключаем свет если настроено
           if (lightsConfig && !lightsTurnedOff) {
@@ -720,15 +760,14 @@
             ).join('; ');
             debugInfo.textContent = `Видимые аудио устройства: ${deviceList}`;
           } else if (debugInfo) {
-            debugInfo.textContent = permissionGranted ?
-              'Аудио устройства не обнаружены' :
-              'Ожидание разрешения на доступ к устройствам...';
+            if (!permissionGranted && permissionAttempted) {
+              debugInfo.textContent = 'Для точного определения нажмите кнопку "Включить автоопределение"';
+            } else if (!permissionGranted) {
+              debugInfo.textContent = 'Инициализация определения устройств...';
+            } else {
+              debugInfo.textContent = 'Аудио устройства не обнаружены';
+            }
           }
-        }
-
-        // Обновляем информацию о подключенных устройствах
-        if (debugInfo && hasHeadphones) {
-          debugInfo.textContent = `✓ Система видит ${audioOutputs.length} аудио устройств(а)`;
         }
       } catch (error) {
         console.log('Не удалось проверить устройства:', error);
