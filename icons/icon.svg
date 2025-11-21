@@ -1,0 +1,65 @@
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Battle of Senses - PWA Icon -->
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#4a0080;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" fill="url(#grad1)"/>
+
+  <!-- Sound waves (left side - слух) -->
+  <path d="M 100 256 Q 150 200, 200 256 T 300 256"
+        stroke="#ffffff"
+        stroke-width="4"
+        fill="none"
+        opacity="0.6"/>
+  <path d="M 100 256 Q 150 230, 200 256 T 300 256"
+        stroke="#ffffff"
+        stroke-width="3"
+        fill="none"
+        opacity="0.4"/>
+  <path d="M 100 256 Q 150 280, 200 256 T 300 256"
+        stroke="#ffffff"
+        stroke-width="3"
+        fill="none"
+        opacity="0.4"/>
+
+  <!-- Eye symbol (right side - зрение) -->
+  <ellipse cx="380" cy="256" rx="50" ry="30"
+           stroke="#ffffff"
+           stroke-width="4"
+           fill="none"
+           opacity="0.6"/>
+  <circle cx="380" cy="256" r="15"
+          fill="#ffffff"
+          opacity="0.8"/>
+  <circle cx="380" cy="256" r="8"
+          fill="#000000"
+          opacity="1"/>
+
+  <!-- Central divider -->
+  <line x1="256" y1="150" x2="256" y2="362"
+        stroke="#ffffff"
+        stroke-width="2"
+        opacity="0.3"
+        stroke-dasharray="5,5"/>
+
+  <!-- Text -->
+  <text x="256" y="420"
+        font-family="monospace"
+        font-size="48"
+        font-weight="bold"
+        fill="#ffffff"
+        text-anchor="middle"
+        opacity="0.9">BOS</text>
+  <text x="256" y="460"
+        font-family="monospace"
+        font-size="20"
+        fill="#ffffff"
+        text-anchor="middle"
+        opacity="0.6">Battle of Senses</text>
+</svg>
