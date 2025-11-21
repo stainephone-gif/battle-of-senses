@@ -6,7 +6,7 @@
   <title>Battle of Senses</title>
 
   <!-- PWA Manifest -->
-  <link rel="manifest" href="/manifest.json">
+  <link rel="manifest" href="./manifest.json">
 
   <!-- Theme colors -->
   <meta name="theme-color" content="#000000">
@@ -15,12 +15,12 @@
   <meta name="apple-mobile-web-app-title" content="Battle of Senses">
 
   <!-- Icons -->
-  <link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
-  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <link rel="icon" type="image/svg+xml" href="./icons/icon.svg">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
 
   <!-- Microsoft Tiles -->
   <meta name="msapplication-TileColor" content="#000000">
-  <meta name="msapplication-TileImage" content="/icons/icon-144.png">
+  <meta name="msapplication-TileImage" content="./icons/icon-144.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -316,7 +316,7 @@
     // PWA: Регистрация Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js')
+        navigator.serviceWorker.register('./service-worker.js')
           .then(registration => {
             console.log('✅ Service Worker зарегистрирован:', registration.scope);
 

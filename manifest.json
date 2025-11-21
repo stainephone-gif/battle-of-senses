@@ -2,57 +2,57 @@
   "name": "Battle of Senses - Битва Чувств",
   "short_name": "Battle of Senses",
   "description": "Интерактивное художественное путешествие через звук и зрение. Исследуйте границы восприятия в иммерсивном опыте.",
-  "start_url": "/index.html",
-  "scope": "/",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
   "orientation": "any",
   "icons": [
     {
-      "src": "/icons/icon-72.png",
+      "src": "./icons/icon-72.png",
       "sizes": "72x72",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-96.png",
+      "src": "./icons/icon-96.png",
       "sizes": "96x96",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-128.png",
+      "src": "./icons/icon-128.png",
       "sizes": "128x128",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-144.png",
+      "src": "./icons/icon-144.png",
       "sizes": "144x144",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-152.png",
+      "src": "./icons/icon-152.png",
       "sizes": "152x152",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-192.png",
+      "src": "./icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-384.png",
+      "src": "./icons/icon-384.png",
       "sizes": "384x384",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-512.png",
+      "src": "./icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -67,10 +67,10 @@
       "name": "Путь Слуха",
       "short_name": "Слух",
       "description": "Начать аудиальное путешествие",
-      "url": "/headphones.html?path=audio",
+      "url": "./headphones.html?path=audio",
       "icons": [
         {
-          "src": "/icons/icon-192.png",
+          "src": "./icons/icon-192.png",
           "sizes": "192x192",
           "type": "image/png"
         }
@@ -80,10 +80,10 @@
       "name": "Путь Зрения",
       "short_name": "Зрение",
       "description": "Начать визуальное путешествие",
-      "url": "/zrenie_mob.html",
+      "url": "./zrenie_mob.html",
       "icons": [
         {
-          "src": "/icons/icon-192.png",
+          "src": "./icons/icon-192.png",
           "sizes": "192x192",
           "type": "image/png"
         }
@@ -92,7 +92,7 @@
   ],
   "screenshots": [
     {
-      "src": "/icons/screenshot-mobile.png",
+      "src": "./icons/screenshot-mobile.png",
       "sizes": "540x720",
       "type": "image/png",
       "form_factor": "narrow"

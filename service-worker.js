@@ -6,27 +6,27 @@ const RUNTIME_CACHE = 'battle-of-senses-runtime-v1';
 
 // Файлы для кеширования при установке
 const PRECACHE_URLS = [
-  '/',
-  '/index.html',
-  '/headphones.html',
-  '/sluh.html',
-  '/quiet.html',
-  '/zrenie_mob.html',
-  '/sound-exhibition.html',
-  '/manifest.json',
+  './',
+  './index.html',
+  './headphones.html',
+  './sluh.html',
+  './quiet.html',
+  './zrenie_mob.html',
+  './sound-exhibition.html',
+  './manifest.json',
   // Изображения
-  '/pic/image1.png',
-  '/pic/image2.png',
-  '/pic/Piph.png',
-  '/pic/Plato.png',
-  '/pic/Arist.png',
-  '/pic/ranciere.jpg',
-  '/pic/leibniz.jpg',
-  '/pic/mcluhan.jpg',
-  '/pic/kant.jpg',
-  '/pic/hegel.jpg',
-  '/pic/descartes.jpg',
-  '/pic/aquinas.jpg'
+  './pic/image1.png',
+  './pic/image2.png',
+  './pic/Piph.png',
+  './pic/Plato.png',
+  './pic/Arist.png',
+  './pic/ranciere.jpg',
+  './pic/leibniz.jpg',
+  './pic/mcluhan.jpg',
+  './pic/kant.jpg',
+  './pic/hegel.jpg',
+  './pic/descartes.jpg',
+  './pic/aquinas.jpg'
 ];
 
 // Установка Service Worker
@@ -129,7 +129,7 @@ self.addEventListener('fetch', (event) => {
 
         // Fallback для HTML страниц - вернуть index.html
         if (request.headers.get('accept').includes('text/html')) {
-          return caches.match('/index.html');
+          return caches.match('./index.html');
         }
 
         throw error;
