@@ -486,8 +486,15 @@
             // Адаптивное начальное масштабирование
             const isMobile = window.innerWidth <= 480;
             let scale = isMobile ? 0.8 : 0.6;
-            let posX = isMobile ? -800 : -1000;
-            let posY = isMobile ? -800 : -1000;
+
+            // Центрируем на области с экспонатами (примерно 1500x1500)
+            const centerX = 1500;
+            const centerY = 1500;
+            const viewportCenterX = window.innerWidth / 2;
+            const viewportCenterY = window.innerHeight / 2;
+
+            let posX = viewportCenterX - (centerX * scale);
+            let posY = viewportCenterY - (centerY * scale);
 
             // Экспонаты (звуковые артефакты)
             const exhibits = [
@@ -764,6 +771,22 @@
 
             // Обновление трансформации пространства выставки
             function updateTransform() {
+                // Ограничиваем перемещение чтобы не выйти за границы
+                const spaceWidth = 5000 * scale;
+                const spaceHeight = 5000 * scale;
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+
+                // Минимальные и максимальные значения для posX и posY
+                const maxX = 0;
+                const minX = viewportWidth - spaceWidth;
+                const maxY = 0;
+                const minY = viewportHeight - spaceHeight;
+
+                // Ограничиваем позицию
+                posX = Math.max(minX, Math.min(maxX, posX));
+                posY = Math.max(minY, Math.min(maxY, posY));
+
                 exhibitionSpace.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
             }
 
