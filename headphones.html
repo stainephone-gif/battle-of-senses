@@ -798,6 +798,14 @@
         return;
       }
 
+      // Проверка протокола страницы
+      const pageProtocol = window.location.protocol;
+      if (pageProtocol === 'https:') {
+        showStatus('⚠️ HTTPS страница не может подключиться к HTTP Bridge. Используйте Android приложение или откройте сайт по HTTP', 'error');
+        connectHueBtn.disabled = false;
+        return;
+      }
+
       showStatus('Подключение...', 'info');
       connectHueBtn.disabled = true;
 
@@ -809,11 +817,29 @@
           // Пытаемся получить новый API ключ
           showStatus('Нажмите кнопку на Philips Hue Bridge...', 'info');
 
-          const response = await fetch(`http://${ip}/api`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ devicetype: 'battle_of_senses#web' })
-          });
+          let response;
+          try {
+            response = await fetch(`http://${ip}/api`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ devicetype: 'battle_of_senses#web' })
+            });
+          } catch (fetchError) {
+            console.error('Fetch error details:', fetchError);
+
+            // Детальная диагностика
+            if (fetchError.message.includes('Failed to fetch')) {
+              showStatus('❌ Не удалось подключиться к Bridge. Проверьте:\n1. IP адрес правильный?\n2. Устройство в той же Wi-Fi сети?\n3. Bridge включен?\n4. Используйте Android приложение для надежности', 'error');
+            } else {
+              showStatus(`❌ Ошибка сети: ${fetchError.message}`, 'error');
+            }
+            connectHueBtn.disabled = false;
+            return;
+          }
+
+          if (!response.ok) {
+            throw new Error(`HTTP ошибка: ${response.status}`);
+          }
 
           const data = await response.json();
 
@@ -831,7 +857,17 @@
         }
 
         // Тестовое подключение
-        const testResponse = await fetch(`http://${ip}/api/${apiKey}/lights`);
+        showStatus('Проверка подключения...', 'info');
+
+        let testResponse;
+        try {
+          testResponse = await fetch(`http://${ip}/api/${apiKey}/lights`);
+        } catch (fetchError) {
+          console.error('Test fetch error:', fetchError);
+          showStatus('❌ Ошибка проверки. Убедитесь что Bridge доступен', 'error');
+          connectHueBtn.disabled = false;
+          return;
+        }
 
         if (testResponse.ok) {
           const lights = await testResponse.json();
