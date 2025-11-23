@@ -1,0 +1,1988 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Зрение — Battle of Senses</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* ================================================
+       БАЗОВЫЕ СТИЛИ
+       ================================================ */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      font-family: 'Space Mono', 'Courier New', monospace;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ================================================
+       КОНТЕЙНЕР ЭКРАНОВ
+       ================================================ */
+    #screens-container {
+      height: 100vh;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+    }
+
+    /* ================================================
+       НАВИГАЦИЯ
+       ================================================ */
+    .nav-home {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      width: 48px;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: #fff;
+      font-size: 24px;
+      z-index: 10000;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .nav-home:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(1.1);
+    }
+
+    /* Индикатор экранов */
+    .screen-indicator {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 9999;
+    }
+
+    .screen-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .screen-dot.active {
+      background: rgba(255, 255, 255, 0.9);
+      transform: scale(1.3);
+    }
+
+    /* ================================================
+       ЭКРАН 1: ФИЛОСОФЫ
+       ================================================ */
+    #screen1 {
+      background: linear-gradient(135deg, #E8E5E0 0%, #F5F2ED 50%, #E5E5DD 100%);
+    }
+
+    .philosophers-container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .philosopher {
+      position: absolute;
+      cursor: pointer;
+      transition: transform 0.3s ease, left 0.6s ease, top 0.6s ease;
+    }
+
+    .philosopher:hover {
+      transform: scale(1.05);
+      z-index: 10;
+    }
+
+    .philosopher-image {
+      width: 200px;
+      height: 200px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      transition: all 0.5s ease;
+    }
+
+    .philosopher-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: blur(15px) brightness(0.7);
+      transition: filter 0.6s ease;
+    }
+
+    .philosopher.revealed .philosopher-image img {
+      filter: blur(0px) brightness(1) !important;
+    }
+
+    .philosopher.revealed .philosopher-image {
+      box-shadow: 0 12px 36px rgba(229, 229, 221, 0.4);
+    }
+
+    .philosopher-text {
+      margin-top: 15px;
+      padding: 15px 20px;
+      background: rgba(229, 229, 221, 0.95);
+      border-radius: 8px;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.5s ease;
+      pointer-events: none;
+      max-width: 250px;
+    }
+
+    .philosopher.revealed .philosopher-text {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .philosopher-text h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #000000;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .philosopher-text p {
+      font-size: 13px;
+      font-weight: 400;
+      color: #333333;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    @media (max-width: 480px) {
+      .philosopher-image {
+        width: 150px;
+        height: 150px;
+      }
+
+      .philosopher-text {
+        max-width: 200px;
+        padding: 12px 15px;
+      }
+
+      .philosopher-text h3 {
+        font-size: 16px;
+      }
+
+      .philosopher-text p {
+        font-size: 12px;
+      }
+    }
+
+    /* Индикатор свайпа вниз */
+    .swipe-indicator {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 100;
+      animation: bounceIndicator 2s ease-in-out infinite;
+    }
+
+    .swipe-arrow {
+      width: 0;
+      height: 0;
+      border-left: 15px solid transparent;
+      border-right: 15px solid transparent;
+      border-top: 20px solid rgba(0, 0, 0, 0.6);
+      filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.4));
+      margin-bottom: -8px;
+    }
+
+    .swipe-arrow:nth-child(2) {
+      opacity: 0.6;
+    }
+
+    .swipe-arrow:nth-child(3) {
+      opacity: 0.3;
+    }
+
+    .swipe-text {
+      margin-top: 10px;
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.7);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    @keyframes bounceIndicator {
+      0%, 100% {
+        transform: translateX(-50%) translateY(0);
+      }
+      50% {
+        transform: translateX(-50%) translateY(10px);
+      }
+    }
+
+    /* ================================================
+       ЭКРАН 2: АРТ-ПЕСОЧНИЦА
+       ================================================ */
+    #screen2 {
+      background: linear-gradient(to bottom, #f6d365, #fda085);
+    }
+
+    .shape {
+      position: absolute;
+      left: 0;
+      top: 0;
+      transform: translate(-50%,-50%) rotate(var(--rotation,0deg)) scale(0);
+      will-change: transform, opacity;
+      pointer-events: none;
+      opacity: 0.95;
+      transition: opacity 1s ease, transform 0.9s ease;
+      z-index: 1;
+    }
+
+    @keyframes pop {
+      from { transform: translate(-50%,-50%) rotate(var(--rotation,0deg)) scale(0); opacity:0; }
+      to   { transform: translate(-50%,-50%) rotate(var(--rotation,0deg)) scale(1); opacity:0.95; }
+    }
+
+    .pop {
+      animation: pop 220ms cubic-bezier(.2,.8,.2,1) forwards;
+    }
+
+    .fade-out {
+      opacity: 0;
+      transform: translate(-50%,-50%) rotate(var(--rotation,0deg)) scale(0.4);
+    }
+
+    img.shape {
+      object-fit: cover;
+      border-radius: 12px;
+      display:block;
+    }
+
+    .hint {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 24px;
+      font-size: 13px;
+      backdrop-filter: blur(10px);
+      z-index: 9998;
+      letter-spacing: 0.5px;
+      border: 1px solid rgba(255,255,255,0.3);
+      font-weight: 400;
+      text-align: center;
+      max-width: 200px;
+    }
+
+    /* ================================================
+       ЭКРАН 3: ГИПЕРТЕКСТ-ЛОВУШКА
+       ================================================ */
+    #screen3 {
+      background: linear-gradient(135deg,#ff3cac,#784ba0,#2b86c5,#ffcc70,#ff8177);
+      background-size: 500% 500%;
+      animation: bgshift 10s ease infinite;
+      color: white;
+      text-align: center;
+    }
+
+    @keyframes bgshift {
+      0%{background-position:0% 50%;}
+      50%{background-position:100% 50%;}
+      100%{background-position:0% 50%;}
+    }
+
+    .btn {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      padding: 20px 35px;
+      background: #fff;
+      color: #000;
+      border-radius: 20px;
+      font-size: 26px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 0 25px #fff, 0 0 50px #ff00ff;
+      animation: blink 1s infinite;
+      z-index: 10;
+      border: none;
+      font-family: 'Space Mono', 'Courier New', monospace;
+    }
+
+    @keyframes blink {
+      0%,100% {opacity:1; transform:translate(-50%,-50%) scale(1);}
+      50% {opacity:0.3; transform:translate(-50%,-50%) scale(1.1);}
+    }
+
+    .message {
+      position: absolute;
+      top: 20%; left: 50%;
+      transform: translateX(-50%);
+      font-size: 22px;
+      font-weight: 700;
+      text-shadow: 0 0 10px #000;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 9;
+    }
+
+    .garbage, .text-frag {
+      position: absolute;
+      animation: fall 6s linear forwards;
+      z-index: 2;
+    }
+
+    .garbage img {
+      border-radius: 10px;
+    }
+
+    .text-frag {
+      color: #fff;
+      font-weight: 600;
+      text-shadow: 0 0 10px #000;
+    }
+
+    @keyframes fall {
+      from {transform:translateY(-10vh) rotate(0);}
+      to {transform:translateY(120vh) rotate(360deg);}
+    }
+
+    #philosopherOverlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      display: none;
+    }
+
+    #philosopherOverlay img {
+      max-width: 60%;
+      max-height: 60%;
+      margin-bottom: 20px;
+      border-radius: 15px;
+      transition: opacity 0.3s ease;
+      opacity: 0;
+    }
+
+    #philosopherOverlay img.active {
+      opacity: 1;
+    }
+
+    #quote {
+      color: white;
+      font-size: 28px;
+      font-weight: 700;
+      text-align: center;
+      max-width: 80%;
+      line-height: 1.4;
+    }
+
+    /* ================================================
+       ЭКРАН 4: СЕНСОРНЫЙ ПОВОРОТ
+       ================================================ */
+    #screen4 {
+      background: linear-gradient(120deg, #ff6ec4, #7873f5, #00f2fe, #ff9a9e);
+      background-size: 600% 600%;
+      animation: gradientShift 12s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    @keyframes gradientShift {
+      0%{background-position:0% 50%;}
+      50%{background-position:100% 50%;}
+      100%{background-position:0% 50%;}
+    }
+
+    /* яркие частицы */
+    .particle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: rgba(255,255,255,0.9);
+      border-radius: 50%;
+      box-shadow: 0 0 15px rgba(255,255,255,0.8), 0 0 30px rgba(255,255,255,0.6);
+      animation: floatParticle 14s linear infinite;
+      z-index: 1;
+    }
+
+    @keyframes floatParticle {
+      from { transform: translateY(110vh) scale(0.4); opacity: 0; }
+      20% { opacity: 1; }
+      to { transform: translateY(-20vh) scale(1.4); opacity: 0; }
+    }
+
+    /* контейнер текста */
+    .text-wrapper {
+      position: relative;
+      width: 80%;
+      max-width: 340px;
+      height: 100%;
+      overflow: hidden;
+      text-align: center;
+      z-index: 2;
+    }
+
+    .text-blurred, .text-readable {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      line-height: 1.8;
+      font-size: 20px;
+      font-weight: 600;
+      white-space: pre-line;
+      animation: scrollText 70s linear infinite;
+    }
+
+    @keyframes scrollText {
+      0% { transform: translate(-50%, 0); }
+      100% { transform: translate(-50%, -100%); }
+    }
+
+    .text-blurred {
+      color: transparent;
+      text-shadow: 0 0 6px rgba(0,0,0,0.8);
+      filter: blur(4px) contrast(200%);
+    }
+
+    /* проявляющая маска */
+    .mask {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      pointer-events: none;
+      -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,1) 75%, transparent 100%);
+      -webkit-mask-repeat: no-repeat;
+      -webkit-mask-position: center 50%;
+      -webkit-mask-size: 100% 30%;
+      mask-image: radial-gradient(circle, rgba(0,0,0,1) 75%, transparent 100%);
+      mask-repeat: no-repeat;
+      mask-position: center 50%;
+      mask-size: 100% 30%;
+      filter: drop-shadow(0 0 25px rgba(255,255,255,0.9));
+      transition: -webkit-mask-position 0.1s ease, mask-position 0.1s ease;
+    }
+
+    .text-readable {
+      color: #fff;
+      text-shadow: 0 0 10px rgba(0,0,0,0.6);
+    }
+
+    /* декоративные кольца */
+    .ring {
+      position: absolute;
+      border: 2px solid rgba(255,255,255,0.5);
+      border-radius: 50%;
+      animation: pulseRing 10s linear infinite;
+      z-index: 1;
+    }
+
+    @keyframes pulseRing {
+      0% { transform: scale(0.8); opacity: 0.8; }
+      50% { transform: scale(1.3); opacity: 0.2; }
+      100% { transform: scale(0.8); opacity: 0.8; }
+    }
+
+    @media (max-width: 480px) {
+      .text-wrapper {
+        max-width: 300px;
+      }
+
+      .text-blurred, .text-readable {
+        font-size: 16px;
+      }
+    }
+
+    /* ================================================
+       ЭКРАН 5: ПОВЕРНИ (ВЕРТИКАЛЬНАЯ/ГОРИЗОНТАЛЬНАЯ)
+       ================================================ */
+    #screen5 {
+      background: linear-gradient(135deg, #7B2CBF 0%, #E0AAFF 50%, #FF6EC4 100%);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Noise эффект */
+    #screen5::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4"/></filter><rect width="300" height="300" filter="url(%23n)" opacity="0.2"/></svg>');
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Вертикальная версия (портрет) */
+    .portrait-content {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 60px 20px 40px;
+      z-index: 2;
+    }
+
+    .portrait-content.hidden {
+      display: none;
+    }
+
+    /* Пиксельная елка */
+    .pixel-tree {
+      width: 120px;
+      height: 140px;
+      background: #00FF00;
+      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+      image-rendering: pixelated;
+      animation: treeGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes treeGlow {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.3); }
+    }
+
+    .portrait-top-text {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .portrait-title {
+      font-size: 48px;
+      font-weight: 900;
+      color: #FFFFFF;
+      text-shadow: 0 0 10px #FF00FF, 0 0 20px #00FFFF;
+      letter-spacing: 8px;
+      margin-bottom: 10px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .portrait-subtitle {
+      font-size: 24px;
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 600;
+    }
+
+    .portrait-bottom-text {
+      font-size: 64px;
+      font-weight: 900;
+      color: #FFFFFF;
+      text-shadow: 0 0 15px #FF00FF, 0 0 30px #00FFFF;
+      letter-spacing: 10px;
+      font-family: 'Courier New', monospace;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    /* Индикатор поворота экрана */
+    .rotation-indicator {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100px;
+      height: 100px;
+      z-index: 10;
+    }
+
+    .rotation-ring {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 4px solid transparent;
+      border-top-color: #00FFFF;
+      border-right-color: #FF00FF;
+      border-radius: 50%;
+      animation: rotateRing 2s linear infinite, pulseRing 1.5s ease-in-out infinite;
+      box-shadow:
+        0 0 20px rgba(0, 255, 255, 0.6),
+        0 0 40px rgba(255, 0, 255, 0.4),
+        inset 0 0 20px rgba(0, 255, 255, 0.3);
+    }
+
+    .rotation-arrow {
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-style: solid;
+    }
+
+    .rotation-arrow.arrow-1 {
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 0 8px 12px 8px;
+      border-color: transparent transparent #00FFFF transparent;
+      filter: drop-shadow(0 0 8px #00FFFF);
+    }
+
+    .rotation-arrow.arrow-2 {
+      right: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-width: 8px 0 8px 12px;
+      border-color: transparent transparent transparent #FF00FF;
+      filter: drop-shadow(0 0 8px #FF00FF);
+    }
+
+    .rotation-text {
+      position: absolute;
+      top: 120px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.9);
+      text-shadow: 0 0 10px #00FFFF;
+      white-space: nowrap;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes rotateRing {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulseRing {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+      }
+    }
+
+    /* Горизонтальная версия (ландшафт) */
+    .landscape-content {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      z-index: 2;
+      overflow: hidden;
+      background:
+        url('pic/gallery-plan.png') center center / contain no-repeat,
+        linear-gradient(135deg, #7B2CBF 0%, #E0AAFF 50%, #FF6EC4 100%);
+      background-size: contain, 400% 400%;
+      animation: gradientShift 15s ease infinite;
+    }
+
+    /* Полупрозрачный оверлей для лучшей видимости элементов коллажа */
+    .landscape-content::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(123, 44, 191, 0.3);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    #collageContainer {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+    }
+
+    .landscape-content.active {
+      display: block;
+    }
+
+    /* Random Collage Items */
+    .collage-item {
+      position: absolute;
+      width: 120px;
+      height: 90px;
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 1.2s ease, left 2.2s ease, top 2.2s ease;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(131, 56, 236, 0.3);
+    }
+
+    .collage-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: filter 0.3s ease;
+    }
+
+    .collage-item:hover {
+      transform: scale(1.15) !important;
+      box-shadow: 0 12px 30px rgba(131, 56, 236, 0.6), 0 0 30px rgba(255, 110, 196, 0.5);
+      z-index: 100;
+    }
+
+    .collage-item:hover img {
+      filter: brightness(1.2);
+    }
+
+    /* Закладка */
+    .bookmark {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 16px;
+      height: 22px;
+      background: linear-gradient(135deg, #FFDE59, #FFB627);
+      clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%);
+      z-index: 3;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      transition: transform 0.3s ease;
+    }
+
+    .bookmark:hover {
+      transform: scale(1.2);
+    }
+
+    /* Модальное окно для экрана 5 */
+    .collage-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.93);
+      backdrop-filter: blur(10px);
+      display: none;
+      flex-direction: column;
+      z-index: 1000;
+      padding: 20px;
+      overflow-y: auto;
+      animation: fadeIn .3s ease;
+    }
+
+    .collage-modal.visible {
+      display: flex;
+    }
+
+    .collage-modal img {
+      width: 100%;
+      max-width: 600px;
+      border-radius: 16px;
+      margin: 0 auto 20px;
+      box-shadow: 0 8px 30px rgba(131, 56, 236, 0.5);
+    }
+
+    .collage-modal-text {
+      color: #FFFFFF;
+      font-size: 18px;
+      line-height: 1.8;
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .collage-modal-text h3 {
+      font-size: 28px;
+      font-weight: 900;
+      margin-bottom: 15px;
+      color: #00FFFF;
+      text-shadow: 0 0 10px #00FFFF;
+    }
+
+    .modal-close-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 44px;
+      height: 44px;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(10px);
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      color: white;
+      font-size: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 1001;
+    }
+
+    .modal-close-btn:hover {
+      background: rgba(255, 255, 255, 0.4);
+      transform: scale(1.1);
+    }
+
+
+    @media (max-width: 768px) and (orientation: portrait) {
+      .portrait-title {
+        font-size: 36px;
+      }
+
+      .portrait-bottom-text {
+        font-size: 48px;
+      }
+    }
+
+    /* ================================================
+       ФИНАЛЬНАЯ КНОПКА
+       ================================================ */
+    .finish-btn {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 18px 45px;
+      background: rgba(255, 255, 255, 0.25);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 15px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(15px);
+      transition: all 0.3s ease;
+      z-index: 9999;
+      font-family: 'Space Mono', 'Courier New', monospace;
+      display: none;
+    }
+
+    .finish-btn.visible {
+      display: block;
+    }
+
+    .finish-btn:hover {
+      background: rgba(255, 255, 255, 0.35);
+      transform: translateX(-50%) scale(1.05);
+    }
+
+    /* ================================================
+       АДАПТИВНОСТЬ
+       ================================================ */
+    @media (max-width: 480px) {
+      .hint {
+        top: auto;
+        bottom: 100px;
+        right: 50%;
+        transform: translateX(50%);
+        max-width: calc(100% - 40px);
+        font-size: 12px;
+        padding: 10px 16px;
+      }
+
+      .finish-btn {
+        padding: 16px 35px;
+        font-size: 14px;
+        bottom: 20px;
+      }
+
+      .nav-home {
+        width: 44px;
+        height: 44px;
+        font-size: 22px;
+      }
+
+      #quote {
+        font-size: 20px;
+      }
+    }
+
+    /* ================================================
+       ДОСТУПНОСТЬ
+       ================================================ */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.2s !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="nav-home" aria-label="Вернуться на главную">⌂</a>
+
+  <!-- Индикатор экранов -->
+  <div class="screen-indicator">
+    <div class="screen-dot active"></div>
+    <div class="screen-dot"></div>
+    <div class="screen-dot"></div>
+    <div class="screen-dot"></div>
+    <div class="screen-dot"></div>
+  </div>
+
+  <!-- Контейнер экранов -->
+  <div id="screens-container">
+    <!-- ЭКРАН 1: ФИЛОСОФЫ -->
+    <div class="screen" id="screen1" data-screen="0">
+      <div class="philosophers-container">
+        <div class="philosopher" data-philosopher="plato">
+          <div class="philosopher-image">
+            <img src="pic/Plato.png" alt="Платон" loading="lazy">
+          </div>
+          <div class="philosopher-text">
+            <h3>Платон</h3>
+            <p>Зрение — важнейшее из чувств, через него познаётся истина и красота идей.</p>
+          </div>
+        </div>
+
+        <div class="philosopher" data-philosopher="aristotle">
+          <div class="philosopher-image">
+            <img src="pic/Arist.png" alt="Аристотель" loading="lazy">
+          </div>
+          <div class="philosopher-text">
+            <h3>Аристотель</h3>
+            <p>Видение даёт наибольшее знание о мире, открывая различия между вещами.</p>
+          </div>
+        </div>
+
+        <div class="philosopher" data-philosopher="pythagoras">
+          <div class="philosopher-image">
+            <img src="pic/Piph.png" alt="Пифагор" loading="lazy">
+          </div>
+          <div class="philosopher-text">
+            <h3>Пифагор</h3>
+            <p>Через созерцание геометрических форм разум постигает гармонию космоса.</p>
+          </div>
+        </div>
+
+        <div class="philosopher" data-philosopher="descartes">
+          <div class="philosopher-image">
+            <img src="pic/descartes.jpg" alt="Рене Декарт" loading="lazy">
+          </div>
+          <div class="philosopher-text">
+            <h3>Рене Декарт</h3>
+            <p>В «Рассуждении о методе» называл зрение главным чувством для научного анализа.</p>
+          </div>
+        </div>
+
+        <div class="philosopher" data-philosopher="leibniz">
+          <div class="philosopher-image">
+            <img src="pic/leibniz.jpg" alt="Готфрид Лейбниц" loading="lazy">
+          </div>
+          <div class="philosopher-text">
+            <h3>Готфрид Лейбниц</h3>
+            <p>Считал музыку (слух) «скрытой арифметикой», а зрение — основой ясного восприятия.</p>
+          </div>
+        </div>
+
+        <div class="philosopher" data-philosopher="aquinas">
+          <div class="philosopher-image">
+            <img src="pic/aquinas.jpg" alt="Фома Аквинский" loading="lazy">
+          </div>
+          <div class="philosopher-text">
+            <h3>Фома Аквинский</h3>
+            <p>Вслед за Аристотелем утверждал приоритет зрения и слуха в познании Божественного порядка.</p>
+          </div>
+        </div>
+
+        <div class="philosopher" data-philosopher="mcluhan">
+          <div class="philosopher-image">
+            <img src="pic/mcluhan.jpg" alt="Маршалл Маклюэн" loading="lazy">
+          </div>
+          <div class="philosopher-text">
+            <h3>Маршалл Маклюэн</h3>
+            <p>В «Понимании медиа» писал, что технологии усиливают доминирование зрения и слуха (ТВ, радио).</p>
+          </div>
+        </div>
+
+        <div class="philosopher" data-philosopher="ranciere">
+          <div class="philosopher-image">
+            <img src="pic/ranciere.jpg" alt="Жак Рансьер" loading="lazy">
+          </div>
+          <div class="philosopher-text">
+            <h3>Жак Рансьер</h3>
+            <p>В «Эстетическом бессознательном» анализировал, как искусство эксплуатирует эти чувства для власти.</p>
+          </div>
+        </div>
+
+        <div class="philosopher" data-philosopher="hegel">
+          <div class="philosopher-image">
+            <img src="pic/hegel.jpg" alt="Гегель" loading="lazy">
+          </div>
+          <div class="philosopher-text">
+            <h3>Гегель</h3>
+            <p>Называл зрение и слух «теоретическими» чувствами, способными к созерцанию абсолютного.</p>
+          </div>
+        </div>
+
+        <div class="philosopher" data-philosopher="kant">
+          <div class="philosopher-image">
+            <img src="pic/kant.jpg" alt="Иммануил Кант" loading="lazy">
+          </div>
+          <div class="philosopher-text">
+            <h3>Иммануил Кант</h3>
+            <p>В «Критике способности суждения» разделял чувства на «высшие» (зрение, слух) и «низшие» (вкус, обоняние).</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Индикатор свайпа вниз -->
+      <div class="swipe-indicator">
+        <div class="swipe-arrow"></div>
+        <div class="swipe-arrow"></div>
+        <div class="swipe-arrow"></div>
+      </div>
+    </div>
+
+    <!-- ЭКРАН 2: АРТ-ПЕСОЧНИЦА -->
+    <div class="screen" id="screen2" data-screen="1">
+      <div class="hint">Рисуйте касанием или кликом</div>
+    </div>
+
+    <!-- ЭКРАН 3: ГИПЕРТЕКСТ-ЛОВУШКА -->
+    <div class="screen" id="screen3" data-screen="2">
+      <div class="btn" id="startBtn">НЕ НАЖИМАЙ СЮДА</div>
+
+      <div id="philosopherOverlay">
+        <img id="philo0" src="pic/Arist.png">
+        <img id="philo1" src="pic/Plato.png">
+        <img id="philo2" src="pic/Piph.png">
+        <img id="philo3" src="pic/descartes.jpg">
+        <img id="philo4" src="pic/leibniz.jpg">
+        <img id="philo5" src="pic/aquinas.jpg">
+        <img id="philo6" src="pic/mcluhan.jpg">
+        <img id="philo7" src="pic/ranciere.jpg">
+        <img id="philo8" src="pic/hegel.jpg">
+        <img id="philo9" src="pic/kant.jpg">
+        <img id="philo10" src="pic/image1.png">
+        <img id="philo11" src="pic/image2.png">
+        <div id="quote"></div>
+      </div>
+    </div>
+
+    <!-- ЭКРАН 4: СЕНСОРНЫЙ ПОВОРОТ -->
+    <div class="screen" id="screen4" data-screen="3">
+      <!-- кольца -->
+      <div class="ring" style="width:200px;height:200px;top:10%;left:10%;"></div>
+      <div class="ring" style="width:300px;height:300px;bottom:15%;right:15%;animation-delay:3s;"></div>
+
+      <div class="text-wrapper">
+        <!-- размытый текст -->
+        <div class="text-blurred">На представленной выставке "Благородные чувства" авторы исследуют роль зрения и слуха в восприятии и познании мира. Ищут новые подходы в оптическом и акустическом, в попытке опровергнуть или подтвердить доводы о "благородных чувствах и ощущениях", тезис, который опирается на античную и современную философию и подтверждается человеческим бытованием вплоть до 21 го века. Так ли благородны эти чувства, может ли раскрыться их потенциал в новой технологической реальности? На выставке представлены видео и саунд-арт, интерактивные инсталляции, оп-арт, фотография, скульптура и документация перформанса, тексты. Участники проекта: художники, ученые, инноваторы и философы
+
+На представленной выставке "Благородные чувства" авторы исследуют роль зрения и слуха в восприятии и познании мира. Ищут новые подходы в оптическом и акустическом, в попытке опровергнуть или подтвердить доводы о "благородных чувствах и ощущениях", тезис, который опирается на античную и современную философию и подтверждается человеческим бытованием вплоть до 21 го века. Так ли благородны эти чувства, может ли раскрыться их потенциал в новой технологической реальности? На выставке представлены видео и саунд-арт, интерактивные инсталляции, оп-арт, фотография, скульптура и документация перформанса, тексты. Участники проекта: художники, ученые, инноваторы и философы</div>
+
+        <!-- читаемый текст через маску -->
+        <div class="mask">
+          <div class="text-readable">На представленной выставке "Благородные чувства" авторы исследуют роль зрения и слуха в восприятии и познании мира. Ищут новые подходы в оптическом и акустическом, в попытке опровергнуть или подтвердить доводы о "благородных чувствах и ощущениях", тезис, который опирается на античную и современную философию и подтверждается человеческим бытованием вплоть до 21 го века. Так ли благородны эти чувства, может ли раскрыться их потенциал в новой технологической реальности? На выставке представлены видео и саунд-арт, интерактивные инсталляции, оп-арт, фотография, скульптура и документация перформанса, тексты. Участники проекта: художники, ученые, инноваторы и философы
+
+На представленной выставке "Благородные чувства" авторы исследуют роль зрения и слуха в восприятии и познании мира. Ищут новые подходы в оптическом и акустическом, в попытке опровергнуть или подтвердить доводы о "благородных чувствах и ощущениях", тезис, который опирается на античную и современную философию и подтверждается человеческим бытованием вплоть до 21 го века. Так ли благородны эти чувства, может ли раскрыться их потенциал в новой технологической реальности? На выставке представлены видео и саунд-арт, интерактивные инсталляции, оп-арт, фотография, скульптура и документация перформанса, тексты. Участники проекта: художники, ученые, инноваторы и философы</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ЭКРАН 5: ПОВЕРНИ (ВЕРТИКАЛЬНАЯ/ГОРИЗОНТАЛЬНАЯ) -->
+    <div class="screen" id="screen5" data-screen="4">
+      <!-- Вертикальная версия (портрет) -->
+      <div class="portrait-content">
+        <div>
+          <div class="pixel-tree"></div>
+          <div class="portrait-top-text">
+            <div class="portrait-title">ПОВЕРНИ</div>
+            <div class="portrait-subtitle">Поверни</div>
+          </div>
+        </div>
+
+        <!-- Индикатор поворота экрана -->
+        <div class="rotation-indicator">
+          <div class="rotation-ring">
+            <div class="rotation-arrow arrow-1"></div>
+            <div class="rotation-arrow arrow-2"></div>
+          </div>
+          <div class="rotation-text">Поверни экран →</div>
+        </div>
+
+        <div class="portrait-bottom-text">ПОВЕРНИ</div>
+      </div>
+
+      <!-- Горизонтальная версия (ландшафт) - Random Collage -->
+      <div class="landscape-content" id="landscapeCollage">
+        <!-- Контейнер для случайно расположенных элементов -->
+        <div id="collageContainer"></div>
+      </div>
+    </div>
+
+    <!-- Модальное окно для просмотра деталей -->
+    <div class="collage-modal" id="collageModal">
+      <div class="modal-close-btn" id="closeCollageModal">×</div>
+      <img id="collageModalImg" alt="">
+      <div class="collage-modal-text" id="collageModalText"></div>
+    </div>
+  </div>
+    </div>
+  </div>
+
+  <!-- Финальная кнопка -->
+  <a href="quiet.html" class="finish-btn" id="finishBtn">Войти в тишину</a>
+
+  <script>
+    // ================================================
+    // СИСТЕМА НАВИГАЦИИ МЕЖДУ ЭКРАНАМИ
+    // ================================================
+    let currentScreen = 0;
+    const totalScreens = 5;
+    const screensContainer = document.getElementById('screens-container');
+    const screens = document.querySelectorAll('.screen');
+    const dots = document.querySelectorAll('.screen-dot');
+    const finishBtn = document.getElementById('finishBtn');
+
+    let touchStartY = 0;
+    let touchEndY = 0;
+    let isTransitioning = false;
+    let hasRotated = false; // Флаг для отслеживания поворота устройства
+
+    function updateScreens() {
+      screens.forEach((screen, index) => {
+        const offset = (index - currentScreen) * 100;
+        screen.style.transform = `translateY(${offset}%)`;
+      });
+
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentScreen);
+      });
+
+      // Кнопка "Войти в тишину" показывается только на экране 5 в горизонтальной ориентации
+      const isLandscape = window.innerWidth > window.innerHeight;
+      if (currentScreen === 4 && hasRotated && isLandscape) {
+        finishBtn.classList.add('visible');
+      } else {
+        finishBtn.classList.remove('visible');
+      }
+    }
+
+    function goToScreen(screenIndex) {
+      if (isTransitioning) return;
+      if (screenIndex < 0 || screenIndex >= totalScreens) return;
+
+      isTransitioning = true;
+      currentScreen = screenIndex;
+      updateScreens();
+
+      setTimeout(() => {
+        isTransitioning = false;
+      }, 500);
+    }
+
+    // Touch события для свайпов
+    document.addEventListener('touchstart', (e) => {
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    document.addEventListener('touchend', (e) => {
+      touchEndY = e.changedTouches[0].screenY;
+      handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+      const diff = touchStartY - touchEndY;
+      const threshold = 50;
+
+      if (Math.abs(diff) > threshold) {
+        if (diff > 0) {
+          // Свайп вверх - следующий экран
+          goToScreen(currentScreen + 1);
+        } else {
+          // Свайп вниз - предыдущий экран
+          goToScreen(currentScreen - 1);
+        }
+      }
+    }
+
+    // Клавиатура для тестирования
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') goToScreen(currentScreen + 1);
+      if (e.key === 'ArrowUp') goToScreen(currentScreen - 1);
+    });
+
+    // Инициализация
+    updateScreens();
+
+    // ================================================
+    // ЭКРАН 1: ФИЛОСОФЫ
+    // ================================================
+
+    // Случайный выбор 3 философов из 10
+    function selectRandomPhilosophers() {
+      const allPhilosophers = document.querySelectorAll('.philosopher');
+      const philosophersArray = Array.from(allPhilosophers);
+
+      // Скрываем всех философов
+      philosophersArray.forEach(phil => {
+        phil.style.display = 'none';
+      });
+
+      // Перемешиваем массив философов
+      const shuffled = philosophersArray.sort(() => Math.random() - 0.5);
+
+      // Выбираем первых 3
+      const selected = shuffled.slice(0, 3);
+
+      // Показываем выбранных
+      selected.forEach(phil => {
+        phil.style.display = 'block';
+      });
+
+      return selected;
+    }
+
+    function positionPhilosophers() {
+      const container = document.querySelector('.philosophers-container');
+      const philosophers = document.querySelectorAll('.philosopher:not([style*="display: none"])');
+
+      if (!container || philosophers.length === 0) return;
+
+      const containerWidth = container.clientWidth;
+      const containerHeight = container.clientHeight;
+      const positions = [];
+      const isMobile = window.innerWidth < 768;
+
+      function checkOverlap(rect1, rect2) {
+        return !(rect1.right < rect2.left ||
+                 rect1.left > rect2.right ||
+                 rect1.bottom < rect2.top ||
+                 rect1.top > rect2.bottom);
+      }
+
+      philosophers.forEach((philosopher, index) => {
+        const imageWidth = philosopher.querySelector('.philosopher-image').offsetWidth;
+        const imageHeight = philosopher.querySelector('.philosopher-image').offsetHeight;
+        const textHeight = 100;
+        const totalHeight = imageHeight + textHeight;
+
+        // Отступы от краев и снизу для индикатора свайпа
+        const padding = 20;
+        const bottomPadding = 100; // Место для индикатора свайпа
+
+        let attempts = 0;
+        let positioned = false;
+
+        while (!positioned && attempts < 100) {
+          attempts++;
+
+          // Генерируем позицию полностью внутри видимой области
+          const x = padding + Math.random() * (containerWidth - imageWidth - padding * 2);
+          const y = padding + Math.random() * (containerHeight - totalHeight - bottomPadding - padding);
+
+          const newRect = {
+            left: x,
+            top: y,
+            right: x + imageWidth,
+            bottom: y + totalHeight
+          };
+
+          let hasOverlap = false;
+          for (let pos of positions) {
+            if (checkOverlap(newRect, pos)) {
+              hasOverlap = true;
+              break;
+            }
+          }
+
+          if (!hasOverlap) {
+            philosopher.style.left = `${x}px`;
+            philosopher.style.top = `${y}px`;
+            positions.push(newRect);
+            positioned = true;
+          }
+        }
+
+        if (!positioned) {
+          // Fallback позиции также полностью внутри экрана
+          const fallbackPositions = [
+            { x: containerWidth * 0.1, y: containerHeight * 0.15 },
+            { x: Math.max(padding, containerWidth * 0.5 - imageWidth / 2), y: containerHeight * 0.4 },
+            { x: Math.max(padding, containerWidth * 0.7 - imageWidth), y: containerHeight * 0.25 }
+          ];
+          const fallback = fallbackPositions[index] || fallbackPositions[0];
+          philosopher.style.left = `${fallback.x}px`;
+          philosopher.style.top = `${fallback.y}px`;
+        }
+      });
+    }
+
+    // Функция центрирования философа если он за границей экрана
+    function centerPhilosopherIfNeeded(philosopher) {
+      const container = document.querySelector('.philosophers-container');
+      const philosopherRect = philosopher.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+
+      // Проверяем, находится ли философ полностью в пределах экрана
+      const isOutOfBounds =
+        philosopherRect.left < containerRect.left ||
+        philosopherRect.right > containerRect.right ||
+        philosopherRect.top < containerRect.top ||
+        philosopherRect.bottom > containerRect.bottom;
+
+      if (isOutOfBounds) {
+        // Вычисляем текущую позицию философа относительно контейнера
+        const currentLeft = parseFloat(philosopher.style.left) || 0;
+        const currentTop = parseFloat(philosopher.style.top) || 0;
+
+        // Получаем размеры
+        const philosopherWidth = philosopher.offsetWidth;
+        const philosopherHeight = philosopher.offsetHeight;
+        const containerWidth = container.clientWidth;
+        const containerHeight = container.clientHeight;
+
+        // Вычисляем центральную позицию
+        const centerLeft = (containerWidth - philosopherWidth) / 2;
+        const centerTop = (containerHeight - philosopherHeight) / 2;
+
+        // Применяем новую позицию с плавной анимацией
+        philosopher.style.transition = 'left 0.6s ease, top 0.6s ease';
+        philosopher.style.left = `${centerLeft}px`;
+        philosopher.style.top = `${centerTop}px`;
+
+        // Возвращаем transition к исходному состоянию после анимации
+        setTimeout(() => {
+          philosopher.style.transition = 'transform 0.3s ease, left 0.6s ease, top 0.6s ease';
+        }, 600);
+      }
+    }
+
+    window.addEventListener('load', () => {
+      selectRandomPhilosophers();
+      positionPhilosophers();
+    });
+    window.addEventListener('resize', positionPhilosophers);
+
+    document.querySelectorAll('.philosopher').forEach(philosopher => {
+      philosopher.addEventListener('click', function(e) {
+        this.classList.add('revealed');
+        const img = this.querySelector('.philosopher-image img');
+        img.style.filter = '';
+
+        if ('vibrate' in navigator) {
+          navigator.vibrate(20);
+        }
+
+        // Центрируем философа если он находится за границей экрана
+        centerPhilosopherIfNeeded(this);
+
+        e.stopPropagation();
+      });
+
+      philosopher.addEventListener('mouseenter', function() {
+        if (!this.classList.contains('revealed')) {
+          const img = this.querySelector('.philosopher-image img');
+          img.style.filter = 'blur(12px) brightness(0.8)';
+        }
+      });
+
+      philosopher.addEventListener('mouseleave', function() {
+        if (!this.classList.contains('revealed')) {
+          const img = this.querySelector('.philosopher-image img');
+          img.style.filter = 'blur(15px) brightness(0.7)';
+        }
+      });
+    });
+
+    // ================================================
+    // ЭКРАН 2: АРТ-ПЕСОЧНИЦА
+    // ================================================
+    const CLEAR_DELAY = 5000;
+    const MIN_SIZE = 30;
+    const MAX_SIZE = 140;
+    const MOVE_THROTTLE_MS = 40;
+    const MOVE_MIN_DIST = 8;
+
+    const images = [
+      "pic/Plato.png",
+      "pic/Arist.png",
+      "pic/Piph.png",
+      "pic/descartes.jpg",
+      "pic/leibniz.jpg",
+      "pic/aquinas.jpg",
+      "pic/mcluhan.jpg",
+      "pic/ranciere.jpg",
+      "pic/hegel.jpg",
+      "pic/kant.jpg",
+      "pic/image1.png",
+      "pic/image2.png"
+    ];
+
+    let clearTimer = null;
+    let isDrawing = false;
+    let lastMoveTime = 0;
+    let lastPos = { x: -9999, y: -9999 };
+
+    function randInt(min, max){ return Math.floor(Math.random()*(max-min+1))+min; }
+    function randColor(){ return `hsl(${randInt(0,360)}, ${randInt(60,100)}%, ${randInt(40,65)}%)`; }
+    function randGradient(){
+      const a = randColor();
+      const b = randColor();
+      const ang = randInt(0,360);
+      return `linear-gradient(${ang}deg, ${a}, ${b})`;
+    }
+
+    function scheduleClear(){
+      if (clearTimer) clearTimeout(clearTimer);
+      clearTimer = setTimeout(()=> {
+        const all = document.querySelectorAll('.shape');
+        all.forEach(el => {
+          el.classList.add('fade-out');
+          setTimeout(()=> el.remove(), 1000);
+        });
+      }, CLEAR_DELAY);
+    }
+
+    function createShapeAt(x,y){
+      const useImage = Math.random() > 0.5 && images.length>0;
+      const el = useImage ? document.createElement('img') : document.createElement('div');
+      el.classList.add('shape');
+
+      const size = randInt(MIN_SIZE, MAX_SIZE);
+      el.style.width = size + 'px';
+      el.style.height = size + 'px';
+
+      const rotationDeg = randInt(0,360) + 'deg';
+      el.style.setProperty('--rotation', rotationDeg);
+
+      el.style.left = x + 'px';
+      el.style.top = y + 'px';
+
+      if (useImage){
+        el.src = images[randInt(0, images.length-1)];
+        el.style.objectFit = 'cover';
+      } else {
+        const shapeKind = randInt(1,5);
+        if (shapeKind === 1) el.style.borderRadius = '50%';
+        else if (shapeKind === 2) el.style.borderRadius = '6px';
+        else if (shapeKind === 3) el.style.clipPath = 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)';
+        else if (shapeKind === 4) el.style.borderRadius = '18%';
+        else el.style.borderRadius = '0';
+
+        if (Math.random() > 0.35) el.style.background = randGradient();
+        else el.style.background = randColor();
+      }
+
+      document.getElementById('screen2').appendChild(el);
+      requestAnimationFrame(()=> {
+        el.classList.add('pop');
+      });
+
+      setTimeout(()=>{
+        if (el.parentElement) {
+          el.classList.add('fade-out');
+          setTimeout(()=> el.remove(), 1000);
+        }
+      }, CLEAR_DELAY + 2000);
+
+      scheduleClear();
+      return el;
+    }
+
+    function handlePointerDown(e){
+      if (currentScreen !== 1) return; // Только на экране 2
+      if (e.cancelable) e.preventDefault();
+
+      isDrawing = true;
+      lastMoveTime = 0;
+      lastPos.x = -9999; lastPos.y = -9999;
+      const {x,y} = getXY(e);
+      createShapeAt(x,y);
+      scheduleClear();
+
+      if ('vibrate' in navigator) {
+        navigator.vibrate(10);
+      }
+    }
+
+    function handlePointerMove(e){
+      if (!isDrawing || currentScreen !== 1) return;
+      const now = performance.now();
+      if (now - lastMoveTime < MOVE_THROTTLE_MS) return;
+
+      const {x,y} = getXY(e);
+      const dx = x - lastPos.x;
+      const dy = y - lastPos.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < MOVE_MIN_DIST) return;
+
+      lastMoveTime = now;
+      lastPos.x = x; lastPos.y = y;
+      createShapeAt(x,y);
+    }
+
+    function handlePointerUp(e){
+      isDrawing = false;
+    }
+
+    function getXY(e){
+      if ('clientX' in e && 'clientY' in e){
+        return { x: e.clientX, y: e.clientY };
+      }
+      if (e.touches && e.touches[0]){
+        return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      }
+      if (e.changedTouches && e.changedTouches[0]){
+        return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+      }
+      return { x: window.innerWidth/2, y: window.innerHeight/2 };
+    }
+
+    if (window.PointerEvent){
+      document.addEventListener('pointerdown', handlePointerDown, {passive:false});
+      document.addEventListener('pointermove', handlePointerMove, {passive:false});
+      document.addEventListener('pointerup', handlePointerUp, {passive:true});
+      document.addEventListener('pointercancel', handlePointerUp, {passive:true});
+    } else {
+      document.addEventListener('touchstart', (e)=>{ if (e.cancelable) e.preventDefault(); handlePointerDown(e); }, {passive:false});
+      document.addEventListener('touchmove', (e)=>{ if (e.cancelable) e.preventDefault(); handlePointerMove(e); }, {passive:false});
+      document.addEventListener('touchend', handlePointerUp, {passive:true});
+      document.addEventListener('mousedown', (e)=>{ handlePointerDown(e); }, {passive:false});
+      document.addEventListener('mousemove', (e)=>{ handlePointerMove(e); }, {passive:true});
+      document.addEventListener('mouseup', handlePointerUp, {passive:true});
+    }
+
+    // ================================================
+    // ЭКРАН 3: ГИПЕРТЕКСТ-ЛОВУШКА
+    // ================================================
+    const btn = document.getElementById('startBtn');
+    const warnings = ["Серьёзно, прекрати!","Это тебе не нужно","Ты правда хочешь это?","Ещё раз и назад дороги не будет","Стоп!"];
+    const texts = ["Благородные чувства…","Зрение — солнце души","Слух — проводник гармонии","Пифагор: музыка — математика мира","Познание идей через зрение","21 век: технологии и чувства","Искусство, наука, философия","Гармония света и звука"];
+    const philosophers = [
+      {name:'aristotel', src:'pic/Arist.png', quote:'«Счастье заключается в деятельности разума, согласной с добродетелью»'},
+      {name:'platon', src:'pic/Plato.png', quote:'«Идеи — это вечные образы всего сущего»'},
+      {name:'pifagor', src:'pic/Piph.png', quote:'«Все есть число»'},
+      {name:'descartes', src:'pic/descartes.jpg', quote:'«Я мыслю, следовательно, существую»'},
+      {name:'leibniz', src:'pic/leibniz.jpg', quote:'«Музыка — это скрытое арифметическое упражнение души»'},
+      {name:'aquinas', src:'pic/aquinas.jpg', quote:'«Красота есть сияние истины»'},
+      {name:'mcluhan', src:'pic/mcluhan.jpg', quote:'«Средство коммуникации само является сообщением»'},
+      {name:'ranciere', src:'pic/ranciere.jpg', quote:'«Эстетика — это распределение чувственного»'},
+      {name:'hegel', src:'pic/hegel.jpg', quote:'«Истина есть целое»'},
+      {name:'kant', src:'pic/kant.jpg', quote:'«Красота — это символ нравственно доброго»'},
+      {name:'image1', src:'pic/image1.png', quote:'«Благородные чувства формируют наше восприятие мира»'},
+      {name:'image2', src:'pic/image2.png', quote:'«Зрение и слух — врата к познанию истины»'}
+    ];
+
+    let clickCount = 0, chaosInterval, slideshowInterval, activeIndex=0;
+    const overlay = document.getElementById('philosopherOverlay');
+    const imagesArr = [
+      document.getElementById('philo0'),
+      document.getElementById('philo1'),
+      document.getElementById('philo2'),
+      document.getElementById('philo3'),
+      document.getElementById('philo4'),
+      document.getElementById('philo5'),
+      document.getElementById('philo6'),
+      document.getElementById('philo7'),
+      document.getElementById('philo8'),
+      document.getElementById('philo9'),
+      document.getElementById('philo10'),
+      document.getElementById('philo11')
+    ];
+
+    btn.addEventListener('click',()=>{
+      if(clickCount<warnings.length){
+        showMessage(warnings[clickCount]);
+        clickCount++;
+      } else {
+        spawnChaos();
+      }
+    });
+
+    function showMessage(text){
+      const msg=document.createElement('div');
+      msg.className='message';
+      msg.textContent=text;
+      document.getElementById('screen3').appendChild(msg);
+      setTimeout(()=>{ msg.style.opacity=1; },10);
+      setTimeout(()=>msg.remove(),3000);
+    }
+
+    function spawnChaos(){
+      btn.style.display='none';
+      chaosInterval = setInterval(()=>{
+        if(Math.random()>0.5){
+          const g=document.createElement('div');
+          g.className='garbage';
+          g.style.left=Math.random()*90+'%';
+          g.style.top='-10vh';
+          const img=document.createElement('img');
+          img.src=images[Math.floor(Math.random()*images.length)];
+          const size=40+Math.random()*60;
+          img.style.width=size+'px';
+          img.style.height=size+'px';
+          g.appendChild(img);
+          document.getElementById('screen3').appendChild(g);
+          setTimeout(()=>g.remove(),6000);
+        } else {
+          const t=document.createElement('div');
+          t.className='text-frag';
+          t.textContent=texts[Math.floor(Math.random()*texts.length)];
+          t.style.fontSize=(16+Math.random()*14)+'px';
+          t.style.left=Math.random()*80+'%';
+          t.style.top='-10vh';
+          t.style.animationDuration=(3+Math.random()*3)+'s';
+          document.getElementById('screen3').appendChild(t);
+          setTimeout(()=>t.remove(),6000);
+        }
+      },500);
+
+      setTimeout(()=>{
+        startSlideshow();
+      },10000);
+    }
+
+    function startSlideshow(){
+      overlay.style.display='flex';
+      let lastIndex=-1;
+
+      slideshowInterval=setInterval(()=>{
+        let idx;
+        do { idx=Math.floor(Math.random()*12); } while(idx===lastIndex);
+        imagesArr.forEach(img => img.classList.remove('active'));
+        imagesArr[idx].classList.add('active');
+        lastIndex = idx;
+        activeIndex = idx;
+      }, 150);
+
+      overlay.addEventListener('click', fixSlide);
+    }
+
+    function fixSlide(){
+      clearInterval(slideshowInterval);
+      imagesArr.forEach(img => img.classList.remove('active'));
+      imagesArr[activeIndex].classList.add('active');
+      document.getElementById('quote').textContent = philosophers[activeIndex].quote;
+      overlay.removeEventListener('click', fixSlide);
+    }
+
+    // Вибрация для финальной кнопки
+    finishBtn.addEventListener('click', () => {
+      if ('vibrate' in navigator) {
+        navigator.vibrate(15);
+      }
+    });
+
+    // ================================================
+    // ЭКРАН 4: СЕНСОРНЫЙ ПОВОРОТ
+    // ================================================
+
+    // Генерация частиц
+    const screen4 = document.getElementById('screen4');
+    for(let i = 0; i < 35; i++){
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.animationDelay = (Math.random() * 14) + 's';
+      screen4.appendChild(p);
+    }
+
+    // Управление маской через прикосновение к экрану
+    const mask = document.querySelector('.mask');
+    let isTouching = false;
+
+    function setMaskPosition(clientY){
+      if (!mask) return;
+
+      const screenHeight = window.innerHeight;
+      let pos = (clientY / screenHeight) * 100;
+
+      // Ограничиваем позицию
+      if (pos < 0) pos = 0;
+      if (pos > 100) pos = 100;
+
+      mask.style.webkitMaskPosition = `center ${pos}%`;
+      mask.style.maskPosition = `center ${pos}%`;
+    }
+
+    // Touch события для экрана 4
+    screen4.addEventListener('touchstart', (e) => {
+      if (currentScreen !== 3) return;
+      isTouching = true;
+      const touch = e.touches[0];
+      setMaskPosition(touch.clientY);
+
+      if ('vibrate' in navigator) {
+        navigator.vibrate(10);
+      }
+    }, {passive: true});
+
+    screen4.addEventListener('touchmove', (e) => {
+      if (currentScreen !== 3 || !isTouching) return;
+      const touch = e.touches[0];
+      setMaskPosition(touch.clientY);
+    }, {passive: true});
+
+    screen4.addEventListener('touchend', () => {
+      isTouching = false;
+    }, {passive: true});
+
+    // Mouse события для десктопа
+    screen4.addEventListener('mousedown', (e) => {
+      if (currentScreen !== 3) return;
+      isTouching = true;
+      setMaskPosition(e.clientY);
+    });
+
+    screen4.addEventListener('mousemove', (e) => {
+      if (currentScreen !== 3 || !isTouching) return;
+      setMaskPosition(e.clientY);
+    });
+
+    screen4.addEventListener('mouseup', () => {
+      isTouching = false;
+    });
+
+    screen4.addEventListener('mouseleave', () => {
+      isTouching = false;
+    });
+
+    // ================================================
+    // ЭКРАН 5: ПОВЕРНИ (ОПРЕДЕЛЕНИЕ ОРИЕНТАЦИИ И RANDOM COLLAGE)
+    // ================================================
+    const screen5 = document.getElementById('screen5');
+    const portraitContent = screen5.querySelector('.portrait-content');
+    const landscapeContent = screen5.querySelector('.landscape-content');
+    const collageContainer = document.getElementById('collageContainer');
+    const collageModal = document.getElementById('collageModal');
+    const collageModalImg = document.getElementById('collageModalImg');
+    const collageModalText = document.getElementById('collageModalText');
+    const closeCollageModal = document.getElementById('closeCollageModal');
+
+    // Флаги для коллажа
+    let collageInitialized = false;
+    let collageItems = [];
+
+    // Данные для коллажа - используем все изображения
+    const collageData = [
+      { src: 'pic/Plato.png', name: 'Платон', desc: 'Зрение — важнейшее из чувств, через него познаётся истина и красота идей.' },
+      { src: 'pic/Arist.png', name: 'Аристотель', desc: 'Видение даёт наибольшее знание о мире, открывая различия между вещами.' },
+      { src: 'pic/Piph.png', name: 'Пифагор', desc: 'Через созерцание геометрических форм разум постигает гармонию космоса.' },
+      { src: 'pic/descartes.jpg', name: 'Рене Декарт', desc: 'В «Рассуждении о методе» называл зрение главным чувством для научного анализа.' },
+      { src: 'pic/leibniz.jpg', name: 'Готфрид Лейбниц', desc: 'Считал музыку (слух) «скрытой арифметикой», а зрение — основой ясного восприятия.' },
+      { src: 'pic/aquinas.jpg', name: 'Фома Аквинский', desc: 'Вслед за Аристотелем утверждал приоритет зрения и слуха в познании Божественного порядка.' },
+      { src: 'pic/mcluhan.jpg', name: 'Маршалл Маклюэн', desc: 'В «Понимании медиа» писал, что технологии усиливают доминирование зрения и слуха (ТВ, радио).' },
+      { src: 'pic/ranciere.jpg', name: 'Жак Рансьер', desc: 'В «Эстетическом бессознательном» анализировал, как искусство эксплуатирует эти чувства для власти.' },
+      { src: 'pic/hegel.jpg', name: 'Гегель', desc: 'Называл зрение и слух «теоретическими» чувствами, способными к созерцанию абсолютного.' },
+      { src: 'pic/kant.jpg', name: 'Иммануил Кант', desc: 'В «Критике способности суждения» разделял чувства на «высшие» (зрение, слух) и «низшие».' },
+      { src: 'pic/image1.png', name: 'Благородные чувства', desc: 'Благородные чувства формируют наше восприятие мира' },
+      { src: 'pic/image2.png', name: 'Познание истины', desc: 'Зрение и слух — врата к познанию истины' }
+    ];
+
+    // Создание элементов random collage
+    function initCollage() {
+      if (collageInitialized) return;
+      collageInitialized = true;
+
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      collageData.forEach((data, index) => {
+        const item = document.createElement('div');
+        item.className = 'collage-item';
+
+        const x = Math.random() * (vw - 140);
+        const y = Math.random() * (vh - 110);
+
+        item.style.left = x + 'px';
+        item.style.top = y + 'px';
+
+        item.innerHTML = `
+          <img src="${data.src}" alt="${data.name}">
+          <div class="bookmark" data-index="${index}"></div>
+        `;
+
+        collageContainer.appendChild(item);
+        collageItems.push({ element: item, data: data });
+
+        // Запускаем пульсацию
+        startPulse(item);
+
+        // Запускаем случайное движение
+        startRandomMove(item, vw, vh);
+      });
+
+      // Добавляем обработчики для закладок
+      document.querySelectorAll('.bookmark').forEach(bookmark => {
+        bookmark.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const index = parseInt(bookmark.getAttribute('data-index'));
+          showCollageModal(collageData[index]);
+        });
+      });
+    }
+
+    // Пульсация элементов
+    function startPulse(element) {
+      function pulse() {
+        element.style.transform = 'scale(1.2)';
+        setTimeout(() => {
+          element.style.transform = 'scale(1)';
+        }, 600);
+
+        const next = 3000 + Math.random() * 6000;
+        setTimeout(pulse, next);
+      }
+      setTimeout(pulse, Math.random() * 3000);
+    }
+
+    // Случайное движение элементов
+    function startRandomMove(element, viewWidth, viewHeight) {
+      function move() {
+        const nx = Math.random() * (viewWidth - 140);
+        const ny = Math.random() * (viewHeight - 110);
+
+        element.style.left = nx + 'px';
+        element.style.top = ny + 'px';
+
+        const next = 5000 + Math.random() * 7000;
+        setTimeout(move, next);
+      }
+      setTimeout(move, Math.random() * 5000);
+    }
+
+    // Показать модальное окно
+    function showCollageModal(data) {
+      collageModalImg.src = data.src;
+      collageModalText.innerHTML = `<h3>${data.name}</h3><p>${data.desc}</p>`;
+      collageModal.classList.add('visible');
+
+      if ('vibrate' in navigator) {
+        navigator.vibrate(15);
+      }
+    }
+
+    // Закрытие модального окна
+    if (closeCollageModal) {
+      closeCollageModal.addEventListener('click', () => {
+        collageModal.classList.remove('visible');
+        if ('vibrate' in navigator) {
+          navigator.vibrate(10);
+        }
+      });
+    }
+
+    // Закрытие по клику вне модального окна
+    collageModal.addEventListener('click', (e) => {
+      if (e.target === collageModal) {
+        collageModal.classList.remove('visible');
+      }
+    });
+
+    function checkOrientation() {
+      if (currentScreen !== 4) return; // Только на экране 5
+
+      const isLandscape = window.innerWidth > window.innerHeight;
+
+      if (isLandscape) {
+        // Горизонтальная ориентация
+        portraitContent.classList.add('hidden');
+        landscapeContent.classList.add('active');
+
+        // Инициализируем коллаж при первом показе
+        if (!collageInitialized) {
+          initCollage();
+        }
+
+        // Отмечаем что произошел поворот
+        if (!hasRotated) {
+          hasRotated = true;
+          updateScreens(); // Обновляем экраны чтобы показать кнопку
+        }
+      } else {
+        // Вертикальная ориентация
+        portraitContent.classList.remove('hidden');
+        landscapeContent.classList.remove('active');
+        collageModal.classList.remove('visible'); // Скрываем модалку при переходе в портрет
+      }
+
+      // Обновляем видимость кнопки при смене ориентации
+      updateScreens();
+    }
+
+    // Слушатель изменения ориентации
+    window.addEventListener('orientationchange', () => {
+      setTimeout(checkOrientation, 100);
+    });
+
+    // Слушатель resize (для десктопа и некоторых устройств)
+    window.addEventListener('resize', checkOrientation);
+
+    // Проверка ориентации при смене экрана
+    function onScreenChange() {
+      if (currentScreen === 4) {
+        setTimeout(checkOrientation, 100);
+      }
+    }
+
+    // Интегрируем проверку в функцию goToScreen
+    const originalGoToScreen = goToScreen;
+    goToScreen = function(screenIndex) {
+      originalGoToScreen(screenIndex);
+      onScreenChange();
+    };
+
+    // Предзагрузка следующей страницы
+    const preload = document.createElement('link');
+    preload.rel = 'prefetch';
+    preload.href = 'quiet.html';
+    document.head.appendChild(preload);
+
+    console.log('Battle of Senses - Визуальная ветвь загружена');
+    console.log('Экранов:', totalScreens);
+  </script>
+</body>
+</html>

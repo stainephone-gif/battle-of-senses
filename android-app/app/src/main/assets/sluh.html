@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Слух — аудиальная ветвь</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      background: #000;
+      font-family: 'Courier New', monospace;
+      overflow-x: hidden;
+      color: #fff;
+    }
+
+    .phone-frame {
+      width: 100%;
+      max-width: 428px;
+      background: #000;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    section {
+      position: relative;
+      min-height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      text-align: center;
+      background: #000;
+      border-top: 1px solid #333;
+    }
+
+    h2 {
+      font-size: 1.4rem;
+      margin: 0 0 40px;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 1s ease, transform 1s ease;
+      z-index: 10;
+      position: relative;
+      font-weight: 300;
+      letter-spacing: 3px;
+      color: #fff;
+      text-transform: uppercase;
+    }
+
+    h2.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Прогресс бар */
+    .progress-container {
+      width: 100%;
+      max-width: 300px;
+      height: 4px;
+      background: #222;
+      margin: 20px auto;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #fff;
+      transition: width 0.3s ease;
+    }
+
+    /* Визуализация звука */
+    .sound-visualizer {
+      width: 100%;
+      max-width: 350px;
+      height: 200px;
+      margin: 30px auto;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+    }
+
+    .bar {
+      width: 4px;
+      background: #fff;
+      border-radius: 2px;
+      transition: height 0.1s ease;
+      opacity: 0.7;
+    }
+
+    /* Текстовые элементы */
+    .audio-text {
+      font-size: 0.9rem;
+      line-height: 1.6rem;
+      margin: 20px auto;
+      max-width: 320px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+      color: #aaa;
+    }
+
+    .audio-text.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Кнопки управления */
+    .controls {
+      display: flex;
+      gap: 20px;
+      margin: 30px auto;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .control-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2px solid #fff;
+      color: #000;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+
+    .control-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 20px rgba(255,255,255,0.5);
+    }
+
+    .control-btn:active {
+      transform: scale(0.95);
+    }
+
+    .control-btn.secondary {
+      width: 44px;
+      height: 44px;
+      background: transparent;
+      color: #fff;
+      font-size: 1.2rem;
+    }
+
+    /* Стрелка вниз */
+    .arrow {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2rem;
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      animation: bounce 2s infinite;
+      z-index: 10;
+      transition: color 0.3s ease;
+    }
+
+    .arrow:hover {
+      color: rgba(255,255,255,0.9);
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translate(-50%, 0); }
+      50% { transform: translate(-50%, 15px); }
+    }
+
+    /* Кнопка финиша */
+    .finish-btn {
+      display: inline-block;
+      margin-top: 40px;
+      padding: 16px 40px;
+      background: #fff;
+      color: #000;
+      text-decoration: none;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 1rem;
+      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      z-index: 10;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .finish-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 255, 255, 0.5);
+    }
+
+    .finish-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Навигация */
+    .nav-home {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      width: 44px;
+      height: 44px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: #fff;
+      font-size: 1.2rem;
+      z-index: 1000;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .nav-home:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.1);
+    }
+
+    /* Глитч-эффекты для текста нарастающие */
+    #stage1 h2 {
+      animation: none;
+    }
+
+    #stage2 h2 {
+      animation: text-glitch-1 3s ease-in-out infinite;
+    }
+
+    #stage3 h2 {
+      animation: text-glitch-2 2s ease-in-out infinite;
+    }
+
+    #stage4 h2 {
+      animation: text-glitch-3 1.5s ease-in-out infinite;
+    }
+
+    #stage5 h2 {
+      animation: text-glitch-4 1s ease-in-out infinite;
+    }
+
+    @keyframes text-glitch-1 {
+      0%, 100% { opacity: 1; transform: translateY(0); }
+      50% { opacity: 0.9; transform: translateY(1px); }
+    }
+
+    @keyframes text-glitch-2 {
+      0%, 100% { opacity: 1; transform: translateY(0) translateX(0); }
+      25% { opacity: 0.8; transform: translateY(-1px) translateX(1px); }
+      75% { opacity: 0.9; transform: translateY(1px) translateX(-1px); }
+    }
+
+    @keyframes text-glitch-3 {
+      0%, 100% { opacity: 1; transform: translateY(0) translateX(0); }
+      20% { opacity: 0.7; transform: translateY(-2px) translateX(2px); }
+      40% { opacity: 0.9; transform: translateY(1px) translateX(-1px); }
+      60% { opacity: 0.8; transform: translateY(2px) translateX(-2px); }
+    }
+
+    @keyframes text-glitch-4 {
+      0%, 100% { opacity: 1; transform: translateY(0) translateX(0); letter-spacing: 3px; }
+      10% { opacity: 0.5; transform: translateY(-3px) translateX(3px); letter-spacing: 5px; }
+      25% { opacity: 0.8; transform: translateY(2px) translateX(-2px); letter-spacing: 1px; }
+      40% { opacity: 0.6; transform: translateY(-2px) translateX(2px); letter-spacing: 4px; }
+      60% { opacity: 0.9; transform: translateY(3px) translateX(-3px); letter-spacing: 2px; }
+      80% { opacity: 0.7; transform: translateY(-1px) translateX(1px); letter-spacing: 6px; }
+    }
+
+    /* Индикатор уровня звука */
+    .volume-indicator {
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 10px;
+      letter-spacing: 1px;
+    }
+
+    /* Иконка поворота экрана */
+    .rotate-hint {
+      margin-top: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      opacity: 0;
+      animation: fadeInRotate 2s ease-in-out 1s forwards;
+    }
+
+    @keyframes fadeInRotate {
+      to {
+        opacity: 1;
+      }
+    }
+
+    .rotate-icon {
+      animation: rotateIcon 3s ease-in-out infinite;
+    }
+
+    @keyframes rotateIcon {
+      0%, 100% {
+        transform: rotate(0deg);
+      }
+      25% {
+        transform: rotate(15deg);
+      }
+      75% {
+        transform: rotate(-15deg);
+      }
+    }
+
+    .rotate-text {
+      font-size: 0.9rem;
+      color: #aaa;
+      letter-spacing: 1px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    /* Адаптация для уменьшения анимаций */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="phone-frame">
+    <!-- Кнопка "Домой" -->
+    <a href="index.html" class="nav-home" aria-label="На главную">⌂</a>
+
+    <!-- Этап 1 -->
+    <section id="stage1" data-stage="1">
+      <h2>Начало путешествия</h2>
+      <div class="audio-text">
+        Философы древности считали слух проводником знания. Аристотель писал: «Слух более других чувств способствует развитию разума».
+      </div>
+      <div class="sound-visualizer" id="visualizer1"></div>
+      <div class="controls">
+        <button class="control-btn secondary" onclick="audioManager.stop(1)">⏹</button>
+        <button class="control-btn" onclick="audioManager.play(1)">▶</button>
+        <button class="control-btn secondary" onclick="audioManager.stop(1)">⏸</button>
+      </div>
+      <div class="volume-indicator">Уровень: <span id="level1">минимальный</span></div>
+      <a class="arrow" href="#stage2" aria-label="Следующий этап">⌄</a>
+    </section>
+
+    <!-- Этап 2 -->
+    <section id="stage2" data-stage="2">
+      <h2>Звуки множатся</h2>
+      <div class="audio-text">
+        В Средневековье монахи исследовали влияние григорианских хоралов на сознание, открывая новые грани слухового восприятия.
+      </div>
+      <div class="sound-visualizer" id="visualizer2"></div>
+      <div class="controls">
+        <button class="control-btn secondary" onclick="audioManager.stop(2)">⏹</button>
+        <button class="control-btn" onclick="audioManager.play(2)">▶</button>
+        <button class="control-btn secondary" onclick="audioManager.stop(2)">⏸</button>
+      </div>
+      <div class="volume-indicator">Уровень: <span id="level2">средний</span></div>
+      <a class="arrow" href="#stage3" aria-label="Следующий этап">⌄</a>
+    </section>
+
+    <!-- Этап 3 -->
+    <section id="stage3" data-stage="3">
+      <h2>Нарастание хаоса</h2>
+      <div class="audio-text">
+        Немецкие философы говорили о музыке как о высшей форме искусства. Шопенгауэр считал её прямым выражением воли.
+      </div>
+      <div class="sound-visualizer" id="visualizer3"></div>
+      <div class="controls">
+        <button class="control-btn secondary" onclick="audioManager.stop(3)">⏹</button>
+        <button class="control-btn" onclick="audioManager.play(3)">▶</button>
+        <button class="control-btn secondary" onclick="audioManager.stop(3)">⏸</button>
+      </div>
+      <div class="volume-indicator">Уровень: <span id="level3">высокий</span></div>
+      <a class="arrow" href="#stage4" aria-label="Следующий этап">⌄</a>
+    </section>
+
+    <!-- Этап 4 -->
+    <section id="stage4" data-stage="4">
+      <h2>Искажение восприятия</h2>
+      <div class="audio-text">
+        ХХ век принёс эксперименты с электронной музыкой и звуковыми коллажами, расширяя границы слухового опыта.
+      </div>
+      <div class="sound-visualizer" id="visualizer4"></div>
+      <div class="controls">
+        <button class="control-btn secondary" onclick="audioManager.stop(4)">⏹</button>
+        <button class="control-btn" onclick="audioManager.play(4)">▶</button>
+        <button class="control-btn secondary" onclick="audioManager.stop(4)">⏸</button>
+      </div>
+      <div class="volume-indicator">Уровень: <span id="level4">очень высокий</span></div>
+      <a class="arrow" href="#stage5" aria-label="Следующий этап">⌄</a>
+    </section>
+
+    <!-- Этап 5 -->
+    <section id="stage5" data-stage="5">
+      <h2>Какофония</h2>
+      <div class="audio-text">
+        Нейронауки показывают, как мозг обрабатывает звуковые волны, превращая их в осмысленные образы. Но что происходит, когда звуков слишком много?
+      </div>
+      <div class="sound-visualizer" id="visualizer5"></div>
+      <div class="controls">
+        <button class="control-btn secondary" onclick="audioManager.stop(5)">⏹</button>
+        <button class="control-btn" onclick="audioManager.play(5)">▶</button>
+        <button class="control-btn secondary" onclick="audioManager.stop(5)">⏸</button>
+      </div>
+      <div class="volume-indicator">Уровень: <span id="level5">максимальный</span></div>
+
+      <!-- Иконка поворота экрана -->
+      <div class="rotate-hint" id="rotateHint">
+        <div class="rotate-icon">
+          <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 15 L15 30 L30 30" stroke="#ffffff" stroke-width="2" fill="none"/>
+            <path d="M45 45 L45 30 L30 30" stroke="#ffffff" stroke-width="2" fill="none"/>
+            <circle cx="30" cy="30" r="18" stroke="#ffffff" stroke-width="2" fill="none" stroke-dasharray="5,3"/>
+            <path d="M48 30 C48 39.9 39.9 48 30 48" stroke="#ffffff" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            <path d="M12 30 C12 20.1 20.1 12 30 12" stroke="#ffffff" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            <defs>
+              <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                <polygon points="0 0, 10 5, 0 10" fill="#ffffff"/>
+              </marker>
+            </defs>
+          </svg>
+        </div>
+        <div class="rotate-text">Поверните экран</div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Менеджер аудио с Web Audio API
+    const audioManager = {
+      context: null,
+      oscillators: {},
+      gainNodes: {},
+
+      init() {
+        // Инициализация AudioContext при первом взаимодействии
+        if (!this.context) {
+          this.context = new (window.AudioContext || window.webkitAudioContext)();
+        }
+      },
+
+      play(stage) {
+        this.init();
+
+        // Останавливаем предыдущий звук для этого этапа
+        this.stop(stage);
+
+        // Создаем осциллятор и gain node
+        const oscillator = this.context.createOscillator();
+        const gainNode = this.context.createGain();
+
+        // Настройки в зависимости от этапа
+        const configs = {
+          1: { freq: 220, type: 'sine', gain: 0.1, detune: 0 },
+          2: { freq: 330, type: 'triangle', gain: 0.15, detune: 10 },
+          3: { freq: 440, type: 'square', gain: 0.2, detune: 20 },
+          4: { freq: 550, type: 'sawtooth', gain: 0.25, detune: 30 },
+          5: { freq: 660, type: 'square', gain: 0.3, detune: 50 }
+        };
+
+        const config = configs[stage];
+        oscillator.type = config.type;
+        oscillator.frequency.setValueAtTime(config.freq, this.context.currentTime);
+        oscillator.detune.setValueAtTime(config.detune, this.context.currentTime);
+
+        gainNode.gain.setValueAtTime(0, this.context.currentTime);
+        gainNode.gain.linearRampToValueAtTime(config.gain, this.context.currentTime + 0.5);
+
+        oscillator.connect(gainNode);
+        gainNode.connect(this.context.destination);
+
+        oscillator.start();
+
+        this.oscillators[stage] = oscillator;
+        this.gainNodes[stage] = gainNode;
+
+        // Визуализация
+        this.visualize(stage);
+      },
+
+      stop(stage) {
+        if (this.oscillators[stage]) {
+          const gainNode = this.gainNodes[stage];
+          gainNode.gain.linearRampToValueAtTime(0, this.context.currentTime + 0.3);
+
+          setTimeout(() => {
+            if (this.oscillators[stage]) {
+              this.oscillators[stage].stop();
+              delete this.oscillators[stage];
+              delete this.gainNodes[stage];
+            }
+          }, 300);
+        }
+      },
+
+      visualize(stage) {
+        const visualizer = document.getElementById(`visualizer${stage}`);
+        if (!visualizer) return;
+
+        // Создаем столбцы для визуализации
+        visualizer.innerHTML = '';
+        const barCount = 40;
+
+        for (let i = 0; i < barCount; i++) {
+          const bar = document.createElement('div');
+          bar.className = 'bar';
+          const baseHeight = 20;
+          const randomHeight = Math.random() * (stage * 20);
+          bar.style.height = (baseHeight + randomHeight) + 'px';
+          visualizer.appendChild(bar);
+        }
+
+        // Анимация столбцов
+        let frameCount = 0;
+        const animate = () => {
+          if (!this.oscillators[stage]) return;
+
+          const bars = visualizer.querySelectorAll('.bar');
+          bars.forEach((bar, i) => {
+            const baseHeight = 20;
+            const randomHeight = Math.random() * (stage * 20);
+            const wave = Math.sin(frameCount * 0.1 + i * 0.3) * (stage * 5);
+            bar.style.height = (baseHeight + randomHeight + wave) + 'px';
+          });
+
+          frameCount++;
+          requestAnimationFrame(animate);
+        };
+
+        animate();
+      }
+    };
+
+    // Intersection Observer для анимации появления элементов
+    const observerOptions = {
+      threshold: 0.3,
+      rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+
+          // Автоматическое начало воспроизведения при появлении секции
+          const stage = entry.target.dataset.stage;
+          if (stage) {
+            setTimeout(() => {
+              audioManager.play(parseInt(stage));
+            }, 500);
+          }
+        }
+      });
+    }, observerOptions);
+
+    // Наблюдаем за всеми элементами
+    document.querySelectorAll('h2, .audio-text, section').forEach(el => {
+      observer.observe(el);
+    });
+
+    // Плавный скролл
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // Останавливаем все звуки при уходе со страницы
+    window.addEventListener('beforeunload', () => {
+      [1, 2, 3, 4, 5].forEach(stage => audioManager.stop(stage));
+    });
+
+    // ========== ОБРАБОТКА ПОВОРОТА ЭКРАНА ==========
+    let isOnStage5 = false;
+    let rotationDetected = false;
+
+    // Определяем, находимся ли мы на stage5
+    const stage5Observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.target.id === 'stage5') {
+          isOnStage5 = entry.isIntersecting;
+        }
+      });
+    }, { threshold: 0.5 });
+
+    const stage5 = document.getElementById('stage5');
+    if (stage5) {
+      stage5Observer.observe(stage5);
+    }
+
+    // Функция для определения ориентации
+    function getOrientation() {
+      if (window.screen && window.screen.orientation) {
+        return window.screen.orientation.type;
+      }
+      // Fallback для старых браузеров
+      if (window.innerHeight > window.innerWidth) {
+        return 'portrait-primary';
+      }
+      return 'landscape-primary';
+    }
+
+    let previousOrientation = getOrientation();
+
+    // Обработчик изменения ориентации
+    function handleOrientationChange() {
+      const currentOrientation = getOrientation();
+
+      // Если мы на stage5 и ориентация изменилась на landscape
+      if (isOnStage5 && !rotationDetected) {
+        const isLandscape = currentOrientation.includes('landscape');
+        const wasPortrait = previousOrientation.includes('portrait');
+
+        if (isLandscape && wasPortrait) {
+          rotationDetected = true;
+
+          // Плавное затемнение
+          document.body.style.transition = 'opacity 0.5s ease';
+          document.body.style.opacity = '0';
+
+          setTimeout(() => {
+            window.location.href = 'sound-exhibition.html';
+          }, 500);
+        }
+      }
+
+      previousOrientation = currentOrientation;
+    }
+
+    // Слушаем изменение ориентации
+    if (window.screen && window.screen.orientation) {
+      window.screen.orientation.addEventListener('change', handleOrientationChange);
+    }
+
+    // Fallback для старых браузеров
+    window.addEventListener('orientationchange', handleOrientationChange);
+    window.addEventListener('resize', handleOrientationChange);
+  </script>
+</body>
+</html>

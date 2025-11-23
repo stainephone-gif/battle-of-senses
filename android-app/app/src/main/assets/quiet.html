@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Тихое место</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      overflow-x: hidden;
+      color: #5a6c7d;
+    }
+
+    .phone-frame {
+      width: 100%;
+      max-width: 428px;
+      min-height: 100vh;
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 30px;
+      text-align: center;
+    }
+
+    .content {
+      max-width: 350px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeIn 2s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 300;
+      margin-bottom: 40px;
+      color: #4a5568;
+      letter-spacing: 2px;
+    }
+
+    .meditation-text {
+      font-size: 1rem;
+      line-height: 1.8;
+      margin-bottom: 40px;
+      color: #718096;
+      font-weight: 300;
+    }
+
+    .meditation-text p {
+      margin-bottom: 20px;
+    }
+
+    /* Таймер */
+    .timer {
+      font-size: 3rem;
+      font-weight: 200;
+      margin: 40px 0;
+      color: #a0aec0;
+      letter-spacing: 3px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Кнопки */
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 50px;
+      width: 100%;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 16px 32px;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 400;
+      font-size: 0.95rem;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      letter-spacing: 0.5px;
+      border: none;
+      cursor: pointer;
+      background: none;
+    }
+
+    .btn-primary {
+      background: rgba(255, 255, 255, 0.4);
+      color: #4a5568;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-primary:hover {
+      background: rgba(255, 255, 255, 0.6);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #a0aec0;
+      border: 1px solid rgba(160, 174, 192, 0.3);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: #718096;
+      border-color: rgba(160, 174, 192, 0.5);
+    }
+
+    /* Дыхательный индикатор */
+    .breath-indicator {
+      width: 100px;
+      height: 100px;
+      margin: 30px auto;
+      position: relative;
+    }
+
+    .breath-circle {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, rgba(195, 207, 226, 0.2) 100%);
+      animation: breathe 6s ease-in-out infinite;
+      box-shadow: 0 0 30px rgba(195, 207, 226, 0.3);
+    }
+
+    @keyframes breathe {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 0.6;
+      }
+      50% {
+        transform: scale(1.3);
+        opacity: 0.9;
+      }
+    }
+
+    .breath-text {
+      font-size: 0.85rem;
+      color: #a0aec0;
+      margin-top: 20px;
+      font-weight: 300;
+      letter-spacing: 1px;
+    }
+
+    /* Минималистичный декор */
+    .decorative-line {
+      width: 60px;
+      height: 1px;
+      background: rgba(160, 174, 192, 0.3);
+      margin: 30px auto;
+    }
+
+    /* Адаптация для уменьшения анимаций */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.2s !important;
+      }
+
+      .breath-circle {
+        animation: none;
+        transform: scale(1);
+      }
+    }
+
+    /* Мобильная адаптация */
+    @media (max-width: 380px) {
+      h1 {
+        font-size: 1.6rem;
+      }
+
+      .meditation-text {
+        font-size: 0.95rem;
+      }
+
+      .timer {
+        font-size: 2.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="phone-frame">
+    <div class="content">
+      <h1>Тихое место</h1>
+
+      <div class="meditation-text">
+        <p>Вы прошли через поток образов и какофонию звуков.</p>
+        <p>Теперь позвольте себе просто быть. Без стимуляции. Без отвлечений.</p>
+        <p>Интегрируйте опыт в тишине.</p>
+      </div>
+
+      <div class="decorative-line"></div>
+
+      <!-- Дыхательный индикатор -->
+      <div class="breath-indicator">
+        <div class="breath-circle"></div>
+      </div>
+      <div class="breath-text">дышите спокойно</div>
+
+      <!-- Таймер пребывания -->
+      <div class="timer" id="timer">00:00</div>
+
+      <div class="decorative-line"></div>
+
+      <!-- Кнопки навигации -->
+      <div class="button-group">
+        <a href="index.html" class="btn btn-primary">Начать сначала</a>
+        <button class="btn btn-secondary" id="otherPathBtn">Исследовать другой путь</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Таймер пребывания в "тихом месте"
+    let seconds = 0;
+    const timerElement = document.getElementById('timer');
+
+    function updateTimer() {
+      seconds++;
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      timerElement.textContent =
+        String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+    }
+
+    // Запуск таймера
+    const timerInterval = setInterval(updateTimer, 1000);
+
+    // Останавливаем таймер при уходе со страницы
+    window.addEventListener('beforeunload', () => {
+      clearInterval(timerInterval);
+    });
+
+    // Кнопка "Исследовать другой путь"
+    document.getElementById('otherPathBtn').addEventListener('click', () => {
+      // Определяем, откуда пришел пользователь
+      const referrer = document.referrer;
+      let targetPath = 'index.html';
+
+      if (referrer.includes('zrenie')) {
+        // Если пришел из визуальной ветви, предлагаем аудиальную
+        targetPath = 'sluh.html';
+      } else if (referrer.includes('sluh')) {
+        // Если пришел из аудиальной ветви, предлагаем визуальную
+        targetPath = 'zrenie_mob.html';
+      }
+
+      // Плавный переход
+      document.querySelector('.content').style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      document.querySelector('.content').style.opacity = '0';
+      document.querySelector('.content').style.transform = 'translateY(-20px)';
+
+      setTimeout(() => {
+        window.location.href = targetPath;
+      }, 500);
+    });
+
+    // Предотвращаем случайные звуки (останавливаем все аудио)
+    const stopAllAudio = () => {
+      const audioElements = document.querySelectorAll('audio, video');
+      audioElements.forEach(el => {
+        el.pause();
+        el.currentTime = 0;
+      });
+
+      // Останавливаем Web Audio API контексты
+      if (window.AudioContext || window.webkitAudioContext) {
+        try {
+          const contexts = [];
+          // Попытка остановить все возможные аудио контексты
+          if (window.audioManager && window.audioManager.context) {
+            window.audioManager.context.close();
+          }
+        } catch (e) {
+          // Игнорируем ошибки
+        }
+      }
+    };
+
+    // Останавливаем все звуки при загрузке страницы
+    stopAllAudio();
+
+    // Также останавливаем при любом взаимодействии (на всякий случай)
+    document.addEventListener('click', stopAllAudio, { once: true });
+  </script>
+</body>
+</html>
