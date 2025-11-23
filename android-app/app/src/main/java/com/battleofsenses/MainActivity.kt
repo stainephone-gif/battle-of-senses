@@ -114,7 +114,7 @@ class MainActivity : AppCompatActivity() {
 
             // Кэширование
             settings.cacheMode = WebSettings.LOAD_DEFAULT
-            settings.setAppCacheEnabled(true)
+            // Note: setAppCacheEnabled deprecated and removed in newer Android versions
 
             // Поддержка мультимедиа
             settings.mediaPlaybackRequiresUserGesture = false

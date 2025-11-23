@@ -590,84 +590,7 @@
 
     loadLightsConfigEarly();
 
-    // ========== ПОДДЕРЖКА НАТИВНОГО ANDROID ПРИЛОЖЕНИЯ ==========
-
-    // Проверка, запущено ли приложение в нативном Android окружении
-    const isNativeApp = typeof Android !== 'undefined';
-
-    // Логирование для отладки
-    if (isNativeApp) {
-      console.log('🤖 Запущено в нативном Android приложении');
-      Android.log('Battle of Senses WebView загружен');
-      statusElement.textContent = 'Ожидание подключения наушников...';
-    } else {
-      console.log('🌐 Запущено в браузере');
-    }
-
-    /**
-     * Обработчик подключения наушников из нативного кода
-     * Вызывается из MainActivity.kt когда AudioDeviceCallback обнаруживает наушники
-     */
-    window.onNativeHeadphonesConnected = function() {
-      console.log('✅ Нативное событие: наушники подключены');
-
-      if (!headphonesConnected) {
-        headphonesConnected = true;
-        statusElement.textContent = '✓ Наушники подключены';
-        statusElement.classList.add('connected');
-        statusElement.classList.remove('checking');
-
-        // Выключаем свет если настроено
-        if (lightsConfig && !lightsTurnedOff) {
-          lightsTurnedOff = true;
-          turnOffLights().catch(err => {
-            console.error('Ошибка выключения света:', err);
-            if (isNativeApp) {
-              Android.logError('Light control error: ' + err.message);
-            }
-          });
-        }
-
-        // Вибрация для тактильной обратной связи
-        if (isNativeApp) {
-          Android.vibrate(200);
-        }
-
-        // Автоматический переход через 2 секунды
-        autoRedirectTimer = setTimeout(() => {
-          window.location.href = 'sluh.html';
-        }, 2000);
-      }
-    };
-
-    /**
-     * Обработчик отключения наушников из нативного кода
-     * Вызывается из MainActivity.kt когда AudioDeviceCallback обнаруживает отключение
-     */
-    window.onNativeHeadphonesDisconnected = function() {
-      console.log('❌ Нативное событие: наушники отключены');
-
-      if (headphonesConnected) {
-        headphonesConnected = false;
-        statusElement.textContent = 'Наушники отключены';
-        statusElement.classList.remove('connected');
-        statusElement.classList.add('checking');
-
-        if (autoRedirectTimer) {
-          clearTimeout(autoRedirectTimer);
-          autoRedirectTimer = null;
-        }
-
-        // Легкая вибрация при отключении
-        if (isNativeApp) {
-          Android.vibrate(100);
-        }
-      }
-    };
-
-    // ========== ФУНКЦИЯ ПРОВЕРКИ НАУШНИКОВ (WEB API) ==========
-
-    // Функция проверки наушников (используется только в браузере)
+    // Функция проверки наушников
     async function checkHeadphones() {
       try {
         // Проверяем доступность Media Devices API
@@ -735,34 +658,22 @@
       }
     });
 
-    // Запуск проверки наушников (только для браузера)
-    // В нативном приложении используется AudioDeviceCallback
-    let checkInterval = null;
+    // Первоначальная проверка
+    checkHeadphones();
 
-    if (!isNativeApp) {
-      console.log('Запуск Web API проверки наушников...');
+    // Периодическая проверка каждые 2 секунды
+    const checkInterval = setInterval(checkHeadphones, 2000);
 
-      // Первоначальная проверка
-      checkHeadphones();
-
-      // Периодическая проверка каждые 2 секунды
-      checkInterval = setInterval(checkHeadphones, 2000);
-
-      // Обработчик изменения устройств (если поддерживается)
-      if (navigator.mediaDevices && navigator.mediaDevices.addEventListener) {
-        navigator.mediaDevices.addEventListener('devicechange', () => {
-          checkHeadphones();
-        });
-      }
-    } else {
-      console.log('Нативное определение наушников активно');
+    // Обработчик изменения устройств (если поддерживается)
+    if (navigator.mediaDevices && navigator.mediaDevices.addEventListener) {
+      navigator.mediaDevices.addEventListener('devicechange', () => {
+        checkHeadphones();
+      });
     }
 
     // Очистка при уходе со страницы
     window.addEventListener('beforeunload', () => {
-      if (checkInterval) {
-        clearInterval(checkInterval);
-      }
+      clearInterval(checkInterval);
       if (autoRedirectTimer) {
         clearTimeout(autoRedirectTimer);
       }
@@ -887,6 +798,14 @@
         return;
       }
 
+      // Проверка протокола страницы
+      const pageProtocol = window.location.protocol;
+      if (pageProtocol === 'https:') {
+        showStatus('⚠️ HTTPS страница не может подключиться к HTTP Bridge. Используйте Android приложение или откройте сайт по HTTP', 'error');
+        connectHueBtn.disabled = false;
+        return;
+      }
+
       showStatus('Подключение...', 'info');
       connectHueBtn.disabled = true;
 
@@ -898,11 +817,29 @@
           // Пытаемся получить новый API ключ
           showStatus('Нажмите кнопку на Philips Hue Bridge...', 'info');
 
-          const response = await fetch(`http://${ip}/api`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ devicetype: 'battle_of_senses#web' })
-          });
+          let response;
+          try {
+            response = await fetch(`http://${ip}/api`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ devicetype: 'battle_of_senses#web' })
+            });
+          } catch (fetchError) {
+            console.error('Fetch error details:', fetchError);
+
+            // Детальная диагностика
+            if (fetchError.message.includes('Failed to fetch')) {
+              showStatus('❌ Не удалось подключиться к Bridge. Проверьте:\n1. IP адрес правильный?\n2. Устройство в той же Wi-Fi сети?\n3. Bridge включен?\n4. Используйте Android приложение для надежности', 'error');
+            } else {
+              showStatus(`❌ Ошибка сети: ${fetchError.message}`, 'error');
+            }
+            connectHueBtn.disabled = false;
+            return;
+          }
+
+          if (!response.ok) {
+            throw new Error(`HTTP ошибка: ${response.status}`);
+          }
 
           const data = await response.json();
 
@@ -920,7 +857,17 @@
         }
 
         // Тестовое подключение
-        const testResponse = await fetch(`http://${ip}/api/${apiKey}/lights`);
+        showStatus('Проверка подключения...', 'info');
+
+        let testResponse;
+        try {
+          testResponse = await fetch(`http://${ip}/api/${apiKey}/lights`);
+        } catch (fetchError) {
+          console.error('Test fetch error:', fetchError);
+          showStatus('❌ Ошибка проверки. Убедитесь что Bridge доступен', 'error');
+          connectHueBtn.disabled = false;
+          return;
+        }
 
         if (testResponse.ok) {
           const lights = await testResponse.json();
