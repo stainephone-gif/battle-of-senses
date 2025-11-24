@@ -4,6 +4,24 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Battle of Senses</title>
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="./manifest.json">
+
+  <!-- Theme colors -->
+  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Battle of Senses">
+
+  <!-- Icons -->
+  <link rel="icon" type="image/svg+xml" href="./icons/icon.svg">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+
+  <!-- Microsoft Tiles -->
+  <meta name="msapplication-TileColor" content="#000000">
+  <meta name="msapplication-TileImage" content="./icons/icon-144.png">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -272,13 +290,13 @@
 
     <div class="buttons">
       <a href="zrenie_mob.html" class="choice-button">Зрение</a>
-      <a href="headphones.html" class="choice-button">Слух</a>
+      <a href="sluh.html" class="choice-button" id="soundBtn">Слух</a>
     </div>
   </div>
 
   <script>
     // Предзагрузка следующих страниц для быстрой навигации
-    const preloadLinks = ['zrenie_mob.html', 'headphones.html'];
+    const preloadLinks = ['zrenie_mob.html', 'sluh.html'];
     preloadLinks.forEach(href => {
       const link = document.createElement('link');
       link.rel = 'prefetch';
@@ -286,11 +304,135 @@
       document.head.appendChild(link);
     });
 
+    // ========== УПРАВЛЕНИЕ УМНЫМ ОСВЕЩЕНИЕМ ==========
+
+    let lightsConfig = null;
+
+    // Загрузка настроек освещения
+    function loadLightsConfig() {
+      const saved = localStorage.getItem('lights_config');
+      if (saved) {
+        try {
+          lightsConfig = JSON.parse(saved);
+        } catch (e) {
+          console.error('Ошибка загрузки настроек света:', e);
+        }
+      }
+    }
+
+    // Выключение света (Philips Hue)
+    async function turnOffLights() {
+      if (!lightsConfig || lightsConfig.type !== 'hue') return;
+
+      try {
+        const response = await fetch(`http://${lightsConfig.ip}/api/${lightsConfig.apiKey}/lights`);
+        if (!response.ok) return;
+
+        const lights = await response.json();
+        const lightIds = Object.keys(lights);
+
+        // Выключаем все лампы
+        for (const id of lightIds) {
+          await fetch(`http://${lightsConfig.ip}/api/${lightsConfig.apiKey}/lights/${id}/state`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ on: false })
+          });
+        }
+
+        console.log('💡 Свет выключен');
+
+        // Вибрация для обратной связи
+        if (typeof Android !== 'undefined') {
+          Android.vibrate(200);
+        }
+      } catch (error) {
+        console.error('Ошибка выключения света:', error);
+      }
+    }
+
+    // Включение света (Philips Hue)
+    async function turnOnLights() {
+      if (!lightsConfig || lightsConfig.type !== 'hue') return;
+
+      try {
+        const response = await fetch(`http://${lightsConfig.ip}/api/${lightsConfig.apiKey}/lights`);
+        if (!response.ok) return;
+
+        const lights = await response.json();
+        const lightIds = Object.keys(lights);
+
+        // Включаем все лампы
+        for (const id of lightIds) {
+          await fetch(`http://${lightsConfig.ip}/api/${lightsConfig.apiKey}/lights/${id}/state`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ on: true, bri: 254 }) // Максимальная яркость
+          });
+        }
+
+        console.log('💡 Свет включен');
+
+        // Вибрация для обратной связи
+        if (typeof Android !== 'undefined') {
+          Android.vibrate(100);
+        }
+      } catch (error) {
+        console.error('Ошибка включения света:', error);
+      }
+    }
+
+    // Загружаем настройки при старте
+    loadLightsConfig();
+
+    // Обработчик кнопки "Слух" - выключаем свет
+    const soundBtn = document.getElementById('soundBtn');
+    if (soundBtn) {
+      soundBtn.addEventListener('click', async (e) => {
+        if (lightsConfig) {
+          e.preventDefault(); // Предотвращаем немедленный переход
+
+          console.log('🎵 Кнопка "Слух" нажата, выключаем свет...');
+          await turnOffLights();
+
+          // Небольшая задержка для завершения выключения
+          setTimeout(() => {
+            window.location.href = 'sluh.html';
+          }, 500);
+        }
+        // Если настроек нет, просто переходим по ссылке
+      });
+    }
+
     // Добавляем тактильную обратную связь на мобильных устройствах
     if ('vibrate' in navigator) {
       document.querySelectorAll('.choice-button').forEach(button => {
         button.addEventListener('click', () => {
           navigator.vibrate(10); // 10ms вибрация
+        });
+      });
+    }
+
+    // PWA: Регистрация Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+          .then(registration => {
+            console.log('✅ Service Worker зарегистрирован:', registration.scope);
+
+            // Проверка обновлений каждые 60 секунд
+            setInterval(() => {
+              registration.update();
+            }, 60000);
+          })
+          .catch(error => {
+            console.error('❌ Ошибка регистрации Service Worker:', error);
+          });
+
+        // Обработка обновлений Service Worker
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          console.log('🔄 Service Worker обновлен, перезагрузка...');
+          window.location.reload();
         });
       });
     }
