@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Battle of Senses</title>
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="./manifest.json">
+
+  <!-- Theme colors -->
+  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Battle of Senses">
+
+  <!-- Icons -->
+  <link rel="icon" type="image/svg+xml" href="./icons/icon.svg">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+
+  <!-- Microsoft Tiles -->
+  <meta name="msapplication-TileColor" content="#000000">
+  <meta name="msapplication-TileImage" content="./icons/icon-144.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Space Mono', 'Courier New', monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #000000;
+      color: #000;
+      overflow-x: hidden;
+      padding: 20px;
+      animation: themeChange 8s ease-in-out infinite;
+    }
+
+    @keyframes themeChange {
+      0%, 100% {
+        background: #000000;
+      }
+      50% {
+        background: #FFFFFF;
+      }
+    }
+
+    /* Карточка стартового экрана */
+    .card {
+      background: #E5E5E5;
+      width: 90%;
+      max-width: 450px;
+      padding: 50px;
+      border-radius: 0px;
+      text-align: center;
+      opacity: 0;
+      transform: scale(0.95);
+      animation: fadeInScale 0.5s ease-out forwards, cardThemeChange 8s ease-in-out infinite;
+      animation-delay: 0s, 0.5s;
+    }
+
+    @keyframes cardThemeChange {
+      0%, 100% {
+        background: #E5E5E5;
+        color: #000000;
+      }
+      50% {
+        background: #1A1A1A;
+        color: #FFFFFF;
+      }
+    }
+
+    @keyframes fadeInScale {
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* Заголовок "Сделай свой выбор" */
+    .title {
+      font-size: 26px;
+      font-weight: 700;
+      color: #000000;
+      margin-bottom: 35px;
+      text-align: center;
+      animation: textThemeChange 8s ease-in-out infinite;
+      animation-delay: 0.5s;
+    }
+
+    /* Философский текст */
+    .description {
+      font-size: 15px;
+      font-weight: 400;
+      color: #333333;
+      line-height: 1.6;
+      text-align: center;
+      margin-bottom: 45px;
+      animation: descriptionThemeChange 8s ease-in-out infinite;
+      animation-delay: 0.5s;
+    }
+
+    /* Вопрос */
+    .question {
+      font-size: 17px;
+      font-weight: 600;
+      color: #000000;
+      text-align: center;
+      margin-bottom: 25px;
+      animation: textThemeChange 8s ease-in-out infinite;
+      animation-delay: 0.5s;
+    }
+
+    @keyframes textThemeChange {
+      0%, 100% {
+        color: #000000;
+      }
+      50% {
+        color: #FFFFFF;
+      }
+    }
+
+    @keyframes descriptionThemeChange {
+      0%, 100% {
+        color: #333333;
+      }
+      50% {
+        color: #CCCCCC;
+      }
+    }
+
+    /* Контейнер для кнопок */
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    /* Кнопки выбора */
+    .choice-button {
+      display: inline-block;
+      width: 150px;
+      height: 46px;
+      background: #D0D0D0;
+      color: #000000;
+      font-family: 'Space Mono', 'Courier New', monospace;
+      font-size: 15px;
+      font-weight: 700;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* Первая кнопка - движение вверх-вниз */
+    .choice-button:nth-child(1) {
+      animation: buttonFloat1 4s ease-in-out infinite, buttonThemeChange 8s ease-in-out infinite;
+      animation-delay: 0.5s, 0.5s;
+    }
+
+    /* Вторая кнопка - движение вниз-вверх (противоположное) */
+    .choice-button:nth-child(2) {
+      animation: buttonFloat2 4s ease-in-out infinite, buttonThemeChange 8s ease-in-out infinite;
+      animation-delay: 0.5s, 0.5s;
+    }
+
+    @keyframes buttonFloat1 {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-15px);
+      }
+    }
+
+    @keyframes buttonFloat2 {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(15px);
+      }
+    }
+
+    @keyframes buttonThemeChange {
+      0%, 100% {
+        background: #D0D0D0;
+        color: #000000;
+      }
+      50% {
+        background: #3A3A3A;
+        color: #FFFFFF;
+      }
+    }
+
+    .choice-button:hover {
+      background: #A0A0A0;
+    }
+
+    .choice-button:active {
+      transform: scale(0.98);
+    }
+
+    /* Адаптация для маленьких экранов */
+    @media (max-width: 480px) {
+      .card {
+        padding: 40px 30px;
+      }
+
+      .title {
+        font-size: 24px;
+        margin-bottom: 30px;
+      }
+
+      .description {
+        font-size: 14px;
+        margin-bottom: 40px;
+      }
+
+      .question {
+        font-size: 16px;
+        margin-bottom: 20px;
+      }
+
+      .choice-button {
+        width: 140px;
+        height: 44px;
+        font-size: 14px;
+      }
+    }
+
+    /* Адаптация для очень маленьких экранов */
+    @media (max-width: 360px) {
+      .buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .choice-button {
+        width: 100%;
+        max-width: 200px;
+      }
+    }
+
+    /* Адаптация для уменьшения анимаций */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.2s !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1 class="title">Сделай свой выбор</h1>
+
+    <p class="description">
+      Мир древних философов. Еще Платон
+      и Аристотель считали два чувства
+      «благородными». С появлением цифровых
+      технологий наше восприятие изменилось.
+      Это есть то, которое связано с разумом.
+      Но Платон чувство зрения по отдельно
+      ставил выше, потому что посредством
+      со страсти или, скорее со состояния
+      со страшной боли и пустоты.
+    </p>
+
+    <h2 class="question">Какое чувство для вас важнее?</h2>
+
+    <div class="buttons">
+      <a href="zrenie_mob.html" class="choice-button">Зрение</a>
+      <a href="headphones.html" class="choice-button">Слух</a>
+    </div>
+  </div>
+
+  <script>
+    // Предзагрузка следующих страниц для быстрой навигации
+    const preloadLinks = ['zrenie_mob.html', 'headphones.html'];
+    preloadLinks.forEach(href => {
+      const link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.href = href;
+      document.head.appendChild(link);
+    });
+
+    // Добавляем тактильную обратную связь на мобильных устройствах
+    if ('vibrate' in navigator) {
+      document.querySelectorAll('.choice-button').forEach(button => {
+        button.addEventListener('click', () => {
+          navigator.vibrate(10); // 10ms вибрация
+        });
+      });
+    }
+
+    // PWA: Регистрация Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+          .then(registration => {
+            console.log('✅ Service Worker зарегистрирован:', registration.scope);
+
+            // Проверка обновлений каждые 60 секунд
+            setInterval(() => {
+              registration.update();
+            }, 60000);
+          })
+          .catch(error => {
+            console.error('❌ Ошибка регистрации Service Worker:', error);
+          });
+
+        // Обработка обновлений Service Worker
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          console.log('🔄 Service Worker обновлен, перезагрузка...');
+          window.location.reload();
+        });
+      });
+    }
+  </script>
+</body>
+</html>
