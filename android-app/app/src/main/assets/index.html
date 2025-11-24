@@ -487,15 +487,12 @@
       <!-- Кнопки -->
       <div class="button-group">
         <button class="btn btn-primary" id="continueBtn">
-          Продолжить и выключить свет
-        </button>
-        <button class="btn btn-secondary" id="skipBtn">
-          Пропустить (не рекомендуется)
+          Продолжить
         </button>
       </div>
 
       <div class="hint">
-        Нажмите "Продолжить и выключить свет" чтобы начать и автоматически выключить лампочки Philips Hue.
+        Для полного погружения в звуковое путешествие рекомендуется использовать наушники.
       </div>
     </div>
   </div>
@@ -506,7 +503,7 @@
       <button class="modal-close" id="modalClose">×</button>
       <h2>💡 Умное освещение</h2>
       <div class="modal-subtitle">
-        Настройте один раз — свет будет выключаться автоматически при каждом подключении наушников
+        Настройте управление светом Philips Hue для погружения в звуковой опыт
       </div>
 
       <div class="modal-section">
@@ -544,8 +541,6 @@
   <script>
     const statusElement = document.getElementById('status');
     const continueBtn = document.getElementById('continueBtn');
-    const skipBtn = document.getElementById('skipBtn');
-    let lightsTurnedOff = false;
     let lightsConfig = null;
 
     // Загрузка настроек освещения сразу
@@ -566,56 +561,9 @@
     statusElement.textContent = 'Готово к продолжению';
     statusElement.classList.remove('checking');
 
-    // Обработчик кнопки "Продолжить и выключить свет"
-    continueBtn.addEventListener('click', async () => {
-      continueBtn.disabled = true;
-      continueBtn.textContent = 'Выключаем свет...';
-
-      try {
-        // Выключаем свет если настроено
-        if (lightsConfig && !lightsTurnedOff) {
-          lightsTurnedOff = true;
-          statusElement.textContent = 'Выключаем свет...';
-          statusElement.classList.add('connected');
-
-          await turnOffLights();
-
-          statusElement.textContent = '✓ Свет выключен!';
-
-          // Вибрация для обратной связи (если в Android приложении)
-          if (typeof Android !== 'undefined') {
-            Android.vibrate(200);
-            Android.log('Свет выключен через кнопку Продолжить');
-          }
-
-          // Небольшая задержка для показа сообщения
-          await new Promise(resolve => setTimeout(resolve, 1000));
-        } else if (!lightsConfig) {
-          statusElement.textContent = 'Свет не настроен';
-        } else {
-          statusElement.textContent = 'Свет уже выключен';
-        }
-
-        // Переход на следующую страницу
-        window.location.href = 'main.html';
-      } catch (error) {
-        console.error('Ошибка выключения света:', error);
-        statusElement.textContent = '⚠️ Ошибка выключения света';
-        continueBtn.disabled = false;
-        continueBtn.textContent = 'Продолжить и выключить свет';
-
-        // Все равно переходим дальше через 2 секунды
-        setTimeout(() => {
-          window.location.href = 'main.html';
-        }, 2000);
-      }
-    });
-
-    // Обработчик кнопки "Пропустить"
-    skipBtn.addEventListener('click', () => {
-      if (confirm('Вы уверены? Звуковое путешествие лучше воспринимается в наушниках.')) {
-        window.location.href = 'main.html';
-      }
+    // Обработчик кнопки "Продолжить"
+    continueBtn.addEventListener('click', () => {
+      window.location.href = 'main.html';
     });
 
     // ========== УПРАВЛЕНИЕ УМНЫМ ОСВЕЩЕНИЕМ ==========
