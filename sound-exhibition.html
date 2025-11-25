@@ -673,6 +673,7 @@
             const item = document.createElement('div');
             item.className = 'exhibit-item';
             item.dataset.exhibitId = exhibit.id;
+            item.dataset.exhibitIndex = index;
             item.innerHTML = `
                 <div class="exhibit-number">ЭКСПОНАТ #${String(exhibit.id).padStart(2, '0')}</div>
                 <div class="exhibit-icon">${exhibit.icon}</div>
@@ -686,28 +687,30 @@
                 item.style.top = positions[index].top + 'px';
             }
 
-            // Mouse events for dragging
-            item.addEventListener('mousedown', startDrag);
-            item.addEventListener('touchstart', startDrag, { passive: false });
-
-            // Click event (only if not dragged)
-            item.addEventListener('click', (e) => {
-                if (!hasMoved) {
-                    openModal(exhibit);
-                }
-            });
+            // Mouse events for dragging (landscape) and clicking
+            item.addEventListener('mousedown', (e) => startDrag(e, exhibit));
+            item.addEventListener('touchstart', (e) => startDrag(e, exhibit), { passive: false });
 
             exhibitionList.appendChild(item);
         });
 
-        // Start dragging
-        function startDrag(e) {
-            if (!isLandscape()) return;
+        // Store current exhibit for click handling
+        let currentExhibit = null;
 
-            e.preventDefault();
+        // Start dragging
+        function startDrag(e, exhibit) {
             hasMoved = false;
-            isDragging = true;
+            currentExhibit = exhibit;
             draggedElement = e.currentTarget;
+
+            // In portrait mode, just open modal immediately
+            if (!isLandscape()) {
+                openModal(exhibit);
+                return;
+            }
+
+            // In landscape mode, prepare for drag
+            isDragging = true;
             draggedElement.classList.add('dragging');
 
             const touch = e.touches ? e.touches[0] : e;
@@ -752,6 +755,11 @@
             if (isDragging && draggedElement) {
                 draggedElement.classList.remove('dragging');
 
+                // If not moved, it's a click - open modal
+                if (!hasMoved && currentExhibit) {
+                    openModal(currentExhibit);
+                }
+
                 // Save positions if moved
                 if (hasMoved) {
                     savePositions();
@@ -764,10 +772,11 @@
 
                 isDragging = false;
 
-                // Reset hasMoved after a short delay to allow click event to check it
+                // Reset state
                 setTimeout(() => {
                     hasMoved = false;
                     draggedElement = null;
+                    currentExhibit = null;
                 }, 50);
             }
         }
