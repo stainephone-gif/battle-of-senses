@@ -831,6 +831,15 @@
       border-radius: 16px;
       margin: 0 auto 20px;
       box-shadow: 0 8px 30px rgba(131, 56, 236, 0.5);
+      cursor: zoom-in;
+      transition: all 0.3s ease;
+    }
+
+    .collage-modal img.zoomed {
+      max-width: 95%;
+      transform: scale(1.5);
+      cursor: zoom-out;
+      border-radius: 8px;
     }
 
     .collage-modal-text {
@@ -1812,20 +1821,10 @@
     let collageInitialized = false;
     let collageItems = [];
 
-    // Данные для коллажа - используем все изображения
+    // Данные для коллажа - используем изображения из artworks
     const collageData = [
-      { src: 'pic/Plato.png', name: 'Платон', desc: 'Зрение — важнейшее из чувств, через него познаётся истина и красота идей.' },
-      { src: 'pic/Arist.png', name: 'Аристотель', desc: 'Видение даёт наибольшее знание о мире, открывая различия между вещами.' },
-      { src: 'pic/Piph.png', name: 'Пифагор', desc: 'Через созерцание геометрических форм разум постигает гармонию космоса.' },
-      { src: 'pic/descartes.jpg', name: 'Рене Декарт', desc: 'В «Рассуждении о методе» называл зрение главным чувством для научного анализа.' },
-      { src: 'pic/leibniz.jpg', name: 'Готфрид Лейбниц', desc: 'Считал музыку (слух) «скрытой арифметикой», а зрение — основой ясного восприятия.' },
-      { src: 'pic/aquinas.jpg', name: 'Фома Аквинский', desc: 'Вслед за Аристотелем утверждал приоритет зрения и слуха в познании Божественного порядка.' },
-      { src: 'pic/mcluhan.jpg', name: 'Маршалл Маклюэн', desc: 'В «Понимании медиа» писал, что технологии усиливают доминирование зрения и слуха (ТВ, радио).' },
-      { src: 'pic/ranciere.jpg', name: 'Жак Рансьер', desc: 'В «Эстетическом бессознательном» анализировал, как искусство эксплуатирует эти чувства для власти.' },
-      { src: 'pic/hegel.jpg', name: 'Гегель', desc: 'Называл зрение и слух «теоретическими» чувствами, способными к созерцанию абсолютного.' },
-      { src: 'pic/kant.jpg', name: 'Иммануил Кант', desc: 'В «Критике способности суждения» разделял чувства на «высшие» (зрение, слух) и «низшие».' },
-      { src: 'pic/image1.png', name: 'Благородные чувства', desc: 'Благородные чувства формируют наше восприятие мира' },
-      { src: 'pic/image2.png', name: 'Познание истины', desc: 'Зрение и слух — врата к познанию истины' }
+      { src: 'artworks/13Bioconstruction.jpg', name: 'Bioconstruction', desc: 'Биоконструкция - исследование органических форм и структур' },
+      { src: 'artworks/16ReadFace.jpg', name: 'Read Face', desc: 'Чтение лиц - визуальный анализ человеческого восприятия' }
     ];
 
     // Создание элементов random collage
@@ -1903,12 +1902,25 @@
     // Показать модальное окно
     function showCollageModal(data) {
       collageModalImg.src = data.src;
+      collageModalImg.classList.remove('zoomed'); // Сбрасываем зум при открытии
       collageModalText.innerHTML = `<h3>${data.name}</h3><p>${data.desc}</p>`;
       collageModal.classList.add('visible');
 
       if ('vibrate' in navigator) {
         navigator.vibrate(15);
       }
+    }
+
+    // Обработчик клика по изображению для зума
+    if (collageModalImg) {
+      collageModalImg.addEventListener('click', (e) => {
+        e.stopPropagation();
+        collageModalImg.classList.toggle('zoomed');
+
+        if ('vibrate' in navigator) {
+          navigator.vibrate(10);
+        }
+      });
     }
 
     // Закрытие модального окна
