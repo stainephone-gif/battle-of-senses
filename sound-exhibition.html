@@ -46,8 +46,8 @@
 
         #exhibition-space {
             position: absolute;
-            width: 5000px;
-            height: 5000px;
+            width: 1200px;
+            height: 800px;
             transform-origin: 0 0;
             transition: transform 0.5s ease;
             cursor: grab;
@@ -115,17 +115,19 @@
 
         .exhibit-panel {
             position: fixed;
-            bottom: -400px;
+            bottom: -600px;
             left: 50%;
             transform: translateX(-50%);
-            width: 90%;
-            max-width: 400px;
-            background: rgba(30, 30, 30, 0.95);
-            padding: 20px;
-            border-radius: 10px 10px 0 0;
-            transition: bottom 0.5s ease;
+            width: 92%;
+            max-width: 420px;
+            background: linear-gradient(135deg, rgba(20, 20, 20, 0.98), rgba(30, 30, 30, 0.98));
+            padding: 24px;
+            border-radius: 20px 20px 0 0;
+            transition: bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 1000;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
         }
 
         .exhibit-panel.active {
@@ -135,52 +137,174 @@
         .exhibit-panel img {
             width: 100%;
             height: auto;
-            filter: grayscale(100%);
-            margin-bottom: 15px;
-            border-radius: 5px;
+            filter: grayscale(100%) contrast(1.2);
+            margin-bottom: 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .exhibit-panel h2 {
-            margin-bottom: 10px;
-            font-size: 1.3rem;
-            font-weight: 300;
-            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-size: 1.4rem;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            color: #fff;
         }
 
         .exhibit-panel p {
-            margin-bottom: 15px;
-            line-height: 1.5;
-            font-size: 0.9rem;
-            color: #ccc;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-size: 0.88rem;
+            color: #aaa;
+        }
+
+        /* Современный аудио плеер */
+        .audio-player {
+            background: rgba(40, 40, 40, 0.6);
+            border-radius: 16px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .audio-waveform {
+            height: 60px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .audio-waveform::before {
+            content: '🎵';
+            font-size: 24px;
+            opacity: 0.3;
+        }
+
+        .audio-time {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #888;
+            margin-bottom: 12px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .audio-progress-container {
+            position: relative;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .audio-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.1s linear;
+            position: relative;
+        }
+
+        .audio-progress-bar::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
         .audio-controls {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-top: 15px;
+            justify-content: center;
+            gap: 12px;
         }
 
-        .audio-controls button {
-            background: #444;
-            border: none;
+        .audio-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 8px 15px;
-            border-radius: 4px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 1.1rem;
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
         }
 
-        .audio-controls button:hover {
-            background: #555;
+        .audio-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
         }
 
-        .audio-controls progress {
-            flex-grow: 1;
-            height: 10px;
-            border-radius: 5px;
-            overflow: hidden;
+        .audio-btn:active {
+            transform: scale(0.95);
+        }
+
+        .audio-btn-play {
+            width: 56px;
+            height: 56px;
+            font-size: 1.4rem;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border: none;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+        }
+
+        .audio-btn-play:hover {
+            background: linear-gradient(135deg, #45a049, #4CAF50);
+            box-shadow: 0 6px 16px rgba(76, 175, 80, 0.5);
+        }
+
+        .audio-btn-close {
+            background: rgba(244, 67, 54, 0.2);
+            border-color: rgba(244, 67, 54, 0.4);
+        }
+
+        .audio-btn-close:hover {
+            background: rgba(244, 67, 54, 0.3);
+        }
+
+        .audio-loading {
+            display: none;
+            text-align: center;
+            padding: 8px;
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        .audio-loading.active {
+            display: block;
+        }
+
+        .audio-error {
+            display: none;
+            text-align: center;
+            padding: 12px;
+            background: rgba(244, 67, 54, 0.1);
+            border-radius: 8px;
+            color: #f44336;
+            font-size: 0.85rem;
+            margin-top: 8px;
+        }
+
+        .audio-error.active {
+            display: block;
         }
 
         .navigation-info {
@@ -451,10 +575,28 @@
             <img id="exhibit-img" src="" alt="">
             <h2 id="exhibit-title"></h2>
             <p id="exhibit-description"></p>
-            <div class="audio-controls">
-                <button id="play-btn">▶</button>
-                <button id="close-btn">✕</button>
-                <progress id="audio-progress" value="0" max="100"></progress>
+
+            <div class="audio-player">
+                <div class="audio-waveform" id="audio-waveform"></div>
+
+                <div class="audio-time">
+                    <span id="current-time">0:00</span>
+                    <span id="duration-time">0:00</span>
+                </div>
+
+                <div class="audio-progress-container" id="progress-container">
+                    <div class="audio-progress-bar" id="progress-bar"></div>
+                </div>
+
+                <div class="audio-controls">
+                    <button class="audio-btn" id="rewind-btn" title="Перемотать назад">⏪</button>
+                    <button class="audio-btn audio-btn-play" id="play-btn">▶</button>
+                    <button class="audio-btn" id="forward-btn" title="Перемотать вперед">⏩</button>
+                    <button class="audio-btn audio-btn-close" id="close-btn" title="Закрыть">✕</button>
+                </div>
+
+                <div class="audio-loading" id="audio-loading">Загрузка аудио...</div>
+                <div class="audio-error" id="audio-error"></div>
             </div>
         </div>
 
@@ -479,7 +621,14 @@
             const exhibitDescription = document.getElementById('exhibit-description');
             const playBtn = document.getElementById('play-btn');
             const closeBtn = document.getElementById('close-btn');
-            const audioProgress = document.getElementById('audio-progress');
+            const rewindBtn = document.getElementById('rewind-btn');
+            const forwardBtn = document.getElementById('forward-btn');
+            const progressContainer = document.getElementById('progress-container');
+            const progressBar = document.getElementById('progress-bar');
+            const currentTimeEl = document.getElementById('current-time');
+            const durationTimeEl = document.getElementById('duration-time');
+            const audioLoading = document.getElementById('audio-loading');
+            const audioError = document.getElementById('audio-error');
             const zoomInBtn = document.getElementById('zoom-in');
             const zoomOutBtn = document.getElementById('zoom-out');
             const navigationInfo = document.querySelector('.navigation-info');
@@ -493,72 +642,72 @@
 
             // Адаптивное начальное масштабирование
             const isMobile = window.innerWidth <= 480;
-            let scale = isMobile ? 0.8 : 0.6;
+            let scale = 1.0; // Убираем масштабирование, т.к. экспонаты в пределах экрана
 
-            // Центрируем на области с экспонатами (примерно 1500x1500)
-            const centerX = 1500;
-            const centerY = 1500;
+            // Центрируем на области с экспонатами (600x400 - центр холста 1200x800)
+            const centerX = 600;
+            const centerY = 400;
             const viewportCenterX = window.innerWidth / 2;
             const viewportCenterY = window.innerHeight / 2;
 
             let posX = viewportCenterX - (centerX * scale);
             let posY = viewportCenterY - (centerY * scale);
 
-            // Экспонаты (звуковые артефакты)
+            // Экспонаты (звуковые артефакты) - расположены в пределах 1200x800
             const exhibits = [
                 {
                     id: 1,
                     title: "Эхо древности",
                     description: "Звуковой след античного храма. Слышите ли вы молитвы тысячелетней давности?",
-                    x: 500,
-                    y: 700,
+                    x: 150,
+                    y: 150,
                     image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='60'%3E%3Crect fill='%23444' width='80' height='60'/%3E%3Ctext x='50%25' y='50%25' fill='%23fff' font-size='10' text-anchor='middle' dy='.3em'%3E🏛️%3C/text%3E%3C/svg%3E",
-                    audioType: 'ambient'
+                    audioFile: './interviews/interview-1.mp3'
                 },
                 {
                     id: 2,
                     title: "Механический вальс",
                     description: "Шестерёнки времени вращаются в такт забытой мелодии.",
-                    x: 1500,
-                    y: 1200,
+                    x: 600,
+                    y: 100,
                     image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='60'%3E%3Crect fill='%23444' width='80' height='60'/%3E%3Ctext x='50%25' y='50%25' fill='%23fff' font-size='10' text-anchor='middle' dy='.3em'%3E⚙️%3C/text%3E%3C/svg%3E",
-                    audioType: 'rhythmic'
+                    audioFile: './interviews/interview-2.mp3'
                 },
                 {
                     id: 3,
                     title: "Шёпот природы",
                     description: "Листья, ветер, капли дождя — симфония без композитора.",
-                    x: 800,
-                    y: 2000,
+                    x: 1000,
+                    y: 180,
                     image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='60'%3E%3Crect fill='%23444' width='80' height='60'/%3E%3Ctext x='50%25' y='50%25' fill='%23fff' font-size='10' text-anchor='middle' dy='.3em'%3E🍃%3C/text%3E%3C/svg%3E",
-                    audioType: 'nature'
+                    audioFile: './interviews/interview-3.mp3'
                 },
                 {
                     id: 4,
                     title: "Голоса города",
                     description: "Мегаполис никогда не спит, его пульс бьётся в ритме миллионов жизней.",
-                    x: 2200,
-                    y: 800,
+                    x: 200,
+                    y: 500,
                     image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='60'%3E%3Crect fill='%23444' width='80' height='60'/%3E%3Ctext x='50%25' y='50%25' fill='%23fff' font-size='10' text-anchor='middle' dy='.3em'%3E🌆%3C/text%3E%3C/svg%3E",
-                    audioType: 'urban'
+                    audioFile: './interviews/interview-4.mp3'
                 },
                 {
                     id: 5,
                     title: "Космическая тишина",
                     description: "Звуки межзвёздного пространства, записанные зондами. Вакуум говорит.",
-                    x: 3000,
-                    y: 1500,
+                    x: 650,
+                    y: 550,
                     image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='60'%3E%3Crect fill='%23444' width='80' height='60'/%3E%3Ctext x='50%25' y='50%25' fill='%23fff' font-size='10' text-anchor='middle' dy='.3em'%3E🌌%3C/text%3E%3C/svg%3E",
-                    audioType: 'cosmic'
+                    audioFile: './interviews/interview-5.mp3'
                 },
                 {
                     id: 6,
                     title: "Пульс времени",
                     description: "Метроном вечности отсчитывает мгновения между прошлым и будущим.",
-                    x: 1200,
-                    y: 2800,
+                    x: 950,
+                    y: 580,
                     image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='60'%3E%3Crect fill='%23444' width='80' height='60'/%3E%3Ctext x='50%25' y='50%25' fill='%23fff' font-size='10' text-anchor='middle' dy='.3em'%3E⏱️%3C/text%3E%3C/svg%3E",
-                    audioType: 'metronome'
+                    audioFile: './interviews/interview-6.mp3'
                 }
             ];
 
@@ -582,12 +731,12 @@
                 });
             });
 
-            // Создание звуковых обманок (20 штук)
-            for (let i = 0; i < 20; i++) {
+            // Создание звуковых обманок (10 штук) - в пределах 1200x800
+            for (let i = 0; i < 10; i++) {
                 const decoy = document.createElement('div');
                 decoy.className = 'bookmark decoy';
-                decoy.style.left = Math.random() * 4500 + 'px';
-                decoy.style.top = Math.random() * 4500 + 'px';
+                decoy.style.left = Math.random() * 1100 + 50 + 'px'; // От 50 до 1150
+                decoy.style.top = Math.random() * 700 + 50 + 'px';   // От 50 до 750
 
                 exhibitionSpace.appendChild(decoy);
 
@@ -603,15 +752,23 @@
                 // Останавливаем текущее аудио, если играет
                 if (currentAudio) {
                     currentAudio.pause();
-                    currentAudio = null;
+                    currentAudio.currentTime = 0;
                 }
+
+                // Сброс UI
+                audioLoading.classList.remove('active');
+                audioError.classList.remove('active');
+                progressBar.style.width = '0%';
+                currentTimeEl.textContent = '0:00';
+                durationTimeEl.textContent = '0:00';
+                playBtn.textContent = '▶';
 
                 exhibitImg.src = exhibit.image;
                 exhibitTitle.textContent = exhibit.title;
                 exhibitDescription.textContent = exhibit.description;
 
-                // Создаем синтезированное аудио на основе типа
-                createAudioForExhibit(exhibit.audioType);
+                // Загружаем реальный аудиофайл
+                loadAudioFile(exhibit.audioFile);
 
                 exhibitPanel.classList.add('active');
 
@@ -619,39 +776,51 @@
                 if (isMobile) {
                     finishBtn.classList.add('hidden');
                 }
-
-                // Приближаемся к экспонату
-                zoomTo(exhibit.x, exhibit.y, isMobile ? 1.2 : 1.5);
             }
 
-            // Создание аудио с Web Audio API
-            function createAudioForExhibit(type) {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            // Загрузка аудиофайла
+            function loadAudioFile(audioFile) {
+                audioLoading.classList.add('active');
+                audioError.classList.remove('active');
 
-                const configs = {
-                    ambient: { freq: 110, type: 'sine', detune: 0 },
-                    rhythmic: { freq: 220, type: 'square', detune: 5 },
-                    nature: { freq: 330, type: 'triangle', detune: -10 },
-                    urban: { freq: 440, type: 'sawtooth', detune: 15 },
-                    cosmic: { freq: 165, type: 'sine', detune: 30 },
-                    metronome: { freq: 880, type: 'square', detune: 0 }
-                };
+                currentAudio = new Audio(audioFile);
 
-                const config = configs[type] || configs.ambient;
+                // Обработка загрузки
+                currentAudio.addEventListener('loadedmetadata', function() {
+                    audioLoading.classList.remove('active');
+                    durationTimeEl.textContent = formatTime(currentAudio.duration);
+                });
 
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
+                // Обработка ошибок
+                currentAudio.addEventListener('error', function(e) {
+                    audioLoading.classList.remove('active');
+                    audioError.classList.add('active');
+                    audioError.textContent = 'Не удалось загрузить аудио. Проверьте наличие файла.';
+                    console.error('Audio load error:', e);
+                });
 
-                oscillator.type = config.type;
-                oscillator.frequency.setValueAtTime(config.freq, audioContext.currentTime);
-                oscillator.detune.setValueAtTime(config.detune, audioContext.currentTime);
+                // Обновление прогресса
+                currentAudio.addEventListener('timeupdate', function() {
+                    if (currentAudio.duration) {
+                        const progress = (currentAudio.currentTime / currentAudio.duration) * 100;
+                        progressBar.style.width = progress + '%';
+                        currentTimeEl.textContent = formatTime(currentAudio.currentTime);
+                    }
+                });
 
-                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                // Завершение воспроизведения
+                currentAudio.addEventListener('ended', function() {
+                    playBtn.textContent = '▶';
+                    progressBar.style.width = '0%';
+                });
+            }
 
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-
-                currentAudio = { oscillator, gainNode, context: audioContext, playing: false };
+            // Форматирование времени
+            function formatTime(seconds) {
+                if (isNaN(seconds) || !isFinite(seconds)) return '0:00';
+                const mins = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return mins + ':' + (secs < 10 ? '0' : '') + secs;
             }
 
             // Функция воспроизведения случайного звука
@@ -671,35 +840,64 @@
 
                 oscillator.start();
                 oscillator.stop(audioContext.currentTime + 0.5);
+
+                // Вибрация на мобильных
+                if (typeof Android !== 'undefined') {
+                    Android.vibrate(50);
+                }
             }
 
-            // Обработчик кнопки воспроизведения
+            // Обработчик кнопки воспроизведения/паузы
             playBtn.addEventListener('click', function() {
-                if (currentAudio && currentAudio.oscillator) {
-                    if (!currentAudio.playing) {
-                        currentAudio.oscillator.start();
-                        currentAudio.playing = true;
-                        playBtn.textContent = '❚❚';
-                    } else {
-                        currentAudio.oscillator.stop();
-                        currentAudio.playing = false;
-                        playBtn.textContent = '▶';
-                        // Пересоздаем аудио для повторного воспроизведения
-                        const type = Array.from(exhibits).find(e => e.title === exhibitTitle.textContent)?.audioType;
-                        if (type) createAudioForExhibit(type);
-                    }
+                if (!currentAudio) return;
+
+                if (currentAudio.paused) {
+                    currentAudio.play().then(() => {
+                        playBtn.textContent = '⏸';
+                    }).catch(err => {
+                        console.error('Play error:', err);
+                        audioError.classList.add('active');
+                        audioError.textContent = 'Ошибка воспроизведения';
+                    });
+                } else {
+                    currentAudio.pause();
+                    playBtn.textContent = '▶';
                 }
+            });
+
+            // Обработчик перемотки назад
+            rewindBtn.addEventListener('click', function() {
+                if (!currentAudio) return;
+                currentAudio.currentTime = Math.max(0, currentAudio.currentTime - 10);
+            });
+
+            // Обработчик перемотки вперед
+            forwardBtn.addEventListener('click', function() {
+                if (!currentAudio) return;
+                currentAudio.currentTime = Math.min(currentAudio.duration, currentAudio.currentTime + 10);
+            });
+
+            // Клик по прогресс-бару
+            progressContainer.addEventListener('click', function(e) {
+                if (!currentAudio || !currentAudio.duration) return;
+
+                const rect = progressContainer.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const percentage = clickX / rect.width;
+                currentAudio.currentTime = percentage * currentAudio.duration;
             });
 
             // Обработчик кнопки закрытия
             closeBtn.addEventListener('click', function() {
                 exhibitPanel.classList.remove('active');
-                if (currentAudio && currentAudio.oscillator && currentAudio.playing) {
-                    currentAudio.oscillator.stop();
-                    currentAudio.playing = false;
+
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio.currentTime = 0;
                 }
+
                 playBtn.textContent = '▶';
-                audioProgress.value = 0;
+                progressBar.style.width = '0%';
 
                 // Показываем кнопку финиша обратно
                 finishBtn.classList.remove('hidden');
