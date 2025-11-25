@@ -1906,7 +1906,7 @@
     function showCollageModal(data) {
       collageModalImg.src = data.src;
       collageModalImg.classList.remove('zoomed'); // Сбрасываем зум при открытии
-      collageModalText.innerHTML = `<h3>${data.name}</h3><p>${data.desc}</p>`;
+      collageModalText.innerHTML = `<h3>${data.desc}</h3><p>${data.name}</p>`;
       collageModal.classList.add('visible');
 
       if ('vibrate' in navigator) {
