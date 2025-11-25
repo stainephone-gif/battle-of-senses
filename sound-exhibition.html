@@ -393,6 +393,91 @@
             }
         }
 
+        /* Landscape Mode - Draggable Cards */
+        @media (orientation: landscape) {
+            body {
+                overflow: hidden;
+            }
+
+            .phone-frame {
+                max-width: 100%;
+                height: 100vh;
+                overflow: hidden;
+            }
+
+            .header {
+                padding: 15px 20px;
+            }
+
+            .header h1 {
+                font-size: 14px;
+            }
+
+            .home-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 18px;
+            }
+
+            .exhibition-list {
+                position: relative;
+                height: calc(100vh - 70px - 70px);
+                padding: 0;
+                overflow: hidden;
+            }
+
+            .exhibit-item {
+                position: absolute;
+                width: 180px;
+                padding: 16px;
+                margin: 0;
+                cursor: grab;
+                user-select: none;
+                touch-action: none;
+            }
+
+            .exhibit-item.dragging {
+                cursor: grabbing;
+                opacity: 0.8;
+                z-index: 50;
+            }
+
+            .exhibit-item:hover {
+                border-color: #fff;
+                background: #111;
+                z-index: 10;
+            }
+
+            .exhibit-number {
+                font-size: 10px;
+                margin-bottom: 6px;
+            }
+
+            .exhibit-title {
+                font-size: 14px;
+                margin-bottom: 8px;
+            }
+
+            .exhibit-description {
+                font-size: 11px;
+                line-height: 1.4;
+            }
+
+            .exhibit-icon {
+                font-size: 24px;
+                margin-bottom: 8px;
+            }
+
+            .footer {
+                padding: 15px 20px;
+            }
+
+            .finish-btn {
+                padding: 12px;
+                font-size: 12px;
+            }
+        }
+
         /* Reduce Motion */
         @media (prefers-reduced-motion: reduce) {
             * {
@@ -533,19 +618,191 @@
         const audioError = document.getElementById('audioError');
 
         let currentAudio = null;
+        let isDragging = false;
+        let draggedElement = null;
+        let startX = 0;
+        let startY = 0;
+        let startLeft = 0;
+        let startTop = 0;
+        let hasMoved = false;
+
+        // Check if landscape mode
+        function isLandscape() {
+            return window.innerHeight < window.innerWidth;
+        }
+
+        // Default positions for landscape mode (grid layout)
+        const defaultPositions = [
+            { left: 30, top: 30 },
+            { left: 240, top: 30 },
+            { left: 450, top: 30 },
+            { left: 30, top: 200 },
+            { left: 240, top: 200 },
+            { left: 450, top: 200 }
+        ];
+
+        // Load saved positions or use defaults
+        function loadPositions() {
+            const saved = localStorage.getItem('exhibit_positions');
+            if (saved) {
+                try {
+                    return JSON.parse(saved);
+                } catch (e) {
+                    return defaultPositions;
+                }
+            }
+            return defaultPositions;
+        }
+
+        // Save positions
+        function savePositions() {
+            const positions = [];
+            document.querySelectorAll('.exhibit-item').forEach(item => {
+                positions.push({
+                    left: parseInt(item.style.left) || 0,
+                    top: parseInt(item.style.top) || 0
+                });
+            });
+            localStorage.setItem('exhibit_positions', JSON.stringify(positions));
+        }
 
         // Render Exhibition List
-        exhibits.forEach(exhibit => {
+        const positions = loadPositions();
+        exhibits.forEach((exhibit, index) => {
             const item = document.createElement('div');
             item.className = 'exhibit-item';
+            item.dataset.exhibitId = exhibit.id;
             item.innerHTML = `
                 <div class="exhibit-number">ЭКСПОНАТ #${String(exhibit.id).padStart(2, '0')}</div>
                 <div class="exhibit-icon">${exhibit.icon}</div>
                 <div class="exhibit-title">${exhibit.title}</div>
                 <div class="exhibit-description">${exhibit.description}</div>
             `;
-            item.addEventListener('click', () => openModal(exhibit));
+
+            // Set position for landscape mode
+            if (isLandscape() && positions[index]) {
+                item.style.left = positions[index].left + 'px';
+                item.style.top = positions[index].top + 'px';
+            }
+
+            // Mouse events for dragging
+            item.addEventListener('mousedown', startDrag);
+            item.addEventListener('touchstart', startDrag, { passive: false });
+
+            // Click event (only if not dragged)
+            item.addEventListener('click', (e) => {
+                if (!hasMoved) {
+                    openModal(exhibit);
+                }
+            });
+
             exhibitionList.appendChild(item);
+        });
+
+        // Start dragging
+        function startDrag(e) {
+            if (!isLandscape()) return;
+
+            e.preventDefault();
+            hasMoved = false;
+            isDragging = true;
+            draggedElement = e.currentTarget;
+            draggedElement.classList.add('dragging');
+
+            const touch = e.touches ? e.touches[0] : e;
+            startX = touch.clientX;
+            startY = touch.clientY;
+            startLeft = parseInt(draggedElement.style.left) || 0;
+            startTop = parseInt(draggedElement.style.top) || 0;
+
+            document.addEventListener('mousemove', onDrag);
+            document.addEventListener('touchmove', onDrag, { passive: false });
+            document.addEventListener('mouseup', stopDrag);
+            document.addEventListener('touchend', stopDrag);
+        }
+
+        // During dragging
+        function onDrag(e) {
+            if (!isDragging || !draggedElement) return;
+
+            e.preventDefault();
+            const touch = e.touches ? e.touches[0] : e;
+            const deltaX = touch.clientX - startX;
+            const deltaY = touch.clientY - startY;
+
+            // Check if moved more than 5px (to distinguish from click)
+            if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+                hasMoved = true;
+            }
+
+            const newLeft = startLeft + deltaX;
+            const newTop = startTop + deltaY;
+
+            // Constrain within bounds
+            const maxLeft = exhibitionList.offsetWidth - draggedElement.offsetWidth - 10;
+            const maxTop = exhibitionList.offsetHeight - draggedElement.offsetHeight - 10;
+
+            draggedElement.style.left = Math.max(10, Math.min(newLeft, maxLeft)) + 'px';
+            draggedElement.style.top = Math.max(10, Math.min(newTop, maxTop)) + 'px';
+        }
+
+        // Stop dragging
+        function stopDrag() {
+            if (isDragging && draggedElement) {
+                draggedElement.classList.remove('dragging');
+
+                // Save positions if moved
+                if (hasMoved) {
+                    savePositions();
+                }
+
+                document.removeEventListener('mousemove', onDrag);
+                document.removeEventListener('touchmove', onDrag);
+                document.removeEventListener('mouseup', stopDrag);
+                document.removeEventListener('touchend', stopDrag);
+
+                isDragging = false;
+
+                // Reset hasMoved after a short delay to allow click event to check it
+                setTimeout(() => {
+                    hasMoved = false;
+                    draggedElement = null;
+                }, 50);
+            }
+        }
+
+        // Re-position on orientation change
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                if (isLandscape()) {
+                    const positions = loadPositions();
+                    document.querySelectorAll('.exhibit-item').forEach((item, index) => {
+                        if (positions[index]) {
+                            item.style.left = positions[index].left + 'px';
+                            item.style.top = positions[index].top + 'px';
+                        }
+                    });
+                } else {
+                    // Reset inline styles for portrait mode
+                    document.querySelectorAll('.exhibit-item').forEach(item => {
+                        item.style.left = '';
+                        item.style.top = '';
+                    });
+                }
+            }, 300);
+        });
+
+        // Re-position on resize
+        window.addEventListener('resize', () => {
+            if (isLandscape()) {
+                const positions = loadPositions();
+                document.querySelectorAll('.exhibit-item').forEach((item, index) => {
+                    if (positions[index]) {
+                        item.style.left = positions[index].left + 'px';
+                        item.style.top = positions[index].top + 'px';
+                    }
+                });
+            }
         });
 
         // Open Modal
