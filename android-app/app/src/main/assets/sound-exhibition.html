@@ -843,6 +843,15 @@
             currentAudio.addEventListener('loadedmetadata', () => {
                 audioLoading.classList.remove('active');
                 durationTime.textContent = formatTime(currentAudio.duration);
+
+                // Автоматически начинаем воспроизведение
+                currentAudio.play().then(() => {
+                    playBtn.textContent = '⏸';
+                    audioVisualizer.classList.add('playing');
+                }).catch(err => {
+                    console.error('Autoplay error:', err);
+                    // Если автозапуск не удался (например, браузер блокирует), просто игнорируем
+                });
             });
 
             currentAudio.addEventListener('error', (e) => {
