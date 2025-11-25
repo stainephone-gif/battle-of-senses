@@ -1917,6 +1917,11 @@
       collageModalText.innerHTML = `<h3>${data.desc}</h3><p>${data.name}</p>`;
       collageModal.classList.add('visible');
 
+      // Скрываем кнопку "Войти в тишину"
+      if (finishBtn) {
+        finishBtn.style.display = 'none';
+      }
+
       if ('vibrate' in navigator) {
         navigator.vibrate(15);
       }
@@ -1938,6 +1943,8 @@
     if (closeCollageModal) {
       closeCollageModal.addEventListener('click', () => {
         collageModal.classList.remove('visible');
+        // Показываем кнопку "Войти в тишину" снова
+        updateScreens();
         if ('vibrate' in navigator) {
           navigator.vibrate(10);
         }
@@ -1948,6 +1955,8 @@
     collageModal.addEventListener('click', (e) => {
       if (e.target === collageModal) {
         collageModal.classList.remove('visible');
+        // Показываем кнопку "Войти в тишину" снова
+        updateScreens();
       }
     });
 
