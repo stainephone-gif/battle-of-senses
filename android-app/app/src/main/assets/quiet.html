@@ -4,6 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Тихое место</title>
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" type="image/svg+xml" href="./icons/icon.svg">
+
   <style>
     * {
       margin: 0;
@@ -228,7 +234,7 @@
 
       <!-- Кнопки навигации -->
       <div class="button-group">
-        <a href="index.html" class="btn btn-primary">Начать сначала</a>
+        <a href="main.html" class="btn btn-primary">Начать сначала</a>
         <button class="btn btn-secondary" id="otherPathBtn">Исследовать другой путь</button>
       </div>
     </div>
@@ -259,7 +265,7 @@
     document.getElementById('otherPathBtn').addEventListener('click', () => {
       // Определяем, откуда пришел пользователь
       const referrer = document.referrer;
-      let targetPath = 'index.html';
+      let targetPath = 'main.html';
 
       if (referrer.includes('zrenie')) {
         // Если пришел из визуальной ветви, предлагаем аудиальную
@@ -306,6 +312,13 @@
 
     // Также останавливаем при любом взаимодействии (на всякий случай)
     document.addEventListener('click', stopAllAudio, { once: true });
+
+    // PWA: Регистрация Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./service-worker.js')
+        .then(reg => console.log('✅ SW registered'))
+        .catch(err => console.error('❌ SW error:', err));
+    }
   </script>
 </body>
 </html>
