@@ -241,6 +241,39 @@
   </div>
 
   <script>
+    // Загрузка конфигурации освещения из localStorage
+    let lightsConfig = null;
+    try {
+      const stored = localStorage.getItem('lightsConfig');
+      if (stored) {
+        lightsConfig = JSON.parse(stored);
+      }
+    } catch (e) {
+      console.error('Ошибка загрузки конфигурации освещения:', e);
+    }
+
+    // Функция включения света через Philips Hue
+    async function turnOnLights() {
+      if (!lightsConfig || lightsConfig.type !== 'hue') return;
+
+      try {
+        const response = await fetch(`http://${lightsConfig.ip}/api/${lightsConfig.apiKey}/lights`);
+        const lights = await response.json();
+        const lightIds = Object.keys(lights);
+
+        for (const id of lightIds) {
+          await fetch(`http://${lightsConfig.ip}/api/${lightsConfig.apiKey}/lights/${id}/state`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ on: true, bri: 254 })
+          });
+        }
+        console.log('✅ Свет включен');
+      } catch (error) {
+        console.error('Ошибка включения света:', error);
+      }
+    }
+
     // Таймер пребывания в "тихом месте"
     let seconds = 0;
     const timerElement = document.getElementById('timer');
@@ -261,8 +294,20 @@
       clearInterval(timerInterval);
     });
 
+    // Кнопка "Начать сначала" - включение света
+    document.querySelector('a[href="main.html"]').addEventListener('click', (e) => {
+      e.preventDefault();
+      turnOnLights();
+      setTimeout(() => {
+        window.location.href = 'main.html';
+      }, 300);
+    });
+
     // Кнопка "Исследовать другой путь"
     document.getElementById('otherPathBtn').addEventListener('click', () => {
+      // Включаем свет
+      turnOnLights();
+
       // Определяем, откуда пришел пользователь
       const referrer = document.referrer;
       let targetPath = 'main.html';
