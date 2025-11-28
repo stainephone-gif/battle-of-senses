@@ -1,0 +1,27 @@
+# Аудио файлы интервью (слишком большие для GitHub)
+interviews/*.mp3
+interviews/*.MP3
+android-app/app/src/main/assets/interviews/*.mp3
+android-app/app/src/main/assets/interviews/*.MP3
+
+# Android build files
+android-app/.gradle/
+android-app/.idea/
+android-app/build/
+android-app/app/build/
+android-app/local.properties
+*.apk
+*.aab
+
+# Node modules (если используются)
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
