@@ -4,6 +4,16 @@ interviews/*.MP3
 android-app/app/src/main/assets/interviews/*.mp3
 android-app/app/src/main/assets/interviews/*.MP3
 
+# Изображения артворков (хранятся локально)
+artworks/*.jpg
+artworks/*.JPG
+artworks/*.png
+artworks/*.PNG
+android-app/app/src/main/assets/artworks/*.jpg
+android-app/app/src/main/assets/artworks/*.JPG
+android-app/app/src/main/assets/artworks/*.png
+android-app/app/src/main/assets/artworks/*.PNG
+
 # Android build files
 android-app/.gradle/
 android-app/.idea/
