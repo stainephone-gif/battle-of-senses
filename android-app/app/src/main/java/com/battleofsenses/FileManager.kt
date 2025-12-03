@@ -13,13 +13,14 @@ class FileManager(private val context: Context) {
         private const val ARTWORKS_DIR = "artworks"
         private const val INTERVIEWS_DIR = "interviews"
 
-        // Placeholder file names
+        // Placeholder file names - 23 works
         val ARTWORK_FILES = listOf(
             "01MoodMirror.jpg", "02Gadgets.jpg", "03SetHumans.jpg", "04Connection.jpg",
             "05Identification.jpg", "06Touching.jpg", "07CAMP.jpg", "08TuesdaySong.jpg",
             "09LightOfUs.jpg", "10Diary.jpg", "11SoundscapeConsole.jpg", "12Bioconstruction.jpg",
-            "13Iddily.jpg", "14Inverse.jpg", "16ReadFace.jpg", "17Omniharmony.jpg",
-            "18Terribletales.jpg", "20GrimasaSynth.jpg", "21LoveAgreement.jpg", "23Biohub.jpg"
+            "13Iddily.jpg", "14Inverse.jpg", "15Placeholder.jpg", "16ReadFace.jpg", "17Omniharmony.jpg",
+            "18Terribletales.jpg", "19Placeholder.jpg", "20GrimasaSynth.jpg", "21LoveAgreement.jpg",
+            "22Placeholder.jpg", "23Biohub.jpg"
         )
 
         val INTERVIEW_FILES = listOf(

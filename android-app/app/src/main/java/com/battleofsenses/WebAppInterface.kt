@@ -222,4 +222,18 @@ class WebAppInterface(private val context: Context) {
     fun exitApp() {
         (context as? MainActivity)?.finish()
     }
+
+    /**
+     * Открыть админ-панель для загрузки файлов
+     * JavaScript: Android.openAdminPanel()
+     */
+    @JavascriptInterface
+    fun openAdminPanel() {
+        (context as? MainActivity)?.runOnUiThread {
+            (context as? MainActivity)?.let { activity ->
+                val intent = android.content.Intent(activity, AdminActivity::class.java)
+                activity.startActivity(intent)
+            }
+        }
+    }
 }
