@@ -1,23 +1,18 @@
 package com.battleofsenses
 
 import android.content.Context
-import android.content.Intent
 import android.media.AudioDeviceCallback
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.GestureDetector
-import android.view.MotionEvent
 import android.view.View
 import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.GestureDetectorCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -26,11 +21,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
     private lateinit var audioManager: AudioManager
-    private lateinit var fileManager: FileManager
-    private lateinit var gestureDetector: GestureDetectorCompat
     private var isHeadphonesConnected = false
-    private var tapCount = 0
-    private val tapHandler = Handler(Looper.getMainLooper())
 
     private val audioCallback = object : AudioDeviceCallback() {
         override fun onAudioDevicesAdded(addedDevices: Array<out AudioDeviceInfo>) {
@@ -81,19 +72,12 @@ class MainActivity : AppCompatActivity() {
         // Включаем полноэкранный режим (immersive mode)
         setupImmersiveMode()
 
-        // Инициализация FileManager
-        fileManager = FileManager(this)
-        initializeFilesAsync()
-
         // Инициализация AudioManager
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
         // Инициализация WebView
         webView = findViewById(R.id.webView)
         setupWebView()
-
-        // Setup gesture detector for admin access (triple tap)
-        setupGestureDetector()
 
         // Регистрация audio callback
         audioManager.registerAudioDeviceCallback(audioCallback, Handler(Looper.getMainLooper()))
@@ -111,62 +95,6 @@ class MainActivity : AppCompatActivity() {
                 notifyWebViewHeadphonesConnected()
             }, 500)
         }
-    }
-
-    /**
-     * Асинхронная инициализация файлов
-     */
-    private fun initializeFilesAsync() {
-        Thread {
-            val success = fileManager.initializeFiles()
-            runOnUiThread {
-                if (!success) {
-                    Toast.makeText(this, "Ошибка инициализации файлов", Toast.LENGTH_LONG).show()
-                }
-            }
-        }.start()
-    }
-
-    /**
-     * Настройка детектора жестов для входа в админку (тройное нажатие)
-     */
-    private fun setupGestureDetector() {
-        gestureDetector = GestureDetectorCompat(this, object : GestureDetector.SimpleOnGestureListener() {
-            override fun onDown(e: MotionEvent): Boolean = true
-
-            override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-                tapCount++
-
-                if (tapCount == 1) {
-                    // Reset count after 2 seconds
-                    tapHandler.postDelayed({
-                        tapCount = 0
-                    }, 2000)
-                }
-
-                if (tapCount == 3) {
-                    // Triple tap detected - open admin
-                    tapCount = 0
-                    tapHandler.removeCallbacksAndMessages(null)
-                    openAdminPanel()
-                    return true
-                }
-
-                return false
-            }
-        })
-    }
-
-    /**
-     * Открыть админ-панель
-     */
-    private fun openAdminPanel() {
-        val intent = Intent(this, AdminActivity::class.java)
-        startActivity(intent)
-    }
-
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        return gestureDetector.onTouchEvent(event) || super.onTouchEvent(event)
     }
 
     private fun setupWebView() {
