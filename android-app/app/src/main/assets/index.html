@@ -254,29 +254,6 @@
       background: rgba(76, 175, 80, 0.1);
     }
 
-    /* Кнопка админки */
-    .admin-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      padding: 12px 20px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 25px;
-      color: #aaa;
-      font-size: 0.85rem;
-      z-index: 1000;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(10px);
-      cursor: pointer;
-    }
-
-    .admin-btn:hover {
-      background: rgba(255, 255, 255, 0.2);
-      color: #fff;
-      border-color: rgba(255, 255, 255, 0.5);
-    }
-
     /* Модальное окно */
     .modal {
       position: fixed;
@@ -483,9 +460,6 @@
 
     <!-- Кнопка настроек -->
     <button class="settings-btn" id="settingsBtn" aria-label="Настройки" title="Настроить умное освещение">⚙️</button>
-
-    <!-- Кнопка админки -->
-    <button class="admin-btn" id="adminBtn" aria-label="Админка" title="Загрузка файлов работ">📁 Админка</button>
 
     <div class="content">
       <h1>Настройка</h1>
@@ -842,18 +816,6 @@
 
     // Загрузка сохраненных настроек при запуске (отображение индикатора)
     loadLightsConfig();
-
-    // ========== КНОПКА АДМИНКИ ==========
-
-    const adminBtn = document.getElementById('adminBtn');
-
-    adminBtn.addEventListener('click', () => {
-      if (typeof Android !== 'undefined' && Android.openAdminPanel) {
-        Android.openAdminPanel();
-      } else {
-        alert('Админ-панель доступна только в Android приложении');
-      }
-    });
 
     // PWA: Регистрация Service Worker
     if ('serviceWorker' in navigator) {
