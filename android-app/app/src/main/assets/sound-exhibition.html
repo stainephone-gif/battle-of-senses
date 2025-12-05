@@ -970,31 +970,72 @@
             return window.innerHeight < window.innerWidth;
         }
 
-        // Default positions for landscape mode (grid layout)
-        const defaultPositions = [
-            { left: 20, top: 20 },
-            { left: 130, top: 20 },
-            { left: 240, top: 20 },
-            { left: 350, top: 20 },
-            { left: 460, top: 20 },
-            { left: 20, top: 130 },
-            { left: 130, top: 130 },
-            { left: 240, top: 130 },
-            { left: 350, top: 130 },
-            { left: 460, top: 130 }
-        ];
+        // Generate evenly distributed positions for all 20 exhibits
+        function generateEvenPositions() {
+            const positions = [];
+            const viewWidth = window.innerWidth;
+            const viewHeight = window.innerHeight;
+            const itemWidth = 90;
+            const itemHeight = 100;
+            const padding = 15;
 
-        // Load saved positions or use defaults
+            // Рассчитываем сетку для 20 элементов
+            const cols = Math.floor(viewWidth / (itemWidth + padding));
+            const rows = Math.ceil(20 / cols);
+
+            // Центрируем сетку
+            const totalGridWidth = cols * (itemWidth + padding);
+            const totalGridHeight = rows * (itemHeight + padding);
+            const startX = Math.max(padding, (viewWidth - totalGridWidth) / 2);
+            const startY = Math.max(padding, (viewHeight - totalGridHeight) / 2);
+
+            for (let i = 0; i < 20; i++) {
+                const col = i % cols;
+                const row = Math.floor(i / cols);
+
+                // Добавляем небольшой случайный offset для органичности
+                const randomX = (Math.random() - 0.5) * 20;
+                const randomY = (Math.random() - 0.5) * 20;
+
+                positions.push({
+                    left: Math.max(padding, Math.min(
+                        startX + col * (itemWidth + padding) + randomX,
+                        viewWidth - itemWidth - padding
+                    )),
+                    top: Math.max(padding, Math.min(
+                        startY + row * (itemHeight + padding) + randomY,
+                        viewHeight - itemHeight - padding
+                    ))
+                });
+            }
+
+            return positions;
+        }
+
+        // Load saved positions or generate new ones
         function loadPositions() {
             const saved = localStorage.getItem('exhibit_positions');
             if (saved) {
                 try {
-                    return JSON.parse(saved);
+                    const parsed = JSON.parse(saved);
+                    // Проверяем что есть позиции для всех 20 элементов
+                    if (parsed.length >= 20) {
+                        return parsed;
+                    } else {
+                        // Если старые позиции неполные, очищаем их
+                        console.log('Clearing old incomplete positions, regenerating...');
+                        localStorage.removeItem('exhibit_positions');
+                    }
                 } catch (e) {
-                    return defaultPositions;
+                    // Игнорируем ошибки парсинга
+                    localStorage.removeItem('exhibit_positions');
                 }
             }
-            return defaultPositions;
+            // Генерируем новые равномерные позиции
+            const newPositions = generateEvenPositions();
+            // Сохраняем для будущего использования
+            localStorage.setItem('exhibit_positions', JSON.stringify(newPositions));
+            return newPositions;
         }
 
         // Save positions
@@ -1024,9 +1065,17 @@
             `;
 
             // Set position for landscape mode
-            if (isLandscape() && positions[index]) {
-                item.style.left = positions[index].left + 'px';
-                item.style.top = positions[index].top + 'px';
+            if (isLandscape()) {
+                if (positions[index]) {
+                    item.style.left = positions[index].left + 'px';
+                    item.style.top = positions[index].top + 'px';
+                } else {
+                    // Fallback: если нет позиции, генерируем случайную
+                    const vw = window.innerWidth;
+                    const vh = window.innerHeight;
+                    item.style.left = Math.random() * (vw - 100) + 'px';
+                    item.style.top = Math.random() * (vh - 120) + 'px';
+                }
             }
 
             // Mouse events for dragging (landscape) and clicking
@@ -1134,6 +1183,12 @@
                         if (positions[index]) {
                             item.style.left = positions[index].left + 'px';
                             item.style.top = positions[index].top + 'px';
+                        } else {
+                            // Fallback для элементов без позиций
+                            const vw = window.innerWidth;
+                            const vh = window.innerHeight;
+                            item.style.left = Math.random() * (vw - 100) + 'px';
+                            item.style.top = Math.random() * (vh - 120) + 'px';
                         }
                     });
                 } else {
@@ -1154,6 +1209,12 @@
                     if (positions[index]) {
                         item.style.left = positions[index].left + 'px';
                         item.style.top = positions[index].top + 'px';
+                    } else {
+                        // Fallback для элементов без позиций
+                        const vw = window.innerWidth;
+                        const vh = window.innerHeight;
+                        item.style.left = Math.random() * (vw - 100) + 'px';
+                        item.style.top = Math.random() * (vh - 120) + 'px';
                     }
                 });
             }
