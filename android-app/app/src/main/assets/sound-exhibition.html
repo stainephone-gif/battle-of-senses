@@ -76,15 +76,109 @@
             letter-spacing: 3px;
         }
 
-        /* Interview Counter */
+        /* Interview Progress Bar */
         .interview-counter {
-            background: #111;
-            border-bottom: 1px solid #333;
-            padding: 15px 20px;
-            text-align: center;
-            font-size: 14px;
-            color: #888;
-            letter-spacing: 1px;
+            background: rgba(17, 17, 17, 0.8);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scrollbar-width: none;
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+
+        .interview-counter::-webkit-scrollbar {
+            display: none;
+        }
+
+        .interview-dot {
+            min-width: 20px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .interview-dot::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .interview-dot:hover {
+            transform: scale(1.2);
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .interview-dot:hover::before {
+            opacity: 1;
+        }
+
+        .interview-dot.listened {
+            background: linear-gradient(135deg, rgba(100, 220, 150, 0.8), rgba(80, 200, 120, 0.8));
+            border-color: rgba(100, 220, 150, 0.4);
+            box-shadow: 0 0 15px rgba(100, 220, 150, 0.5);
+            animation: pulse-listened 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-listened {
+            0%, 100% {
+                box-shadow: 0 0 15px rgba(100, 220, 150, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 25px rgba(100, 220, 150, 0.7);
+            }
+        }
+
+        .interview-separator {
+            width: 8px;
+            height: 2px;
+            background: linear-gradient(90deg,
+                rgba(255, 255, 255, 0.1) 0%,
+                rgba(255, 255, 255, 0.3) 50%,
+                rgba(255, 255, 255, 0.1) 100%);
+            border-radius: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .interview-separator::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                transparent,
+                rgba(255, 255, 255, 0.5),
+                transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                left: -100%;
+            }
+            50%, 100% {
+                left: 100%;
+            }
         }
 
         /* Exhibition List */
@@ -489,6 +583,22 @@
                 font-size: 10px;
             }
 
+            /* Interview progress bar adaptation for landscape */
+            .interview-counter {
+                padding: 10px;
+                gap: 3px;
+            }
+
+            .interview-dot {
+                min-width: 16px;
+                width: 16px;
+                height: 16px;
+            }
+
+            .interview-separator {
+                width: 6px;
+            }
+
             /* Modal adaptation for landscape */
             .modal-content {
                 width: 70%;
@@ -583,8 +693,48 @@
             <div style="width: 40px;"></div> <!-- Spacer for centering -->
         </div>
 
-        <!-- Interview Counter -->
-        <div class="interview-counter" id="interviewCounter">Прослушано: 0 из 20 интервью</div>
+        <!-- Interview Progress Bar -->
+        <div class="interview-counter" id="interviewCounter">
+            <div class="interview-dot" data-interview="0"></div>
+            <div class="interview-separator"></div>
+            <div class="interview-dot" data-interview="1"></div>
+            <div class="interview-separator"></div>
+            <div class="interview-dot" data-interview="2"></div>
+            <div class="interview-separator"></div>
+            <div class="interview-dot" data-interview="3"></div>
+            <div class="interview-separator"></div>
+            <div class="interview-dot" data-interview="4"></div>
+            <div class="interview-separator"></div>
+            <div class="interview-dot" data-interview="5"></div>
+            <div class="interview-separator"></div>
+            <div class="interview-dot" data-interview="6"></div>
+            <div class="interview-separator"></div>
+            <div class="interview-dot" data-interview="7"></div>
+            <div class="interview-separator"></div>
+            <div class="interview-dot" data-interview="8"></div>
+            <div class="interview-separator"></div>
+            <div class="interview-dot" data-interview="9"></div>
+            <div class="interview-separator"></div>
+            <div class="interview-dot" data-interview="10"></div>
+            <div class="interview-separator"></div>
+            <div class="interview-dot" data-interview="11"></div>
+            <div class="interview-separator"></div>
+            <div class="interview-dot" data-interview="12"></div>
+            <div class="interview-separator"></div>
+            <div class="interview-dot" data-interview="13"></div>
+            <div class="interview-separator"></div>
+            <div class="interview-dot" data-interview="14"></div>
+            <div class="interview-separator"></div>
+            <div class="interview-dot" data-interview="15"></div>
+            <div class="interview-separator"></div>
+            <div class="interview-dot" data-interview="16"></div>
+            <div class="interview-separator"></div>
+            <div class="interview-dot" data-interview="17"></div>
+            <div class="interview-separator"></div>
+            <div class="interview-dot" data-interview="18"></div>
+            <div class="interview-separator"></div>
+            <div class="interview-dot" data-interview="19"></div>
+        </div>
 
         <!-- Exhibition List -->
         <div class="exhibition-list" id="exhibitionList"></div>
@@ -812,7 +962,8 @@
         let startLeft = 0;
         let startTop = 0;
         let hasMoved = false;
-        let listenedInterviews = new Set(); // Отслеживание прослушанных интервью
+        let listenedInterviews = new Set(); // Отслеживание прослушанных интервью по индексам
+        let currentExhibitIndex = -1; // Текущий индекс интервью
 
         // Check if landscape mode
         function isLandscape() {
@@ -879,8 +1030,8 @@
             }
 
             // Mouse events for dragging (landscape) and clicking
-            item.addEventListener('mousedown', (e) => startDrag(e, exhibit));
-            item.addEventListener('touchstart', (e) => startDrag(e, exhibit), { passive: false });
+            item.addEventListener('mousedown', (e) => startDrag(e, exhibit, index));
+            item.addEventListener('touchstart', (e) => startDrag(e, exhibit, index), { passive: false });
 
             exhibitionList.appendChild(item);
         });
@@ -889,14 +1040,15 @@
         let currentExhibit = null;
 
         // Start dragging
-        function startDrag(e, exhibit) {
+        function startDrag(e, exhibit, exhibitIndex) {
             hasMoved = false;
             currentExhibit = exhibit;
+            currentExhibitIndex = exhibitIndex;
             draggedElement = e.currentTarget;
 
             // In portrait mode, just open modal immediately
             if (!isLandscape()) {
-                openModal(exhibit);
+                openModal(exhibit, exhibitIndex);
                 return;
             }
 
@@ -949,7 +1101,7 @@
 
                 // If not moved, it's a click - open modal
                 if (!hasMoved && currentExhibit) {
-                    openModal(currentExhibit);
+                    openModal(currentExhibit, currentExhibitIndex);
                 }
 
                 // Save positions if moved
@@ -1008,7 +1160,8 @@
         });
 
         // Open Modal
-        function openModal(exhibit) {
+        function openModal(exhibit, exhibitIndex) {
+            currentExhibitIndex = exhibitIndex;
             modalNumber.textContent = `ЭКСПОНАТ #${String(exhibit.id).padStart(2, '0')}`;
             modalTitle.textContent = exhibit.title;
             modalDescription.textContent = exhibit.description;
@@ -1050,9 +1203,11 @@
                 currentAudio.play().then(() => {
                     playBtn.textContent = '⏸';
                     audioVisualizer.classList.add('playing');
-                    // Добавляем интервью в прослушанные
-                    listenedInterviews.add(audioFile);
-                    updateInterviewCounter();
+                    // Добавляем интервью в прослушанные по индексу
+                    if (currentExhibitIndex >= 0) {
+                        listenedInterviews.add(currentExhibitIndex);
+                        updateInterviewCounter();
+                    }
                 }).catch(err => {
                     console.error('Autoplay error:', err);
                     // Если автозапуск не удался (например, браузер блокирует), просто игнорируем
@@ -1091,10 +1246,14 @@
 
         // Update Interview Counter
         function updateInterviewCounter() {
-            const interviewCounter = document.getElementById('interviewCounter');
-            if (interviewCounter) {
-                interviewCounter.textContent = `Прослушано: ${listenedInterviews.size} из 20 интервью`;
-            }
+            const dots = document.querySelectorAll('.interview-dot');
+            dots.forEach((dot, index) => {
+                if (listenedInterviews.has(index)) {
+                    dot.classList.add('listened');
+                } else {
+                    dot.classList.remove('listened');
+                }
+            });
         }
 
         // Play/Pause Button
@@ -1105,9 +1264,11 @@
                 currentAudio.play().then(() => {
                     playBtn.textContent = '⏸';
                     audioVisualizer.classList.add('playing');
-                    // Добавляем интервью в прослушанные
-                    listenedInterviews.add(currentAudio.src);
-                    updateInterviewCounter();
+                    // Добавляем интервью в прослушанные по индексу
+                    if (currentExhibitIndex >= 0) {
+                        listenedInterviews.add(currentExhibitIndex);
+                        updateInterviewCounter();
+                    }
                 }).catch(err => {
                     console.error('Play error:', err);
                     audioError.classList.add('active');
