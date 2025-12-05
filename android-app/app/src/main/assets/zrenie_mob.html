@@ -2274,8 +2274,8 @@
     if (closeCollageModal) {
       closeCollageModal.addEventListener('click', () => {
         collageModal.classList.remove('visible');
-        // Показываем кнопку "Войти в тишину" снова
-        updateScreens();
+        // Проверяем ориентацию чтобы показать правильный контент
+        checkOrientation();
         if ('vibrate' in navigator) {
           navigator.vibrate(10);
         }
@@ -2286,8 +2286,8 @@
     collageModal.addEventListener('click', (e) => {
       if (e.target === collageModal) {
         collageModal.classList.remove('visible');
-        // Показываем кнопку "Войти в тишину" снова
-        updateScreens();
+        // Проверяем ориентацию чтобы показать правильный контент
+        checkOrientation();
       }
     });
 
