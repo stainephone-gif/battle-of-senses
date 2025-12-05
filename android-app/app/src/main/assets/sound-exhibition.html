@@ -488,6 +488,80 @@
                 padding: 8px;
                 font-size: 10px;
             }
+
+            /* Modal adaptation for landscape */
+            .modal-content {
+                width: 70%;
+                max-width: 600px;
+                max-height: 90vh;
+                overflow-y: auto;
+                padding: 20px;
+            }
+
+            .modal-header {
+                padding-bottom: 10px;
+                margin-bottom: 10px;
+            }
+
+            .modal-number {
+                font-size: 10px;
+                margin-bottom: 4px;
+            }
+
+            .modal-title {
+                font-size: 14px;
+                margin-bottom: 6px;
+            }
+
+            .modal-description {
+                font-size: 11px;
+                line-height: 1.4;
+            }
+
+            .audio-player {
+                margin-top: 15px;
+            }
+
+            .audio-visualizer {
+                height: 40px;
+                margin-bottom: 10px;
+            }
+
+            @keyframes pulse {
+                0%, 100% { height: 8px; }
+                50% { height: 35px; }
+            }
+
+            .audio-time {
+                font-size: 10px;
+                margin-bottom: 8px;
+            }
+
+            .audio-progress {
+                margin-bottom: 15px;
+            }
+
+            .audio-controls {
+                gap: 10px;
+                margin-bottom: 15px;
+            }
+
+            .audio-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 14px;
+            }
+
+            .audio-btn-play {
+                width: 50px;
+                height: 50px;
+                font-size: 18px;
+            }
+
+            .close-modal {
+                padding: 8px 16px;
+                font-size: 11px;
+            }
         }
 
         /* Reduce Motion */
@@ -851,8 +925,9 @@
             const deltaX = touch.clientX - startX;
             const deltaY = touch.clientY - startY;
 
-            // Check if moved more than 5px (to distinguish from click)
-            if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+            // Check if moved more than 15px (to distinguish from click)
+            // Увеличенный порог для лучшего распознавания клика vs перетаскивания
+            if (Math.abs(deltaX) > 15 || Math.abs(deltaY) > 15) {
                 hasMoved = true;
             }
 
