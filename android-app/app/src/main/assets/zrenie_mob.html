@@ -888,22 +888,60 @@
       transform: scale(1.2);
     }
 
-    /* Счётчик просмотренных работ */
+    /* Живой счётчик просмотренных работ */
     .work-counter {
       position: fixed;
       bottom: 30px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(10px);
-      padding: 12px 24px;
-      border-radius: 20px;
-      font-size: 14px;
-      font-weight: 600;
-      color: rgba(255, 255, 255, 0.9);
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      padding: 14px 28px;
+      border-radius: 30px;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
       z-index: 100;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      font-family: 'Space Mono', 'Courier New', monospace;
       letter-spacing: 0.5px;
+    }
+
+    .counter-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .counter-number {
+      font-size: 22px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #fff 0%, #e0e0e0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      min-width: 30px;
+      text-align: center;
+      transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.3s ease;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    }
+
+    .counter-separator {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.4);
+      font-weight: 600;
+    }
+
+    .counter-total {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.5);
+      font-weight: 700;
     }
 
     /* Модальное окно для экрана 5 */
@@ -1391,7 +1429,12 @@
         <!-- Контейнер для случайно расположенных элементов -->
         <div id="collageContainer"></div>
         <!-- Счётчик просмотренных работ -->
-        <div class="work-counter" id="workCounter">Просмотрено: 0 из 21 работ</div>
+        <div class="work-counter" id="workCounter">
+          <span class="counter-label">Просмотрено</span>
+          <span class="counter-number" id="viewedCount">0</span>
+          <span class="counter-separator">/</span>
+          <span class="counter-total">21</span>
+        </div>
       </div>
     </div>
 
@@ -2308,9 +2351,19 @@
 
     // Обновить счётчик просмотренных работ
     function updateWorkCounter() {
-      const workCounter = document.getElementById('workCounter');
-      if (workCounter) {
-        workCounter.textContent = `Просмотрено: ${viewedWorks.size} из 21 работ`;
+      const viewedCountEl = document.getElementById('viewedCount');
+      if (viewedCountEl) {
+        const newCount = viewedWorks.size;
+
+        // Анимация смены числа
+        viewedCountEl.style.transform = 'scale(1.4) rotate(8deg)';
+        viewedCountEl.style.opacity = '0';
+
+        setTimeout(() => {
+          viewedCountEl.textContent = newCount;
+          viewedCountEl.style.transform = 'scale(1) rotate(0deg)';
+          viewedCountEl.style.opacity = '1';
+        }, 250);
       }
     }
 
