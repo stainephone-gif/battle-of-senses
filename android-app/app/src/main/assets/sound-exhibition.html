@@ -539,6 +539,13 @@
                 cursor: grab;
                 user-select: none;
                 touch-action: none;
+                /* Скрываем до установки позиций */
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+
+            .exhibit-item.positioned {
+                opacity: 1;
             }
 
             .exhibit-item.dragging {
@@ -1076,11 +1083,24 @@
                     item.style.left = Math.random() * (vw - 100) + 'px';
                     item.style.top = Math.random() * (vh - 120) + 'px';
                 }
+                // Показываем элемент после установки позиции
+                requestAnimationFrame(() => {
+                    item.classList.add('positioned');
+                });
             }
 
-            // Mouse events for dragging (landscape) and clicking
-            item.addEventListener('mousedown', (e) => startDrag(e, exhibit, index));
-            item.addEventListener('touchstart', (e) => startDrag(e, exhibit, index), { passive: false });
+            // Разная логика для портретного и ландшафтного режимов
+            if (isLandscape()) {
+                // В ландшафте - драг
+                item.addEventListener('mousedown', (e) => startDrag(e, exhibit, index));
+                item.addEventListener('touchstart', (e) => startDrag(e, exhibit, index), { passive: false });
+            } else {
+                // В портрете - простой клик (не мешает скроллингу)
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openModal(exhibit, index);
+                });
+            }
 
             exhibitionList.appendChild(item);
         });
@@ -1088,20 +1108,14 @@
         // Store current exhibit for click handling
         let currentExhibit = null;
 
-        // Start dragging
+        // Start dragging (только для landscape режима)
         function startDrag(e, exhibit, exhibitIndex) {
             hasMoved = false;
             currentExhibit = exhibit;
             currentExhibitIndex = exhibitIndex;
             draggedElement = e.currentTarget;
 
-            // In portrait mode, just open modal immediately
-            if (!isLandscape()) {
-                openModal(exhibit, exhibitIndex);
-                return;
-            }
-
-            // In landscape mode, prepare for drag
+            // Подготовка к драгу
             isDragging = true;
             draggedElement.classList.add('dragging');
 
@@ -1180,6 +1194,9 @@
                 if (isLandscape()) {
                     const positions = loadPositions();
                     document.querySelectorAll('.exhibit-item').forEach((item, index) => {
+                        // Сначала скрываем
+                        item.classList.remove('positioned');
+
                         if (positions[index]) {
                             item.style.left = positions[index].left + 'px';
                             item.style.top = positions[index].top + 'px';
@@ -1190,22 +1207,59 @@
                             item.style.left = Math.random() * (vw - 100) + 'px';
                             item.style.top = Math.random() * (vh - 120) + 'px';
                         }
+
+                        // Плавно показываем после установки позиций
+                        requestAnimationFrame(() => {
+                            item.classList.add('positioned');
+                        });
                     });
                 } else {
                     // Reset inline styles for portrait mode
                     document.querySelectorAll('.exhibit-item').forEach(item => {
                         item.style.left = '';
                         item.style.top = '';
+                        item.classList.remove('positioned');
                     });
                 }
+
+                // Переустанавливаем обработчики событий
+                updateEventListeners();
             }, 300);
         });
+
+        // Update event listeners based on orientation
+        function updateEventListeners() {
+            document.querySelectorAll('.exhibit-item').forEach((item, index) => {
+                // Удаляем все старые обработчики, создавая новый элемент
+                const exhibitId = parseInt(item.dataset.exhibitId);
+                const exhibitIndex = parseInt(item.dataset.exhibitIndex);
+                const exhibit = exhibits[exhibitIndex];
+
+                // Удаляем старый слушатель, клонируя элемент
+                const newItem = item.cloneNode(true);
+                item.parentNode.replaceChild(newItem, item);
+
+                // Добавляем нужные обработчики
+                if (isLandscape()) {
+                    newItem.addEventListener('mousedown', (e) => startDrag(e, exhibit, exhibitIndex));
+                    newItem.addEventListener('touchstart', (e) => startDrag(e, exhibit, exhibitIndex), { passive: false });
+                } else {
+                    newItem.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        openModal(exhibit, exhibitIndex);
+                    });
+                }
+            });
+        }
 
         // Re-position on resize
         window.addEventListener('resize', () => {
             if (isLandscape()) {
                 const positions = loadPositions();
                 document.querySelectorAll('.exhibit-item').forEach((item, index) => {
+                    // Сначала скрываем
+                    item.classList.remove('positioned');
+
                     if (positions[index]) {
                         item.style.left = positions[index].left + 'px';
                         item.style.top = positions[index].top + 'px';
@@ -1216,6 +1270,11 @@
                         item.style.left = Math.random() * (vw - 100) + 'px';
                         item.style.top = Math.random() * (vh - 120) + 'px';
                     }
+
+                    // Плавно показываем после установки позиций
+                    requestAnimationFrame(() => {
+                        item.classList.add('positioned');
+                    });
                 });
             }
         });
