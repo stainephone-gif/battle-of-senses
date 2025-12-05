@@ -76,6 +76,17 @@
             letter-spacing: 3px;
         }
 
+        /* Interview Counter */
+        .interview-counter {
+            background: #111;
+            border-bottom: 1px solid #333;
+            padding: 15px 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #888;
+            letter-spacing: 1px;
+        }
+
         /* Exhibition List */
         .exhibition-list {
             padding: 20px;
@@ -498,6 +509,9 @@
             <div style="width: 40px;"></div> <!-- Spacer for centering -->
         </div>
 
+        <!-- Interview Counter -->
+        <div class="interview-counter" id="interviewCounter">Прослушано: 0 из 20 интервью</div>
+
         <!-- Exhibition List -->
         <div class="exhibition-list" id="exhibitionList"></div>
 
@@ -724,6 +738,7 @@
         let startLeft = 0;
         let startTop = 0;
         let hasMoved = false;
+        let listenedInterviews = new Set(); // Отслеживание прослушанных интервью
 
         // Check if landscape mode
         function isLandscape() {
@@ -960,6 +975,9 @@
                 currentAudio.play().then(() => {
                     playBtn.textContent = '⏸';
                     audioVisualizer.classList.add('playing');
+                    // Добавляем интервью в прослушанные
+                    listenedInterviews.add(audioFile);
+                    updateInterviewCounter();
                 }).catch(err => {
                     console.error('Autoplay error:', err);
                     // Если автозапуск не удался (например, браузер блокирует), просто игнорируем
@@ -996,6 +1014,14 @@
             return mins + ':' + (secs < 10 ? '0' : '') + secs;
         }
 
+        // Update Interview Counter
+        function updateInterviewCounter() {
+            const interviewCounter = document.getElementById('interviewCounter');
+            if (interviewCounter) {
+                interviewCounter.textContent = `Прослушано: ${listenedInterviews.size} из 20 интервью`;
+            }
+        }
+
         // Play/Pause Button
         playBtn.addEventListener('click', () => {
             if (!currentAudio) return;
@@ -1004,6 +1030,9 @@
                 currentAudio.play().then(() => {
                     playBtn.textContent = '⏸';
                     audioVisualizer.classList.add('playing');
+                    // Добавляем интервью в прослушанные
+                    listenedInterviews.add(currentAudio.src);
+                    updateInterviewCounter();
                 }).catch(err => {
                     console.error('Play error:', err);
                     audioError.classList.add('active');
