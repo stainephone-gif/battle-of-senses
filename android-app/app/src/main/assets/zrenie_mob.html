@@ -572,161 +572,14 @@
       z-index: 1;
     }
 
-    /* Вертикальная версия (портрет) */
-    .portrait-content {
+    /* Контейнер коллажа (единая версия для всех ориентаций) */
+    .collage-content {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      padding: 60px 20px 40px;
-      z-index: 2;
-    }
-
-    .portrait-content.hidden {
-      display: none;
-    }
-
-    /* Пиксельная елка */
-    .pixel-tree {
-      width: 120px;
-      height: 140px;
-      background: #00FF00;
-      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-      box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
-      image-rendering: pixelated;
-      animation: treeGlow 2s ease-in-out infinite;
-    }
-
-    @keyframes treeGlow {
-      0%, 100% { filter: brightness(1); }
-      50% { filter: brightness(1.3); }
-    }
-
-    .portrait-top-text {
-      text-align: center;
-      margin-top: 30px;
-    }
-
-    .portrait-title {
-      font-size: 48px;
-      font-weight: 900;
-      color: #FFFFFF;
-      text-shadow: 0 0 10px #FF00FF, 0 0 20px #00FFFF;
-      letter-spacing: 8px;
-      margin-bottom: 10px;
-      font-family: 'Courier New', monospace;
-    }
-
-    .portrait-subtitle {
-      font-size: 24px;
-      color: rgba(255, 255, 255, 0.8);
-      font-weight: 600;
-    }
-
-    .portrait-bottom-text {
-      font-size: 64px;
-      font-weight: 900;
-      color: #FFFFFF;
-      text-shadow: 0 0 15px #FF00FF, 0 0 30px #00FFFF;
-      letter-spacing: 10px;
-      font-family: 'Courier New', monospace;
-      animation: pulse 1.5s ease-in-out infinite;
-    }
-
-    /* Индикатор поворота экрана */
-    .rotation-indicator {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 100px;
-      height: 100px;
-      z-index: 10;
-    }
-
-    .rotation-ring {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: 4px solid transparent;
-      border-top-color: #00FFFF;
-      border-right-color: #FF00FF;
-      border-radius: 50%;
-      animation: rotateRing 2s linear infinite, pulseRing 1.5s ease-in-out infinite;
-      box-shadow:
-        0 0 20px rgba(0, 255, 255, 0.6),
-        0 0 40px rgba(255, 0, 255, 0.4),
-        inset 0 0 20px rgba(0, 255, 255, 0.3);
-    }
-
-    .rotation-arrow {
-      position: absolute;
-      width: 0;
-      height: 0;
-      border-style: solid;
-    }
-
-    .rotation-arrow.arrow-1 {
-      top: -8px;
-      left: 50%;
-      transform: translateX(-50%);
-      border-width: 0 8px 12px 8px;
-      border-color: transparent transparent #00FFFF transparent;
-      filter: drop-shadow(0 0 8px #00FFFF);
-    }
-
-    .rotation-arrow.arrow-2 {
-      right: -8px;
-      top: 50%;
-      transform: translateY(-50%);
-      border-width: 8px 0 8px 12px;
-      border-color: transparent transparent transparent #FF00FF;
-      filter: drop-shadow(0 0 8px #FF00FF);
-    }
-
-    .rotation-text {
-      position: absolute;
-      top: 120px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 14px;
-      color: rgba(255, 255, 255, 0.9);
-      text-shadow: 0 0 10px #00FFFF;
-      white-space: nowrap;
-      animation: pulse 1.5s ease-in-out infinite;
-    }
-
-    @keyframes rotateRing {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    @keyframes pulseRing {
-      0%, 100% {
-        transform: scale(1);
-        opacity: 1;
-      }
-      50% {
-        transform: scale(1.1);
-        opacity: 0.8;
-      }
-    }
-
-    /* Горизонтальная версия (ландшафт) */
-    .landscape-content {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: none;
+      display: block;
       z-index: 2;
       overflow: hidden;
       background:
@@ -737,7 +590,7 @@
     }
 
     /* Полупрозрачный оверлей для лучшей видимости элементов коллажа */
-    .landscape-content::before {
+    .collage-content::before {
       content: '';
       position: absolute;
       top: 0;
@@ -756,8 +609,57 @@
       height: 100%;
     }
 
-    .landscape-content.active {
-      display: block;
+    /* Иконка свайпа для коллажа */
+    #screen5 .swipe-hint {
+      position: fixed;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      opacity: 0;
+      animation: fadeInSwipe 2s ease-in-out 1s forwards;
+      z-index: 100;
+    }
+
+    @keyframes fadeInSwipe {
+      to {
+        opacity: 1;
+      }
+    }
+
+    #screen5 .swipe-icon {
+      animation: swipeLeftAnim 2s ease-in-out infinite;
+    }
+
+    @keyframes swipeLeftAnim {
+      0%, 100% {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      50% {
+        transform: translateX(-15px);
+        opacity: 0.6;
+      }
+    }
+
+    #screen5 .swipe-text {
+      font-size: 0.9rem;
+      color: #fff;
+      letter-spacing: 1px;
+      animation: pulse 2s ease-in-out infinite;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
     }
 
     /* Random Collage Items */
@@ -1255,34 +1157,31 @@
       </div>
     </div>
 
-    <!-- ЭКРАН 5: ПОВЕРНИ (ВЕРТИКАЛЬНАЯ/ГОРИЗОНТАЛЬНАЯ) -->
+    <!-- ЭКРАН 5: КОЛЛАЖ -->
     <div class="screen" id="screen5" data-screen="4">
-      <!-- Вертикальная версия (портрет) -->
-      <div class="portrait-content">
-        <div>
-          <div class="pixel-tree"></div>
-          <div class="portrait-top-text">
-            <div class="portrait-title">ПОВЕРНИ</div>
-            <div class="portrait-subtitle">Поверни</div>
-          </div>
-        </div>
-
-        <!-- Индикатор поворота экрана -->
-        <div class="rotation-indicator">
-          <div class="rotation-ring">
-            <div class="rotation-arrow arrow-1"></div>
-            <div class="rotation-arrow arrow-2"></div>
-          </div>
-          <div class="rotation-text">Поверни экран →</div>
-        </div>
-
-        <div class="portrait-bottom-text">ПОВЕРНИ</div>
-      </div>
-
-      <!-- Горизонтальная версия (ландшафт) - Random Collage -->
-      <div class="landscape-content" id="landscapeCollage">
+      <!-- Контейнер коллажа (единая версия для всех ориентаций) -->
+      <div class="collage-content" id="collageContent">
         <!-- Контейнер для случайно расположенных элементов -->
         <div id="collageContainer"></div>
+
+        <!-- Иконка свайпа влево -->
+        <div class="swipe-hint" id="swipeHintCollage">
+          <div class="swipe-icon">
+            <svg width="80" height="60" viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Рука -->
+              <path d="M55 25 Q50 20 45 25 L35 35 Q30 40 35 45 Q40 50 45 45 L55 35 Q60 30 55 25"
+                    fill="#ffffff" opacity="0.8"/>
+              <!-- Стрелка влево -->
+              <path d="M35 30 L15 30" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+              <path d="M22 23 L15 30 L22 37" stroke="#ffffff" stroke-width="3" stroke-linecap="round"
+                    stroke-linejoin="round" fill="none"/>
+              <!-- Пунктирная траектория -->
+              <path d="M60 30 L40 30" stroke="#ffffff" stroke-width="2" stroke-dasharray="4,4"
+                    opacity="0.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="swipe-text">Свайпните влево</div>
+        </div>
       </div>
     </div>
 
@@ -1331,7 +1230,6 @@
     let touchStartY = 0;
     let touchEndY = 0;
     let isTransitioning = false;
-    let hasRotated = false; // Флаг для отслеживания поворота устройства
 
     function updateScreens() {
       screens.forEach((screen, index) => {
@@ -1343,9 +1241,8 @@
         dot.classList.toggle('active', index === currentScreen);
       });
 
-      // Кнопка "Войти в тишину" показывается только на экране 5 в горизонтальной ориентации
-      const isLandscape = window.innerWidth > window.innerHeight;
-      if (currentScreen === 4 && hasRotated && isLandscape) {
+      // Кнопка "Войти в тишину" показывается на экране 5
+      if (currentScreen === 4) {
         finishBtn.classList.add('visible');
       } else {
         finishBtn.classList.remove('visible');
@@ -1933,11 +1830,9 @@
     });
 
     // ================================================
-    // ЭКРАН 5: ПОВЕРНИ (ОПРЕДЕЛЕНИЕ ОРИЕНТАЦИИ И RANDOM COLLAGE)
+    // ЭКРАН 5: КОЛЛАЖ (ЕДИНАЯ ВЕРСИЯ ДЛЯ ВСЕХ ОРИЕНТАЦИЙ)
     // ================================================
     const screen5 = document.getElementById('screen5');
-    const portraitContent = screen5.querySelector('.portrait-content');
-    const landscapeContent = screen5.querySelector('.landscape-content');
     const collageContainer = document.getElementById('collageContainer');
     const collageModal = document.getElementById('collageModal');
     const collageModalImg = document.getElementById('collageModalImg');
@@ -1947,6 +1842,7 @@
     // Флаги для коллажа
     let collageInitialized = false;
     let collageItems = [];
+    let swipeDetectedOnScreen5 = false;
 
     // Данные для коллажа - 17 элементов с полной информацией
     const collageData = [
@@ -2209,49 +2105,15 @@
       }
     });
 
-    function checkOrientation() {
-      if (currentScreen !== 4) return; // Только на экране 5
-
-      const isLandscape = window.innerWidth > window.innerHeight;
-
-      if (isLandscape) {
-        // Горизонтальная ориентация
-        portraitContent.classList.add('hidden');
-        landscapeContent.classList.add('active');
-
-        // Инициализируем коллаж при первом показе
-        if (!collageInitialized) {
-          initCollage();
-        }
-
-        // Отмечаем что произошел поворот
-        if (!hasRotated) {
-          hasRotated = true;
-          updateScreens(); // Обновляем экраны чтобы показать кнопку
-        }
-      } else {
-        // Вертикальная ориентация
-        portraitContent.classList.remove('hidden');
-        landscapeContent.classList.remove('active');
-        collageModal.classList.remove('visible'); // Скрываем модалку при переходе в портрет
-      }
-
-      // Обновляем видимость кнопки при смене ориентации
-      updateScreens();
-    }
-
-    // Слушатель изменения ориентации
-    window.addEventListener('orientationchange', () => {
-      setTimeout(checkOrientation, 100);
-    });
-
-    // Слушатель resize (для десктопа и некоторых устройств)
-    window.addEventListener('resize', checkOrientation);
-
-    // Проверка ориентации при смене экрана
+    // Инициализация коллажа при попадании на экран 5
     function onScreenChange() {
       if (currentScreen === 4) {
-        setTimeout(checkOrientation, 100);
+        // Инициализируем коллаж при первом показе
+        if (!collageInitialized) {
+          setTimeout(() => {
+            initCollage();
+          }, 100);
+        }
       }
     }
 
@@ -2261,6 +2123,44 @@
       originalGoToScreen(screenIndex);
       onScreenChange();
     };
+
+    // ========== ОБРАБОТКА СВАЙПА ВЛЕВО НА ЭКРАНЕ 5 ==========
+    // Используем глобальные переменные touchStartX/Y уже определенные выше
+    let screen5TouchStartX = 0;
+    let screen5TouchStartY = 0;
+
+    document.addEventListener('touchstart', (e) => {
+      if (currentScreen === 4) {
+        screen5TouchStartX = e.changedTouches[0].screenX;
+        screen5TouchStartY = e.changedTouches[0].screenY;
+      }
+    }, { passive: true });
+
+    document.addEventListener('touchend', (e) => {
+      if (currentScreen === 4 && !swipeDetectedOnScreen5) {
+        const touchEndX = e.changedTouches[0].screenX;
+        const touchEndY = e.changedTouches[0].screenY;
+
+        const diffX = screen5TouchStartX - touchEndX;
+        const diffY = screen5TouchStartY - touchEndY;
+
+        // Минимальная дистанция свайпа (50px)
+        const minSwipeDistance = 50;
+
+        // Проверяем, что это горизонтальный свайп влево
+        if (Math.abs(diffX) > Math.abs(diffY) && diffX > minSwipeDistance) {
+          swipeDetectedOnScreen5 = true;
+
+          // Плавное затемнение
+          document.body.style.transition = 'opacity 0.5s ease';
+          document.body.style.opacity = '0';
+
+          setTimeout(() => {
+            window.location.href = 'quiet.html';
+          }, 500);
+        }
+      }
+    }, { passive: true });
 
     // Предзагрузка следующей страницы
     const preload = document.createElement('link');
