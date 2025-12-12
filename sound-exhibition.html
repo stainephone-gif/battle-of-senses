@@ -395,51 +395,8 @@
             }
         }
 
-        /* Подсказка для драга в landscape режиме */
-        .drag-hint {
-            position: fixed;
-            top: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 20px;
-            font-size: 11px;
-            color: #fff;
-            letter-spacing: 0.5px;
-            opacity: 0;
-            pointer-events: none;
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            transition: opacity 0.5s ease;
-            display: none;
-        }
-
-        @keyframes fadeInOut {
-            0% { opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { opacity: 0; }
-        }
-
-        /* Landscape Mode - Draggable Cards */
+        /* Landscape Mode - Адаптация размеров */
         @media (orientation: landscape) {
-            body {
-                overflow: hidden;
-            }
-
-            .phone-frame {
-                max-width: 100%;
-                height: 100vh;
-                overflow: hidden;
-            }
-
-            .drag-hint {
-                display: block;
-                animation: fadeInOut 4s ease-in-out 0.5s forwards;
-            }
-
             .header {
                 padding: 10px 15px;
             }
@@ -452,35 +409,6 @@
                 width: 30px;
                 height: 30px;
                 font-size: 16px;
-            }
-
-            .exhibition-list {
-                position: relative;
-                height: calc(100vh - 50px - 50px);
-                padding: 0;
-                overflow: hidden;
-            }
-
-            .exhibit-item {
-                position: absolute;
-                width: 90px;
-                padding: 8px;
-                margin: 0;
-                cursor: grab;
-                user-select: none;
-                touch-action: none;
-            }
-
-            .exhibit-item.dragging {
-                cursor: grabbing;
-                opacity: 0.8;
-                z-index: 50;
-            }
-
-            .exhibit-item:hover {
-                border-color: #fff;
-                background: #111;
-                z-index: 10;
             }
 
             .exhibit-number {
@@ -525,9 +453,6 @@
     </style>
 </head>
 <body>
-    <!-- Подсказка для драга (только в landscape режиме) -->
-    <div class="drag-hint">📱 Перетаскивайте карточки</div>
-
     <div class="phone-frame">
         <!-- Header -->
         <div class="header">
@@ -790,60 +715,8 @@
         const audioError = document.getElementById('audioError');
 
         let currentAudio = null;
-        let isDragging = false;
-        let draggedElement = null;
-        let startX = 0;
-        let startY = 0;
-        let startLeft = 0;
-        let startTop = 0;
-        let hasMoved = false;
-
-        // Check if landscape mode
-        function isLandscape() {
-            return window.innerHeight < window.innerWidth;
-        }
-
-        // Default positions for landscape mode (grid layout)
-        const defaultPositions = [
-            { left: 20, top: 20 },
-            { left: 130, top: 20 },
-            { left: 240, top: 20 },
-            { left: 350, top: 20 },
-            { left: 460, top: 20 },
-            { left: 20, top: 130 },
-            { left: 130, top: 130 },
-            { left: 240, top: 130 },
-            { left: 350, top: 130 },
-            { left: 460, top: 130 }
-        ];
-
-        // Load saved positions or use defaults
-        function loadPositions() {
-            const saved = localStorage.getItem('exhibit_positions');
-            if (saved) {
-                try {
-                    return JSON.parse(saved);
-                } catch (e) {
-                    return defaultPositions;
-                }
-            }
-            return defaultPositions;
-        }
-
-        // Save positions
-        function savePositions() {
-            const positions = [];
-            document.querySelectorAll('.exhibit-item').forEach(item => {
-                positions.push({
-                    left: parseInt(item.style.left) || 0,
-                    top: parseInt(item.style.top) || 0
-                });
-            });
-            localStorage.setItem('exhibit_positions', JSON.stringify(positions));
-        }
 
         // Render Exhibition List
-        const positions = loadPositions();
         exhibits.forEach((exhibit, index) => {
             const item = document.createElement('div');
             item.className = 'exhibit-item';
@@ -857,137 +730,12 @@
             `;
 
             // Set position for landscape mode
-            if (isLandscape() && positions[index]) {
-                item.style.left = positions[index].left + 'px';
-                item.style.top = positions[index].top + 'px';
-            }
-
-            // Mouse events for dragging (landscape) and clicking
-            item.addEventListener('mousedown', (e) => startDrag(e, exhibit));
-            item.addEventListener('touchstart', (e) => startDrag(e, exhibit), { passive: false });
+            // Simple click to open modal
+            item.addEventListener('click', () => {
+                openModal(exhibit);
+            });
 
             exhibitionList.appendChild(item);
-        });
-
-        // Store current exhibit for click handling
-        let currentExhibit = null;
-
-        // Start dragging
-        function startDrag(e, exhibit) {
-            hasMoved = false;
-            currentExhibit = exhibit;
-            draggedElement = e.currentTarget;
-
-            // In portrait mode, just open modal immediately
-            if (!isLandscape()) {
-                openModal(exhibit);
-                return;
-            }
-
-            // In landscape mode, prepare for drag
-            isDragging = true;
-            draggedElement.classList.add('dragging');
-
-            const touch = e.touches ? e.touches[0] : e;
-            startX = touch.clientX;
-            startY = touch.clientY;
-            startLeft = parseInt(draggedElement.style.left) || 0;
-            startTop = parseInt(draggedElement.style.top) || 0;
-
-            document.addEventListener('mousemove', onDrag);
-            document.addEventListener('touchmove', onDrag, { passive: false });
-            document.addEventListener('mouseup', stopDrag);
-            document.addEventListener('touchend', stopDrag);
-        }
-
-        // During dragging
-        function onDrag(e) {
-            if (!isDragging || !draggedElement) return;
-
-            e.preventDefault();
-            const touch = e.touches ? e.touches[0] : e;
-            const deltaX = touch.clientX - startX;
-            const deltaY = touch.clientY - startY;
-
-            // Check if moved more than 5px (to distinguish from click)
-            if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
-                hasMoved = true;
-            }
-
-            const newLeft = startLeft + deltaX;
-            const newTop = startTop + deltaY;
-
-            // Constrain within bounds
-            const maxLeft = exhibitionList.offsetWidth - draggedElement.offsetWidth - 10;
-            const maxTop = exhibitionList.offsetHeight - draggedElement.offsetHeight - 10;
-
-            draggedElement.style.left = Math.max(10, Math.min(newLeft, maxLeft)) + 'px';
-            draggedElement.style.top = Math.max(10, Math.min(newTop, maxTop)) + 'px';
-        }
-
-        // Stop dragging
-        function stopDrag() {
-            if (isDragging && draggedElement) {
-                draggedElement.classList.remove('dragging');
-
-                // If not moved, it's a click - open modal
-                if (!hasMoved && currentExhibit) {
-                    openModal(currentExhibit);
-                }
-
-                // Save positions if moved
-                if (hasMoved) {
-                    savePositions();
-                }
-
-                document.removeEventListener('mousemove', onDrag);
-                document.removeEventListener('touchmove', onDrag);
-                document.removeEventListener('mouseup', stopDrag);
-                document.removeEventListener('touchend', stopDrag);
-
-                isDragging = false;
-
-                // Reset state
-                setTimeout(() => {
-                    hasMoved = false;
-                    draggedElement = null;
-                    currentExhibit = null;
-                }, 50);
-            }
-        }
-
-        // Re-position on orientation change
-        window.addEventListener('orientationchange', () => {
-            setTimeout(() => {
-                if (isLandscape()) {
-                    const positions = loadPositions();
-                    document.querySelectorAll('.exhibit-item').forEach((item, index) => {
-                        if (positions[index]) {
-                            item.style.left = positions[index].left + 'px';
-                            item.style.top = positions[index].top + 'px';
-                        }
-                    });
-                } else {
-                    // Reset inline styles for portrait mode
-                    document.querySelectorAll('.exhibit-item').forEach(item => {
-                        item.style.left = '';
-                        item.style.top = '';
-                    });
-                }
-            }, 300);
-        });
-
-        // Re-position on resize
-        window.addEventListener('resize', () => {
-            if (isLandscape()) {
-                const positions = loadPositions();
-                document.querySelectorAll('.exhibit-item').forEach((item, index) => {
-                    if (positions[index]) {
-                        item.style.left = positions[index].left + 'px';
-                        item.style.top = positions[index].top + 'px';
-                    }
-                });
-            }
         });
 
         // Open Modal
