@@ -34,6 +34,7 @@
     section {
       position: relative;
       min-height: 100vh;
+      min-height: calc(var(--vh, 1vh) * 100);
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -64,144 +65,22 @@
       transform: translateY(0);
     }
 
-    /* Живой прогресс-бар */
-    .live-progress {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(25px) saturate(180%);
-      -webkit-backdrop-filter: blur(25px) saturate(180%);
-      padding: 12px 25px;
-      border-radius: 35px;
-      z-index: 10000;
-      box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+    /* Прогресс бар */
+    .progress-container {
+      width: 100%;
+      max-width: 300px;
+      height: 4px;
+      background: #222;
+      margin: 20px auto;
+      border-radius: 2px;
+      overflow: hidden;
     }
 
-    .stage-counter {
-      display: flex;
-      align-items: baseline;
-      gap: 6px;
-      font-family: 'Courier New', monospace;
-      font-weight: 700;
-      font-size: 18px;
-      color: #fff;
-      text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-    }
-
-    .current-stage {
-      font-size: 28px;
-      font-weight: 900;
-      background: linear-gradient(135deg, #fff 0%, #e0e0e0 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      animation: pulseNumber 2s ease-in-out infinite;
-      min-width: 28px;
-      text-align: center;
-      transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.2s ease;
-    }
-
-    @keyframes pulseNumber {
-      0%, 100% {
-        transform: scale(1);
-        filter: brightness(1);
-      }
-      50% {
-        transform: scale(1.1);
-        filter: brightness(1.3);
-      }
-    }
-
-    .stage-separator {
-      font-size: 16px;
-      color: rgba(255, 255, 255, 0.4);
-      font-weight: 600;
-    }
-
-    .total-stages {
-      font-size: 18px;
-      color: rgba(255, 255, 255, 0.5);
-    }
-
-    .progress-dots {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .progress-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2);
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-    }
-
-    .progress-dot::before {
-      content: '';
-      position: absolute;
-      inset: -4px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
-      opacity: 0;
-      transition: opacity 0.4s ease;
-    }
-
-    .progress-dot.active {
-      background: linear-gradient(135deg, #fff 0%, #e0e0e0 100%);
-      box-shadow:
-        0 0 15px rgba(255, 255, 255, 0.8),
-        0 0 30px rgba(255, 255, 255, 0.4);
-      transform: scale(1.4);
-      animation: dotPulse 1.5s ease-in-out infinite;
-    }
-
-    .progress-dot.active::before {
-      opacity: 1;
-      animation: ripple 2s ease-out infinite;
-    }
-
-    .progress-dot.completed {
-      background: linear-gradient(135deg, rgba(100, 220, 150, 0.9), rgba(80, 200, 120, 0.9));
-      box-shadow: 0 0 12px rgba(100, 220, 150, 0.6);
-      transform: scale(1.2);
-    }
-
-    @keyframes dotPulse {
-      0%, 100% {
-        transform: scale(1.4);
-      }
-      50% {
-        transform: scale(1.5);
-      }
-    }
-
-    @keyframes ripple {
-      0% {
-        transform: scale(1);
-        opacity: 1;
-      }
-      100% {
-        transform: scale(2.5);
-        opacity: 0;
-      }
-    }
-
-    .stage-label {
-      font-size: 10px;
-      color: rgba(255, 255, 255, 0.4);
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      font-weight: 600;
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #fff;
+      transition: width 0.3s ease;
     }
 
     /* Визуализация звука */
@@ -417,40 +296,39 @@
       letter-spacing: 1px;
     }
 
-    /* Иконка поворота экрана */
-    .rotate-hint {
+    /* Иконка свайпа */
+    .swipe-hint {
       margin-top: 40px;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 15px;
       opacity: 0;
-      animation: fadeInRotate 2s ease-in-out 1s forwards;
+      animation: fadeInSwipe 2s ease-in-out 1s forwards;
     }
 
-    @keyframes fadeInRotate {
+    @keyframes fadeInSwipe {
       to {
         opacity: 1;
       }
     }
 
-    .rotate-icon {
-      animation: rotateIcon 3s ease-in-out infinite;
+    .swipe-icon {
+      animation: swipeLeftAnim 2s ease-in-out infinite;
     }
 
-    @keyframes rotateIcon {
+    @keyframes swipeLeftAnim {
       0%, 100% {
-        transform: rotate(0deg);
+        transform: translateX(0);
+        opacity: 1;
       }
-      25% {
-        transform: rotate(15deg);
-      }
-      75% {
-        transform: rotate(-15deg);
+      50% {
+        transform: translateX(-15px);
+        opacity: 0.6;
       }
     }
 
-    .rotate-text {
+    .swipe-text {
       font-size: 0.9rem;
       color: #aaa;
       letter-spacing: 1px;
@@ -480,23 +358,6 @@
   <div class="phone-frame">
     <!-- Кнопка "Домой" -->
     <a href="main.html" class="nav-home" id="homeBtn" aria-label="На главную">⌂</a>
-
-    <!-- Живой прогресс-бар -->
-    <div class="live-progress" id="liveProgress">
-      <div class="stage-label">Этап</div>
-      <div class="stage-counter">
-        <span class="current-stage" id="currentStage">1</span>
-        <span class="stage-separator">/</span>
-        <span class="total-stages">5</span>
-      </div>
-      <div class="progress-dots">
-        <div class="progress-dot active" data-stage="1"></div>
-        <div class="progress-dot" data-stage="2"></div>
-        <div class="progress-dot" data-stage="3"></div>
-        <div class="progress-dot" data-stage="4"></div>
-        <div class="progress-dot" data-stage="5"></div>
-      </div>
-    </div>
 
     <!-- Этап 1 -->
     <section id="stage1" data-stage="1">
@@ -576,28 +437,42 @@
       </div>
       <div class="volume-indicator">Уровень: <span id="level5">максимальный</span></div>
 
-      <!-- Иконка поворота экрана -->
-      <div class="rotate-hint" id="rotateHint">
-        <div class="rotate-icon">
-          <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 15 L15 30 L30 30" stroke="#ffffff" stroke-width="2" fill="none"/>
-            <path d="M45 45 L45 30 L30 30" stroke="#ffffff" stroke-width="2" fill="none"/>
-            <circle cx="30" cy="30" r="18" stroke="#ffffff" stroke-width="2" fill="none" stroke-dasharray="5,3"/>
-            <path d="M48 30 C48 39.9 39.9 48 30 48" stroke="#ffffff" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
-            <path d="M12 30 C12 20.1 20.1 12 30 12" stroke="#ffffff" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
-            <defs>
-              <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
-                <polygon points="0 0, 10 5, 0 10" fill="#ffffff"/>
-              </marker>
-            </defs>
+      <!-- Иконка свайпа влево -->
+      <div class="swipe-hint" id="swipeHint">
+        <div class="swipe-icon">
+          <svg width="80" height="60" viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Рука -->
+            <path d="M55 25 Q50 20 45 25 L35 35 Q30 40 35 45 Q40 50 45 45 L55 35 Q60 30 55 25"
+                  fill="#ffffff" opacity="0.8"/>
+            <!-- Стрелка влево -->
+            <path d="M35 30 L15 30" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+            <path d="M22 23 L15 30 L22 37" stroke="#ffffff" stroke-width="3" stroke-linecap="round"
+                  stroke-linejoin="round" fill="none"/>
+            <!-- Пунктирная траектория -->
+            <path d="M60 30 L40 30" stroke="#ffffff" stroke-width="2" stroke-dasharray="4,4"
+                  opacity="0.5" stroke-linecap="round"/>
           </svg>
         </div>
-        <div class="rotate-text">Поверните экран</div>
+        <div class="swipe-text">Свайпните влево</div>
       </div>
     </section>
   </div>
 
   <script>
+    // ================================================
+    // ИСПРАВЛЕНИЕ VIEWPORT ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ
+    // ================================================
+    function setViewportHeight() {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
+
+    setViewportHeight();
+    window.addEventListener('resize', setViewportHeight);
+    window.addEventListener('orientationchange', () => {
+      setTimeout(setViewportHeight, 100);
+    });
+
     // Менеджер аудио с Web Audio API
     const audioManager = {
       context: null,
@@ -730,57 +605,6 @@
       observer.observe(el);
     });
 
-    // ========== ЖИВОЙ ПРОГРЕСС-БАР ==========
-    const currentStageEl = document.getElementById('currentStage');
-    const progressDots = document.querySelectorAll('.progress-dot');
-    let currentActiveStage = 1;
-
-    // Observer для отслеживания текущего этапа
-    const stageObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
-          const stage = parseInt(entry.target.dataset.stage);
-          if (stage && stage !== currentActiveStage) {
-            updateLiveProgress(stage);
-            currentActiveStage = stage;
-          }
-        }
-      });
-    }, {
-      threshold: 0.5,
-      rootMargin: '-20% 0px -20% 0px'
-    });
-
-    // Наблюдаем за всеми секциями
-    document.querySelectorAll('section[data-stage]').forEach(section => {
-      stageObserver.observe(section);
-    });
-
-    // Функция обновления живого прогресса
-    function updateLiveProgress(stage) {
-      // Анимация смены числа
-      currentStageEl.style.transform = 'scale(1.3) rotate(5deg)';
-      currentStageEl.style.opacity = '0';
-
-      setTimeout(() => {
-        currentStageEl.textContent = stage;
-        currentStageEl.style.transform = 'scale(1) rotate(0deg)';
-        currentStageEl.style.opacity = '1';
-      }, 200);
-
-      // Обновление точек прогресса
-      progressDots.forEach((dot, index) => {
-        const dotStage = index + 1;
-        dot.classList.remove('active', 'completed');
-
-        if (dotStage === stage) {
-          dot.classList.add('active');
-        } else if (dotStage < stage) {
-          dot.classList.add('completed');
-        }
-      });
-    }
-
     // Плавный скролл
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
@@ -800,9 +624,9 @@
       [1, 2, 3, 4, 5].forEach(stage => audioManager.stop(stage));
     });
 
-    // ========== ОБРАБОТКА ПОВОРОТА ЭКРАНА ==========
+    // ========== ОБРАБОТКА СВАЙПА ВЛЕВО НА STAGE5 ==========
     let isOnStage5 = false;
-    let rotationDetected = false;
+    let swipeDetected = false;
 
     // Определяем, находимся ли мы на stage5
     const stage5Observer = new IntersectionObserver((entries) => {
@@ -818,53 +642,52 @@
       stage5Observer.observe(stage5);
     }
 
-    // Функция для определения ориентации
-    function getOrientation() {
-      if (window.screen && window.screen.orientation) {
-        return window.screen.orientation.type;
-      }
-      // Fallback для старых браузеров
-      if (window.innerHeight > window.innerWidth) {
-        return 'portrait-primary';
-      }
-      return 'landscape-primary';
+    // Переменные для свайпа
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchEndX = 0;
+    let touchEndY = 0;
+
+    // Обработчик начала касания
+    function handleTouchStart(e) {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
     }
 
-    let previousOrientation = getOrientation();
+    // Обработчик окончания касания
+    function handleTouchEnd(e) {
+      touchEndX = e.changedTouches[0].screenX;
+      touchEndY = e.changedTouches[0].screenY;
+      handleSwipe();
+    }
 
-    // Обработчик изменения ориентации
-    function handleOrientationChange() {
-      const currentOrientation = getOrientation();
+    // Определение направления свайпа
+    function handleSwipe() {
+      if (!isOnStage5 || swipeDetected) return;
 
-      // Если мы на stage5 и ориентация изменилась на landscape
-      if (isOnStage5 && !rotationDetected) {
-        const isLandscape = currentOrientation.includes('landscape');
-        const wasPortrait = previousOrientation.includes('portrait');
+      const diffX = touchStartX - touchEndX;
+      const diffY = touchStartY - touchEndY;
 
-        if (isLandscape && wasPortrait) {
-          rotationDetected = true;
+      // Минимальная дистанция свайпа (50px)
+      const minSwipeDistance = 50;
 
-          // Плавное затемнение
-          document.body.style.transition = 'opacity 0.5s ease';
-          document.body.style.opacity = '0';
+      // Проверяем, что это горизонтальный свайп влево
+      if (Math.abs(diffX) > Math.abs(diffY) && diffX > minSwipeDistance) {
+        swipeDetected = true;
 
-          setTimeout(() => {
-            window.location.href = 'sound-exhibition.html';
-          }, 500);
-        }
+        // Плавное затемнение
+        document.body.style.transition = 'opacity 0.5s ease';
+        document.body.style.opacity = '0';
+
+        setTimeout(() => {
+          window.location.href = 'sound-exhibition.html';
+        }, 500);
       }
-
-      previousOrientation = currentOrientation;
     }
 
-    // Слушаем изменение ориентации
-    if (window.screen && window.screen.orientation) {
-      window.screen.orientation.addEventListener('change', handleOrientationChange);
-    }
-
-    // Fallback для старых браузеров
-    window.addEventListener('orientationchange', handleOrientationChange);
-    window.addEventListener('resize', handleOrientationChange);
+    // Слушаем события касания
+    document.addEventListener('touchstart', handleTouchStart, { passive: true });
+    document.addEventListener('touchend', handleTouchEnd, { passive: true });
 
     // PWA: Регистрация Service Worker
     if ('serviceWorker' in navigator) {

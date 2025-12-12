@@ -25,6 +25,7 @@
             overflow-x: hidden;
             overflow-y: auto;
             min-height: 100vh;
+            min-height: calc(var(--vh, 1vh) * 100);
         }
 
         .phone-frame {
@@ -33,6 +34,7 @@
             margin: 0 auto;
             background: #000;
             min-height: 100vh;
+            min-height: calc(var(--vh, 1vh) * 100);
             padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
 
@@ -74,111 +76,6 @@
             font-weight: 400;
             text-transform: uppercase;
             letter-spacing: 3px;
-        }
-
-        /* Interview Progress Bar */
-        .interview-counter {
-            background: rgba(17, 17, 17, 0.8);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            overflow-x: auto;
-            overflow-y: hidden;
-            scrollbar-width: none;
-            position: sticky;
-            top: 0;
-            z-index: 99;
-        }
-
-        .interview-counter::-webkit-scrollbar {
-            display: none;
-        }
-
-        .interview-dot {
-            min-width: 20px;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.15);
-            border: 1.5px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            cursor: pointer;
-        }
-
-        .interview-dot::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-
-        .interview-dot:hover {
-            transform: scale(1.2);
-            background: rgba(255, 255, 255, 0.25);
-        }
-
-        .interview-dot:hover::before {
-            opacity: 1;
-        }
-
-        .interview-dot.listened {
-            background: linear-gradient(135deg, rgba(100, 220, 150, 0.8), rgba(80, 200, 120, 0.8));
-            border-color: rgba(100, 220, 150, 0.4);
-            box-shadow: 0 0 15px rgba(100, 220, 150, 0.5);
-            animation: pulse-listened 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse-listened {
-            0%, 100% {
-                box-shadow: 0 0 15px rgba(100, 220, 150, 0.5);
-            }
-            50% {
-                box-shadow: 0 0 25px rgba(100, 220, 150, 0.7);
-            }
-        }
-
-        .interview-separator {
-            width: 8px;
-            height: 2px;
-            background: linear-gradient(90deg,
-                rgba(255, 255, 255, 0.1) 0%,
-                rgba(255, 255, 255, 0.3) 50%,
-                rgba(255, 255, 255, 0.1) 100%);
-            border-radius: 1px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .interview-separator::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg,
-                transparent,
-                rgba(255, 255, 255, 0.5),
-                transparent);
-            animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer {
-            0% {
-                left: -100%;
-            }
-            50%, 100% {
-                left: 100%;
-            }
         }
 
         /* Exhibition List */
@@ -498,6 +395,34 @@
             }
         }
 
+        /* Подсказка для драга в landscape режиме */
+        .drag-hint {
+            position: fixed;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            font-size: 11px;
+            color: #fff;
+            letter-spacing: 0.5px;
+            opacity: 0;
+            pointer-events: none;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+            display: none;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
         /* Landscape Mode - Draggable Cards */
         @media (orientation: landscape) {
             body {
@@ -508,6 +433,11 @@
                 max-width: 100%;
                 height: 100vh;
                 overflow: hidden;
+            }
+
+            .drag-hint {
+                display: block;
+                animation: fadeInOut 4s ease-in-out 0.5s forwards;
             }
 
             .header {
@@ -539,13 +469,6 @@
                 cursor: grab;
                 user-select: none;
                 touch-action: none;
-                /* Скрываем до установки позиций */
-                opacity: 0;
-                transition: opacity 0.3s ease;
-            }
-
-            .exhibit-item.positioned {
-                opacity: 1;
             }
 
             .exhibit-item.dragging {
@@ -589,96 +512,6 @@
                 padding: 8px;
                 font-size: 10px;
             }
-
-            /* Interview progress bar adaptation for landscape */
-            .interview-counter {
-                padding: 10px;
-                gap: 3px;
-            }
-
-            .interview-dot {
-                min-width: 16px;
-                width: 16px;
-                height: 16px;
-            }
-
-            .interview-separator {
-                width: 6px;
-            }
-
-            /* Modal adaptation for landscape */
-            .modal-content {
-                width: 70%;
-                max-width: 600px;
-                max-height: 90vh;
-                overflow-y: auto;
-                padding: 20px;
-            }
-
-            .modal-header {
-                padding-bottom: 10px;
-                margin-bottom: 10px;
-            }
-
-            .modal-number {
-                font-size: 10px;
-                margin-bottom: 4px;
-            }
-
-            .modal-title {
-                font-size: 14px;
-                margin-bottom: 6px;
-            }
-
-            .modal-description {
-                font-size: 11px;
-                line-height: 1.4;
-            }
-
-            .audio-player {
-                margin-top: 15px;
-            }
-
-            .audio-visualizer {
-                height: 40px;
-                margin-bottom: 10px;
-            }
-
-            @keyframes pulse {
-                0%, 100% { height: 8px; }
-                50% { height: 35px; }
-            }
-
-            .audio-time {
-                font-size: 10px;
-                margin-bottom: 8px;
-            }
-
-            .audio-progress {
-                margin-bottom: 15px;
-            }
-
-            .audio-controls {
-                gap: 10px;
-                margin-bottom: 15px;
-            }
-
-            .audio-btn {
-                width: 40px;
-                height: 40px;
-                font-size: 14px;
-            }
-
-            .audio-btn-play {
-                width: 50px;
-                height: 50px;
-                font-size: 18px;
-            }
-
-            .close-modal {
-                padding: 8px 16px;
-                font-size: 11px;
-            }
         }
 
         /* Reduce Motion */
@@ -692,55 +525,15 @@
     </style>
 </head>
 <body>
+    <!-- Подсказка для драга (только в landscape режиме) -->
+    <div class="drag-hint">📱 Перетаскивайте карточки</div>
+
     <div class="phone-frame">
         <!-- Header -->
         <div class="header">
             <a href="main.html" class="home-btn" id="homeBtn" aria-label="На главную">⌂</a>
             <h1>Звуковая выставка</h1>
             <div style="width: 40px;"></div> <!-- Spacer for centering -->
-        </div>
-
-        <!-- Interview Progress Bar -->
-        <div class="interview-counter" id="interviewCounter">
-            <div class="interview-dot" data-interview="0"></div>
-            <div class="interview-separator"></div>
-            <div class="interview-dot" data-interview="1"></div>
-            <div class="interview-separator"></div>
-            <div class="interview-dot" data-interview="2"></div>
-            <div class="interview-separator"></div>
-            <div class="interview-dot" data-interview="3"></div>
-            <div class="interview-separator"></div>
-            <div class="interview-dot" data-interview="4"></div>
-            <div class="interview-separator"></div>
-            <div class="interview-dot" data-interview="5"></div>
-            <div class="interview-separator"></div>
-            <div class="interview-dot" data-interview="6"></div>
-            <div class="interview-separator"></div>
-            <div class="interview-dot" data-interview="7"></div>
-            <div class="interview-separator"></div>
-            <div class="interview-dot" data-interview="8"></div>
-            <div class="interview-separator"></div>
-            <div class="interview-dot" data-interview="9"></div>
-            <div class="interview-separator"></div>
-            <div class="interview-dot" data-interview="10"></div>
-            <div class="interview-separator"></div>
-            <div class="interview-dot" data-interview="11"></div>
-            <div class="interview-separator"></div>
-            <div class="interview-dot" data-interview="12"></div>
-            <div class="interview-separator"></div>
-            <div class="interview-dot" data-interview="13"></div>
-            <div class="interview-separator"></div>
-            <div class="interview-dot" data-interview="14"></div>
-            <div class="interview-separator"></div>
-            <div class="interview-dot" data-interview="15"></div>
-            <div class="interview-separator"></div>
-            <div class="interview-dot" data-interview="16"></div>
-            <div class="interview-separator"></div>
-            <div class="interview-dot" data-interview="17"></div>
-            <div class="interview-separator"></div>
-            <div class="interview-dot" data-interview="18"></div>
-            <div class="interview-separator"></div>
-            <div class="interview-dot" data-interview="19"></div>
         </div>
 
         <!-- Exhibition List -->
@@ -799,6 +592,20 @@
     </div>
 
     <script>
+        // ================================================
+        // ИСПРАВЛЕНИЕ VIEWPORT ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ
+        // ================================================
+        function setViewportHeight() {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+
+        setViewportHeight();
+        window.addEventListener('resize', setViewportHeight);
+        window.addEventListener('orientationchange', () => {
+            setTimeout(setViewportHeight, 100);
+        });
+
         // Exhibits Data
         const exhibits = [
             {
@@ -844,11 +651,25 @@
                 audioFile: './interviews/interview-6.mp3'
             },
             {
+                id: 7,
+                title: "Пользовательское соглашение любви",
+                description: "Sun Dar, Всеволод Крючков\nВеб-сайт, 2025",
+                icon: "💝",
+                audioFile: './interviews/interview-7.mp3'
+            },
+            {
                 id: 8,
                 title: "CAMP",
                 description: "Павел Чекулаев\nДвухканальное видео без звука, 2024",
                 icon: "🏕️",
                 audioFile: './interviews/interview-8.mp3'
+            },
+            {
+                id: 9,
+                title: "Tuesday song",
+                description: "z0.sya\nВидео-арт, 2024",
+                icon: "🎵",
+                audioFile: './interviews/interview-9.mp3'
             },
             {
                 id: 10,
@@ -935,6 +756,13 @@
                 audioFile: './interviews/interview-21.mp3'
             },
             {
+                id: 22,
+                title: "Цифровая память",
+                description: "Автор уточняется\nИнтерактивная инсталляция, 2025",
+                icon: "💾",
+                audioFile: './interviews/interview-22.mp3'
+            },
+            {
                 id: 23,
                 title: "БИОХАБ",
                 description: "LUKÚTA\nВидеогенерация, 2024",
@@ -969,80 +797,37 @@
         let startLeft = 0;
         let startTop = 0;
         let hasMoved = false;
-        let listenedInterviews = new Set(); // Отслеживание прослушанных интервью по индексам
-        let currentExhibitIndex = -1; // Текущий индекс интервью
 
         // Check if landscape mode
         function isLandscape() {
             return window.innerHeight < window.innerWidth;
         }
 
-        // Generate evenly distributed positions for all 20 exhibits
-        function generateEvenPositions() {
-            const positions = [];
-            const viewWidth = window.innerWidth;
-            const viewHeight = window.innerHeight;
-            const itemWidth = 90;
-            const itemHeight = 100;
-            const padding = 15;
+        // Default positions for landscape mode (grid layout)
+        const defaultPositions = [
+            { left: 20, top: 20 },
+            { left: 130, top: 20 },
+            { left: 240, top: 20 },
+            { left: 350, top: 20 },
+            { left: 460, top: 20 },
+            { left: 20, top: 130 },
+            { left: 130, top: 130 },
+            { left: 240, top: 130 },
+            { left: 350, top: 130 },
+            { left: 460, top: 130 }
+        ];
 
-            // Рассчитываем сетку для 20 элементов
-            const cols = Math.floor(viewWidth / (itemWidth + padding));
-            const rows = Math.ceil(20 / cols);
-
-            // Центрируем сетку
-            const totalGridWidth = cols * (itemWidth + padding);
-            const totalGridHeight = rows * (itemHeight + padding);
-            const startX = Math.max(padding, (viewWidth - totalGridWidth) / 2);
-            const startY = Math.max(padding, (viewHeight - totalGridHeight) / 2);
-
-            for (let i = 0; i < 20; i++) {
-                const col = i % cols;
-                const row = Math.floor(i / cols);
-
-                // Добавляем небольшой случайный offset для органичности
-                const randomX = (Math.random() - 0.5) * 20;
-                const randomY = (Math.random() - 0.5) * 20;
-
-                positions.push({
-                    left: Math.max(padding, Math.min(
-                        startX + col * (itemWidth + padding) + randomX,
-                        viewWidth - itemWidth - padding
-                    )),
-                    top: Math.max(padding, Math.min(
-                        startY + row * (itemHeight + padding) + randomY,
-                        viewHeight - itemHeight - padding
-                    ))
-                });
-            }
-
-            return positions;
-        }
-
-        // Load saved positions or generate new ones
+        // Load saved positions or use defaults
         function loadPositions() {
             const saved = localStorage.getItem('exhibit_positions');
             if (saved) {
                 try {
-                    const parsed = JSON.parse(saved);
-                    // Проверяем что есть позиции для всех 20 элементов
-                    if (parsed.length >= 20) {
-                        return parsed;
-                    } else {
-                        // Если старые позиции неполные, очищаем их
-                        console.log('Clearing old incomplete positions, regenerating...');
-                        localStorage.removeItem('exhibit_positions');
-                    }
+                    return JSON.parse(saved);
                 } catch (e) {
-                    // Игнорируем ошибки парсинга
-                    localStorage.removeItem('exhibit_positions');
+                    return defaultPositions;
                 }
             }
-            // Генерируем новые равномерные позиции
-            const newPositions = generateEvenPositions();
-            // Сохраняем для будущего использования
-            localStorage.setItem('exhibit_positions', JSON.stringify(newPositions));
-            return newPositions;
+            return defaultPositions;
         }
 
         // Save positions
@@ -1072,35 +857,14 @@
             `;
 
             // Set position for landscape mode
-            if (isLandscape()) {
-                if (positions[index]) {
-                    item.style.left = positions[index].left + 'px';
-                    item.style.top = positions[index].top + 'px';
-                } else {
-                    // Fallback: если нет позиции, генерируем случайную
-                    const vw = window.innerWidth;
-                    const vh = window.innerHeight;
-                    item.style.left = Math.random() * (vw - 100) + 'px';
-                    item.style.top = Math.random() * (vh - 120) + 'px';
-                }
-                // Показываем элемент после установки позиции
-                requestAnimationFrame(() => {
-                    item.classList.add('positioned');
-                });
+            if (isLandscape() && positions[index]) {
+                item.style.left = positions[index].left + 'px';
+                item.style.top = positions[index].top + 'px';
             }
 
-            // Разная логика для портретного и ландшафтного режимов
-            if (isLandscape()) {
-                // В ландшафте - драг
-                item.addEventListener('mousedown', (e) => startDrag(e, exhibit, index));
-                item.addEventListener('touchstart', (e) => startDrag(e, exhibit, index), { passive: false });
-            } else {
-                // В портрете - простой клик (не мешает скроллингу)
-                item.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    openModal(exhibit, index);
-                });
-            }
+            // Mouse events for dragging (landscape) and clicking
+            item.addEventListener('mousedown', (e) => startDrag(e, exhibit));
+            item.addEventListener('touchstart', (e) => startDrag(e, exhibit), { passive: false });
 
             exhibitionList.appendChild(item);
         });
@@ -1108,14 +872,19 @@
         // Store current exhibit for click handling
         let currentExhibit = null;
 
-        // Start dragging (только для landscape режима)
-        function startDrag(e, exhibit, exhibitIndex) {
+        // Start dragging
+        function startDrag(e, exhibit) {
             hasMoved = false;
             currentExhibit = exhibit;
-            currentExhibitIndex = exhibitIndex;
             draggedElement = e.currentTarget;
 
-            // Подготовка к драгу
+            // In portrait mode, just open modal immediately
+            if (!isLandscape()) {
+                openModal(exhibit);
+                return;
+            }
+
+            // In landscape mode, prepare for drag
             isDragging = true;
             draggedElement.classList.add('dragging');
 
@@ -1140,9 +909,8 @@
             const deltaX = touch.clientX - startX;
             const deltaY = touch.clientY - startY;
 
-            // Check if moved more than 15px (to distinguish from click)
-            // Увеличенный порог для лучшего распознавания клика vs перетаскивания
-            if (Math.abs(deltaX) > 15 || Math.abs(deltaY) > 15) {
+            // Check if moved more than 5px (to distinguish from click)
+            if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
                 hasMoved = true;
             }
 
@@ -1164,7 +932,7 @@
 
                 // If not moved, it's a click - open modal
                 if (!hasMoved && currentExhibit) {
-                    openModal(currentExhibit, currentExhibitIndex);
+                    openModal(currentExhibit);
                 }
 
                 // Save positions if moved
@@ -1194,94 +962,36 @@
                 if (isLandscape()) {
                     const positions = loadPositions();
                     document.querySelectorAll('.exhibit-item').forEach((item, index) => {
-                        // Сначала скрываем
-                        item.classList.remove('positioned');
-
                         if (positions[index]) {
                             item.style.left = positions[index].left + 'px';
                             item.style.top = positions[index].top + 'px';
-                        } else {
-                            // Fallback для элементов без позиций
-                            const vw = window.innerWidth;
-                            const vh = window.innerHeight;
-                            item.style.left = Math.random() * (vw - 100) + 'px';
-                            item.style.top = Math.random() * (vh - 120) + 'px';
                         }
-
-                        // Плавно показываем после установки позиций
-                        requestAnimationFrame(() => {
-                            item.classList.add('positioned');
-                        });
                     });
                 } else {
                     // Reset inline styles for portrait mode
                     document.querySelectorAll('.exhibit-item').forEach(item => {
                         item.style.left = '';
                         item.style.top = '';
-                        item.classList.remove('positioned');
                     });
                 }
-
-                // Переустанавливаем обработчики событий
-                updateEventListeners();
             }, 300);
         });
-
-        // Update event listeners based on orientation
-        function updateEventListeners() {
-            document.querySelectorAll('.exhibit-item').forEach((item, index) => {
-                // Удаляем все старые обработчики, создавая новый элемент
-                const exhibitId = parseInt(item.dataset.exhibitId);
-                const exhibitIndex = parseInt(item.dataset.exhibitIndex);
-                const exhibit = exhibits[exhibitIndex];
-
-                // Удаляем старый слушатель, клонируя элемент
-                const newItem = item.cloneNode(true);
-                item.parentNode.replaceChild(newItem, item);
-
-                // Добавляем нужные обработчики
-                if (isLandscape()) {
-                    newItem.addEventListener('mousedown', (e) => startDrag(e, exhibit, exhibitIndex));
-                    newItem.addEventListener('touchstart', (e) => startDrag(e, exhibit, exhibitIndex), { passive: false });
-                } else {
-                    newItem.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        openModal(exhibit, exhibitIndex);
-                    });
-                }
-            });
-        }
 
         // Re-position on resize
         window.addEventListener('resize', () => {
             if (isLandscape()) {
                 const positions = loadPositions();
                 document.querySelectorAll('.exhibit-item').forEach((item, index) => {
-                    // Сначала скрываем
-                    item.classList.remove('positioned');
-
                     if (positions[index]) {
                         item.style.left = positions[index].left + 'px';
                         item.style.top = positions[index].top + 'px';
-                    } else {
-                        // Fallback для элементов без позиций
-                        const vw = window.innerWidth;
-                        const vh = window.innerHeight;
-                        item.style.left = Math.random() * (vw - 100) + 'px';
-                        item.style.top = Math.random() * (vh - 120) + 'px';
                     }
-
-                    // Плавно показываем после установки позиций
-                    requestAnimationFrame(() => {
-                        item.classList.add('positioned');
-                    });
                 });
             }
         });
 
         // Open Modal
-        function openModal(exhibit, exhibitIndex) {
-            currentExhibitIndex = exhibitIndex;
+        function openModal(exhibit) {
             modalNumber.textContent = `ЭКСПОНАТ #${String(exhibit.id).padStart(2, '0')}`;
             modalTitle.textContent = exhibit.title;
             modalDescription.textContent = exhibit.description;
@@ -1323,11 +1033,6 @@
                 currentAudio.play().then(() => {
                     playBtn.textContent = '⏸';
                     audioVisualizer.classList.add('playing');
-                    // Добавляем интервью в прослушанные по индексу
-                    if (currentExhibitIndex >= 0) {
-                        listenedInterviews.add(currentExhibitIndex);
-                        updateInterviewCounter();
-                    }
                 }).catch(err => {
                     console.error('Autoplay error:', err);
                     // Если автозапуск не удался (например, браузер блокирует), просто игнорируем
@@ -1364,18 +1069,6 @@
             return mins + ':' + (secs < 10 ? '0' : '') + secs;
         }
 
-        // Update Interview Counter
-        function updateInterviewCounter() {
-            const dots = document.querySelectorAll('.interview-dot');
-            dots.forEach((dot, index) => {
-                if (listenedInterviews.has(index)) {
-                    dot.classList.add('listened');
-                } else {
-                    dot.classList.remove('listened');
-                }
-            });
-        }
-
         // Play/Pause Button
         playBtn.addEventListener('click', () => {
             if (!currentAudio) return;
@@ -1384,11 +1077,6 @@
                 currentAudio.play().then(() => {
                     playBtn.textContent = '⏸';
                     audioVisualizer.classList.add('playing');
-                    // Добавляем интервью в прослушанные по индексу
-                    if (currentExhibitIndex >= 0) {
-                        listenedInterviews.add(currentExhibitIndex);
-                        updateInterviewCounter();
-                    }
                 }).catch(err => {
                     console.error('Play error:', err);
                     audioError.classList.add('active');
