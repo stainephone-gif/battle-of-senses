@@ -25,6 +25,7 @@
             overflow-x: hidden;
             overflow-y: auto;
             min-height: 100vh;
+            min-height: calc(var(--vh, 1vh) * 100);
         }
 
         .phone-frame {
@@ -33,6 +34,7 @@
             margin: 0 auto;
             background: #000;
             min-height: 100vh;
+            min-height: calc(var(--vh, 1vh) * 100);
             padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
 
@@ -554,6 +556,20 @@
     </div>
 
     <script>
+        // ================================================
+        // ИСПРАВЛЕНИЕ VIEWPORT ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ
+        // ================================================
+        function setViewportHeight() {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+
+        setViewportHeight();
+        window.addEventListener('resize', setViewportHeight);
+        window.addEventListener('orientationchange', () => {
+            setTimeout(setViewportHeight, 100);
+        });
+
         // Exhibits Data
         const exhibits = [
             {

@@ -38,6 +38,7 @@
        ================================================ */
     #screens-container {
       height: 100vh;
+      height: calc(var(--vh, 1vh) * 100);
       width: 100%;
       position: relative;
       overflow: hidden;
@@ -1299,6 +1300,24 @@
   <a href="quiet.html" class="finish-btn" id="finishBtn">Войти в тишину</a>
 
   <script>
+    // ================================================
+    // ИСПРАВЛЕНИЕ VIEWPORT ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ
+    // ================================================
+    // Устанавливаем CSS переменную для правильной высоты viewport
+    function setViewportHeight() {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
+
+    // Устанавливаем при загрузке
+    setViewportHeight();
+
+    // Обновляем при изменении размера окна и ориентации
+    window.addEventListener('resize', setViewportHeight);
+    window.addEventListener('orientationchange', () => {
+      setTimeout(setViewportHeight, 100);
+    });
+
     // ================================================
     // СИСТЕМА НАВИГАЦИИ МЕЖДУ ЭКРАНАМИ
     // ================================================
