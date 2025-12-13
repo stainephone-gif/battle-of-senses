@@ -572,47 +572,157 @@
       z-index: 1;
     }
 
-    /* Контейнер коллажа (единая версия для всех ориентаций) */
-    .collage-content {
+    /* Вертикальная версия (портрет) */
+    .portrait-content {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      display: block;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 60px 20px 40px;
       z-index: 2;
-      overflow: hidden;
-      background:
-        url('pic/gallery-plan.png') center center / contain no-repeat,
-        linear-gradient(135deg, #7B2CBF 0%, #E0AAFF 50%, #FF6EC4 100%);
-      background-size: contain, 400% 400%;
-      animation: gradientShift 15s ease infinite;
     }
 
-    /* Полупрозрачный оверлей для лучшей видимости элементов коллажа */
-    .collage-content::before {
-      content: '';
+    .portrait-content.hidden {
+      display: none;
+    }
+
+    /* Пиксельная елка */
+    .pixel-tree {
+      width: 120px;
+      height: 140px;
+      background: #00FF00;
+      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+      image-rendering: pixelated;
+      animation: treeGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes treeGlow {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.3); }
+    }
+
+    .portrait-top-text {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .portrait-title {
+      font-size: 48px;
+      font-weight: 900;
+      color: #FFFFFF;
+      text-shadow: 0 0 10px #FF00FF, 0 0 20px #00FFFF;
+      letter-spacing: 8px;
+      margin-bottom: 10px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .portrait-subtitle {
+      font-size: 24px;
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 600;
+    }
+
+    .portrait-bottom-text {
+      font-size: 64px;
+      font-weight: 900;
+      color: #FFFFFF;
+      text-shadow: 0 0 15px #FF00FF, 0 0 30px #00FFFF;
+      letter-spacing: 10px;
+      font-family: 'Courier New', monospace;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    /* Индикатор поворота экрана */
+    .rotation-indicator {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100px;
+      height: 100px;
+      z-index: 10;
+    }
+
+    .rotation-ring {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(123, 44, 191, 0.3);
-      pointer-events: none;
-      z-index: 1;
+      border: 4px solid transparent;
+      border-top-color: #00FFFF;
+      border-right-color: #FF00FF;
+      border-radius: 50%;
+      animation: rotateRing 2s linear infinite, pulseRing 1.5s ease-in-out infinite;
+      box-shadow:
+        0 0 20px rgba(0, 255, 255, 0.6),
+        0 0 40px rgba(255, 0, 255, 0.4),
+        inset 0 0 20px rgba(0, 255, 255, 0.3);
     }
 
-    #collageContainer {
-      position: relative;
-      z-index: 2;
-      width: 100%;
-      height: 100%;
+    .rotation-arrow {
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-style: solid;
     }
 
-    /* Иконка свайпа для коллажа */
-    #screen5 .swipe-hint {
-      position: fixed;
-      bottom: 60px;
+    .rotation-arrow.arrow-1 {
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 0 8px 12px 8px;
+      border-color: transparent transparent #00FFFF transparent;
+      filter: drop-shadow(0 0 8px #00FFFF);
+    }
+
+    .rotation-arrow.arrow-2 {
+      right: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-width: 8px 0 8px 12px;
+      border-color: transparent transparent transparent #FF00FF;
+      filter: drop-shadow(0 0 8px #FF00FF);
+    }
+
+    .rotation-text {
+      position: absolute;
+      top: 120px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.9);
+      text-shadow: 0 0 10px #00FFFF;
+      white-space: nowrap;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes rotateRing {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulseRing {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+      }
+    }
+
+    /* Иконка свайпа для портретного режима */
+    .portrait-content .swipe-hint {
+      position: absolute;
+      bottom: 140px;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
@@ -630,7 +740,7 @@
       }
     }
 
-    #screen5 .swipe-icon {
+    .portrait-content .swipe-icon {
       animation: swipeLeftAnim 2s ease-in-out infinite;
     }
 
@@ -645,7 +755,7 @@
       }
     }
 
-    #screen5 .swipe-text {
+    .portrait-content .swipe-text {
       font-size: 0.9rem;
       color: #fff;
       letter-spacing: 1px;
@@ -660,6 +770,47 @@
       50% {
         opacity: 0.5;
       }
+    }
+
+    /* Горизонтальная версия (ландшафт) */
+    .landscape-content {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      z-index: 2;
+      overflow: hidden;
+      background:
+        url('pic/gallery-plan.png') center center / contain no-repeat,
+        linear-gradient(135deg, #7B2CBF 0%, #E0AAFF 50%, #FF6EC4 100%);
+      background-size: contain, 400% 400%;
+      animation: gradientShift 15s ease infinite;
+    }
+
+    /* Полупрозрачный оверлей для лучшей видимости элементов коллажа */
+    .landscape-content::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(123, 44, 191, 0.3);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .landscape-content.active {
+      display: block;
+    }
+
+    #collageContainer {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
     }
 
     /* Random Collage Items */
@@ -1157,12 +1308,26 @@
       </div>
     </div>
 
-    <!-- ЭКРАН 5: КОЛЛАЖ -->
+    <!-- ЭКРАН 5: ПОВЕРНИ (ВЕРТИКАЛЬНАЯ/ГОРИЗОНТАЛЬНАЯ) -->
     <div class="screen" id="screen5" data-screen="4">
-      <!-- Контейнер коллажа (единая версия для всех ориентаций) -->
-      <div class="collage-content" id="collageContent">
-        <!-- Контейнер для случайно расположенных элементов -->
-        <div id="collageContainer"></div>
+      <!-- Вертикальная версия (портрет) -->
+      <div class="portrait-content">
+        <div>
+          <div class="pixel-tree"></div>
+          <div class="portrait-top-text">
+            <div class="portrait-title">ПОВЕРНИ</div>
+            <div class="portrait-subtitle">Поверни</div>
+          </div>
+        </div>
+
+        <!-- Индикатор поворота экрана -->
+        <div class="rotation-indicator">
+          <div class="rotation-ring">
+            <div class="rotation-arrow arrow-1"></div>
+            <div class="rotation-arrow arrow-2"></div>
+          </div>
+          <div class="rotation-text">Поверни экран →</div>
+        </div>
 
         <!-- Иконка свайпа влево -->
         <div class="swipe-hint" id="swipeHintCollage">
@@ -1180,8 +1345,16 @@
                     opacity="0.5" stroke-linecap="round"/>
             </svg>
           </div>
-          <div class="swipe-text">Свайпните влево</div>
+          <div class="swipe-text">или свайпните влево</div>
         </div>
+
+        <div class="portrait-bottom-text">ПОВЕРНИ</div>
+      </div>
+
+      <!-- Горизонтальная версия (ландшафт) - Random Collage -->
+      <div class="landscape-content" id="landscapeCollage">
+        <!-- Контейнер для случайно расположенных элементов -->
+        <div id="collageContainer"></div>
       </div>
     </div>
 
@@ -1241,8 +1414,9 @@
         dot.classList.toggle('active', index === currentScreen);
       });
 
-      // Кнопка "Войти в тишину" показывается на экране 5
-      if (currentScreen === 4) {
+      // Кнопка "Войти в тишину" показывается только на экране 5 в горизонтальной ориентации
+      const isLandscape = window.innerWidth > window.innerHeight;
+      if (currentScreen === 4 && hasRotated && isLandscape) {
         finishBtn.classList.add('visible');
       } else {
         finishBtn.classList.remove('visible');
@@ -1843,6 +2017,11 @@
     let collageInitialized = false;
     let collageItems = [];
     let swipeDetectedOnScreen5 = false;
+    let hasRotated = false; // Флаг для отслеживания поворота устройства
+
+    // Ссылки на контент экрана 5
+    const portraitContent = screen5.querySelector('.portrait-content');
+    const landscapeContent = screen5.querySelector('.landscape-content');
 
     // Данные для коллажа - 17 элементов с полной информацией
     const collageData = [
@@ -2105,15 +2284,50 @@
       }
     });
 
+    // Проверка и переключение ориентации на экране 5
+    function checkOrientation() {
+      if (currentScreen !== 4) return; // Только на экране 5
+
+      const isLandscape = window.innerWidth > window.innerHeight;
+
+      if (isLandscape) {
+        // Горизонтальная ориентация
+        portraitContent.classList.add('hidden');
+        landscapeContent.classList.add('active');
+
+        // Инициализируем коллаж при первом показе
+        if (!collageInitialized) {
+          initCollage();
+        }
+
+        // Отмечаем что произошел поворот
+        if (!hasRotated) {
+          hasRotated = true;
+          updateScreens(); // Обновляем экраны чтобы показать кнопку
+        }
+      } else {
+        // Вертикальная ориентация
+        portraitContent.classList.remove('hidden');
+        landscapeContent.classList.remove('active');
+        collageModal.classList.remove('visible'); // Скрываем модалку при переходе в портрет
+      }
+
+      // Обновляем видимость кнопки при смене ориентации
+      updateScreens();
+    }
+
+    // Слушатель изменения ориентации
+    window.addEventListener('orientationchange', () => {
+      setTimeout(checkOrientation, 100);
+    });
+
+    // Слушатель resize (для десктопа и некоторых устройств)
+    window.addEventListener('resize', checkOrientation);
+
     // Инициализация коллажа при попадании на экран 5
     function onScreenChange() {
       if (currentScreen === 4) {
-        // Инициализируем коллаж при первом показе
-        if (!collageInitialized) {
-          setTimeout(() => {
-            initCollage();
-          }, 100);
-        }
+        setTimeout(checkOrientation, 100);
       }
     }
 
