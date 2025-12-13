@@ -1434,12 +1434,16 @@
 
       // Кнопка "Войти в тишину" показывается на экране 5 когда показан коллаж
       // Проверяем, активен ли landscape-content (имеет класс 'active')
-      const screen5 = document.getElementById('screen5');
-      const landscapeContent = screen5 ? screen5.querySelector('.landscape-content') : null;
-      const isCollageVisible = landscapeContent && landscapeContent.classList.contains('active');
+      if (currentScreen === 4) {
+        const screen5Elem = document.getElementById('screen5');
+        const landscapeContentElem = screen5Elem ? screen5Elem.querySelector('.landscape-content') : null;
+        const isCollageVisible = landscapeContentElem && landscapeContentElem.classList.contains('active');
 
-      if (currentScreen === 4 && hasRotated && isCollageVisible) {
-        finishBtn.classList.add('visible');
+        if (isCollageVisible) {
+          finishBtn.classList.add('visible');
+        } else {
+          finishBtn.classList.remove('visible');
+        }
       } else {
         finishBtn.classList.remove('visible');
       }
