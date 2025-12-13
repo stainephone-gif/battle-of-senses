@@ -1232,6 +1232,12 @@
     <!-- ЭКРАН 2: АРТ-ПЕСОЧНИЦА -->
     <div class="screen" id="screen2" data-screen="1">
       <div class="hint">Рисуйте касанием или кликом</div>
+      <!-- Индикатор свайпа вниз -->
+      <div class="swipe-indicator">
+        <div class="swipe-arrow"></div>
+        <div class="swipe-arrow"></div>
+        <div class="swipe-arrow"></div>
+      </div>
     </div>
 
     <!-- ЭКРАН 3: ГИПЕРТЕКСТ-ЛОВУШКА -->
@@ -1252,6 +1258,12 @@
         <img id="philo10" src="pic/image1.png">
         <img id="philo11" src="pic/image2.png">
         <div id="quote"></div>
+      </div>
+      <!-- Индикатор свайпа вниз -->
+      <div class="swipe-indicator">
+        <div class="swipe-arrow"></div>
+        <div class="swipe-arrow"></div>
+        <div class="swipe-arrow"></div>
       </div>
     </div>
 
@@ -1305,6 +1317,12 @@
 
 Авторы проектов выставки размышляют о вероятном развитии технологий цифровизации чувств. Художники рассматривают эти процессы как с критической, так и с оптимистической точки зрения. На выставке представлены объекты искусства и дизайна, медиаинсталляции, приложения, DIY-устройства и технологические разработки, перформансы, видео-арт, графика и фотография.</div>
         </div>
+      </div>
+      <!-- Индикатор свайпа вниз -->
+      <div class="swipe-indicator">
+        <div class="swipe-arrow"></div>
+        <div class="swipe-arrow"></div>
+        <div class="swipe-arrow"></div>
       </div>
     </div>
 
@@ -2361,17 +2379,25 @@
         // Минимальная дистанция свайпа (50px)
         const minSwipeDistance = 50;
 
-        // Проверяем, что это горизонтальный свайп влево
-        if (Math.abs(diffX) > Math.abs(diffY) && diffX > minSwipeDistance) {
+        // Проверяем, что это горизонтальный свайп влево (только в портретном режиме)
+        const isPortrait = window.innerWidth <= window.innerHeight;
+        if (isPortrait && Math.abs(diffX) > Math.abs(diffY) && diffX > minSwipeDistance) {
           swipeDetectedOnScreen5 = true;
 
-          // Плавное затемнение
-          document.body.style.transition = 'opacity 0.5s ease';
-          document.body.style.opacity = '0';
+          // Показываем коллаж (как при повороте экрана)
+          portraitContent.classList.add('hidden');
+          landscapeContent.classList.add('active');
 
-          setTimeout(() => {
-            window.location.href = 'quiet.html';
-          }, 500);
+          // Инициализируем коллаж при первом показе
+          if (!collageInitialized) {
+            initCollage();
+          }
+
+          // Отмечаем что произошел "поворот" (или свайп)
+          if (!hasRotated) {
+            hasRotated = true;
+            updateScreens(); // Показываем кнопку "Войти в тишину"
+          }
         }
       }
     }, { passive: true });
