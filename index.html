@@ -223,6 +223,76 @@
       line-height: 1.5;
     }
 
+    /* Статистика выбора путей */
+    .stats-container {
+      margin-top: 40px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+    }
+
+    .stats-title {
+      font-size: 0.9rem;
+      color: #888;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 400;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .stat-item {
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.3s ease;
+    }
+
+    .stat-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: #666;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .stat-item.vision .stat-value {
+      color: #64B5F6;
+    }
+
+    .stat-item.sound .stat-value {
+      color: #FFA726;
+    }
+
+    .stats-total {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.8rem;
+      color: #666;
+      text-align: center;
+    }
+
     /* Адаптация */
     @media (max-width: 380px) {
       h1 {
@@ -291,6 +361,24 @@
       <div class="hint">
         Для полного погружения в звуковое путешествие рекомендуется использовать наушники.
       </div>
+
+      <!-- Статистика выбора путей -->
+      <div class="stats-container" id="statsContainer" style="display: none;">
+        <div class="stats-title">Статистика выбора</div>
+        <div class="stats-grid">
+          <div class="stat-item vision">
+            <div class="stat-label">Зрение</div>
+            <div class="stat-value" id="visionCount">0</div>
+          </div>
+          <div class="stat-item sound">
+            <div class="stat-label">Слух</div>
+            <div class="stat-value" id="soundCount">0</div>
+          </div>
+        </div>
+        <div class="stats-total" id="statsTotal">
+          Всего выборов: 0
+        </div>
+      </div>
     </div>
   </div>
 
@@ -306,6 +394,36 @@
     continueBtn.addEventListener('click', () => {
       window.location.href = 'main.html';
     });
+
+    // ========== СТАТИСТИКА ВЫБОРА ПУТЕЙ ==========
+
+    function loadAndDisplayStats() {
+      try {
+        // Получаем статистику из localStorage
+        const visionCount = parseInt(localStorage.getItem('choice_vision') || '0');
+        const soundCount = parseInt(localStorage.getItem('choice_sound') || '0');
+        const totalCount = visionCount + soundCount;
+
+        // Показываем блок статистики только если есть хотя бы один выбор
+        const statsContainer = document.getElementById('statsContainer');
+        if (totalCount > 0) {
+          // Обновляем значения
+          document.getElementById('visionCount').textContent = visionCount;
+          document.getElementById('soundCount').textContent = soundCount;
+          document.getElementById('statsTotal').textContent = `Всего выборов: ${totalCount}`;
+
+          // Показываем контейнер
+          statsContainer.style.display = 'block';
+        } else {
+          statsContainer.style.display = 'none';
+        }
+      } catch (e) {
+        console.error('Ошибка загрузки статистики:', e);
+      }
+    }
+
+    // Загружаем статистику при загрузке страницы
+    loadAndDisplayStats();
 
     // PWA: Регистрация Service Worker
     if ('serviceWorker' in navigator) {

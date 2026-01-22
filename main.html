@@ -313,6 +313,36 @@
       });
     }
 
+    // ========== ОТСЛЕЖИВАНИЕ ВЫБОРА ПУТИ ==========
+
+    // Функция для увеличения счетчика выбора
+    function trackChoice(choice) {
+      try {
+        const key = `choice_${choice}`; // choice_vision или choice_sound
+        const currentCount = parseInt(localStorage.getItem(key) || '0');
+        localStorage.setItem(key, (currentCount + 1).toString());
+        console.log(`✅ Выбор "${choice}" отслежен. Всего: ${currentCount + 1}`);
+      } catch (e) {
+        console.error('Ошибка сохранения выбора:', e);
+      }
+    }
+
+    // Отслеживаем клик на "Зрение"
+    const visionBtn = document.querySelector('a[href="zrenie_mob.html"]');
+    if (visionBtn) {
+      visionBtn.addEventListener('click', () => {
+        trackChoice('vision');
+      });
+    }
+
+    // Отслеживаем клик на "Слух"
+    const soundBtn = document.getElementById('soundBtn');
+    if (soundBtn) {
+      soundBtn.addEventListener('click', () => {
+        trackChoice('sound');
+      });
+    }
+
     // PWA: Регистрация Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
