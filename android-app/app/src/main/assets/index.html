@@ -223,6 +223,80 @@
       line-height: 1.5;
     }
 
+    /* Статистика выбора */
+    .stats-container {
+      margin-top: 40px;
+      padding: 25px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+    }
+
+    .stats-title {
+      font-size: 1rem;
+      font-weight: 400;
+      color: #fff;
+      margin-bottom: 20px;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .stat-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 20px 15px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .stat-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .stat-icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: #aaa;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .stats-total {
+      text-align: center;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+
+    .stats-total span {
+      color: #fff;
+      font-weight: 600;
+    }
+
     /* Кнопка настроек */
     .settings-btn {
       position: fixed;
@@ -489,6 +563,26 @@
         <button class="btn btn-primary" id="continueBtn">
           Продолжить
         </button>
+      </div>
+
+      <!-- Статистика выбора -->
+      <div class="stats-container" id="statsContainer" style="display: none;">
+        <h3 class="stats-title">Статистика выбора</h3>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-icon">👁️</div>
+            <div class="stat-label">Зрение</div>
+            <div class="stat-value" id="visionCount">0</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-icon">👂</div>
+            <div class="stat-label">Слух</div>
+            <div class="stat-value" id="soundCount">0</div>
+          </div>
+        </div>
+        <div class="stats-total">
+          Всего выборов: <span id="totalCount">0</span>
+        </div>
       </div>
 
       <div class="hint">
@@ -816,6 +910,40 @@
 
     // Загрузка сохраненных настроек при запуске (отображение индикатора)
     loadLightsConfig();
+
+    // ========== ОТОБРАЖЕНИЕ СТАТИСТИКИ ВЫБОРА ==========
+
+    function loadAndDisplayStats() {
+      let visionCount = 0;
+      let soundCount = 0;
+
+      // Для Android приложения используем Android.loadData
+      if (typeof Android !== 'undefined') {
+        visionCount = parseInt(Android.loadData('choice_vision') || '0');
+        soundCount = parseInt(Android.loadData('choice_sound') || '0');
+      } else {
+        // Fallback для веб-версии (localStorage)
+        visionCount = parseInt(localStorage.getItem('choice_vision') || '0');
+        soundCount = parseInt(localStorage.getItem('choice_sound') || '0');
+      }
+
+      const totalCount = visionCount + soundCount;
+
+      // Обновляем DOM
+      document.getElementById('visionCount').textContent = visionCount;
+      document.getElementById('soundCount').textContent = soundCount;
+      document.getElementById('totalCount').textContent = totalCount;
+
+      // Показываем статистику только если есть данные
+      if (totalCount > 0) {
+        document.getElementById('statsContainer').style.display = 'block';
+      }
+
+      console.log(`📊 Статистика: Зрение=${visionCount}, Слух=${soundCount}, Всего=${totalCount}`);
+    }
+
+    // Загружаем и отображаем статистику при загрузке страницы
+    loadAndDisplayStats();
 
     // PWA: Регистрация Service Worker
     if ('serviceWorker' in navigator) {
