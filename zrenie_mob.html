@@ -710,6 +710,83 @@
       transform: scale(1.2);
     }
 
+    /* -----------------------------------------
+       10 ЭФФЕКТОВ ДЛЯ КАРТИНОК КОЛЛАЖА
+    -------------------------------------------*/
+
+    /* 1 — Глитч */
+    @keyframes glitch {
+        0% { clip-path: inset(0 0 0 0); transform: translate(0); }
+        20% { clip-path: inset(10% 0 20% 0); transform: translate(4px,-3px); }
+        40% { clip-path: inset(40% 0 5% 0); transform: translate(-3px,2px); }
+        60% { clip-path: inset(5% 0 35% 0); transform: translate(2px,1px); }
+        80% { clip-path: inset(25% 0 15% 0); transform: translate(-2px,-1px); }
+        100% { clip-path: inset(0 0 0 0); transform: translate(0); }
+    }
+    .eff-glitch { animation: glitch .6s infinite steps(2); filter: hue-rotate(40deg); }
+
+    /* 2 — Пульсация + размытие */
+    @keyframes blurPulse {
+        0% { transform: scale(1) ; filter: blur(0px); }
+        50% { transform: scale(1.15); filter: blur(2px); }
+        100% { transform: scale(1); filter: blur(0px); }
+    }
+    .eff-blurPulse { animation: blurPulse 1.4s infinite ease-in-out; }
+
+    /* 3 — Пикселизация */
+    .eff-pixel { image-rendering: pixelated; filter: contrast(1.7) saturate(1.4); }
+
+    /* 4 — Шейк */
+    @keyframes shake {
+        0% { transform: translate(0,0); }
+        25% { transform: translate(3px,-3px); }
+        50% { transform: translate(-3px,3px); }
+        75% { transform: translate(3px,3px); }
+        100% { transform: translate(0,0); }
+    }
+    .eff-shake { animation: shake .3s infinite; }
+
+    /* 5 — Хроматическая аберрация */
+    .eff-chroma {
+        filter: url("#chromatic");
+    }
+
+    /* 6 — Растекание */
+    @keyframes melt {
+        0% { transform: scale(1); filter: blur(0); }
+        50% { transform: scale(1.05, 1.2) blur(3px); }
+        100% { transform: scale(1); }
+    }
+    .eff-melt { animation: melt 2s infinite ease-in-out; }
+
+    /* 7 — Ripple (волнения) */
+    @keyframes ripple {
+        0% { transform: scale(1); filter: blur(0px); }
+        50% { transform: scale(1.1); filter: blur(1.2px); }
+        100% { transform: scale(1); }
+    }
+    .eff-ripple { animation: ripple 1.8s infinite ease-in-out; }
+
+    /* 8 — Разрыв */
+    .eff-break {
+        clip-path: polygon(0 0, 100% 0, 100% 40%, 0 60%);
+        transform: skew(6deg);
+        filter: brightness(1.5);
+    }
+
+    /* 9 — Noise */
+    .eff-noise {
+        filter: contrast(2) brightness(1.2) sepia(.3);
+    }
+
+    /* 10 — Warp */
+    @keyframes warp {
+        0% { transform: skew(0deg,0deg); }
+        50% { transform: skew(8deg,-6deg); filter: hue-rotate(25deg); }
+        100% { transform: skew(0,0); }
+    }
+    .eff-warp { animation: warp 1.5s infinite ease-in-out; }
+
     /* Модальное окно для экрана 5 */
     .collage-modal {
       position: fixed;
@@ -953,6 +1030,27 @@
   </style>
 </head>
 <body>
+  <!-- SVG фильтр хроматической аберрации для эффектов коллажа -->
+  <svg width="0" height="0" style="position: absolute;">
+    <defs>
+      <filter id="chromatic">
+        <feColorMatrix type="matrix"
+        values="1 0 0 0 0
+                0 1 0 0 0
+                0 0 1 0 0
+                0 0 0 1 0" result="m"/>
+        <feOffset in="m" dx="2" dy="0" result="r"/>
+        <feFlood flood-color="red" result="cr"/>
+        <feComposite in="cr" in2="r" operator="in" result="red"/>
+        <feOffset in="m" dx="-2" dy="0" result="b"/>
+        <feFlood flood-color="blue" result="cb"/>
+        <feComposite in="cb" in2="b" operator="in" result="blue"/>
+        <feBlend in="m" in2="red" mode="screen" result="mix"/>
+        <feBlend in="mix" in2="blue" mode="screen"/>
+      </filter>
+    </defs>
+  </svg>
+
   <a href="main.html" class="nav-home" id="homeBtn" aria-label="Вернуться на главную">⌂</a>
 
   <!-- Индикатор экранов -->
@@ -2006,6 +2104,12 @@
 
         // Запускаем случайное движение
         startRandomMove(item, vw, vh);
+
+        // Запускаем случайные эффекты для изображения
+        const img = item.querySelector('img');
+        if (img) {
+          startRandomEffects(img);
+        }
       });
 
       // Добавляем обработчики для закладок
@@ -2045,6 +2149,38 @@
         setTimeout(move, next);
       }
       setTimeout(move, Math.random() * 5000);
+    }
+
+    // Случайные эффекты анимации для изображений
+    const effectsArray = [
+      "eff-glitch",
+      "eff-blurPulse",
+      "eff-pixel",
+      "eff-shake",
+      "eff-chroma",
+      "eff-melt",
+      "eff-ripple",
+      "eff-break",
+      "eff-noise",
+      "eff-warp"
+    ];
+
+    function startRandomEffects(img) {
+      function applyEffect() {
+        // Убираем все эффекты
+        effectsArray.forEach(eff => img.classList.remove(eff));
+
+        // Применяем случайный эффект
+        const randomEffect = effectsArray[Math.floor(Math.random() * effectsArray.length)];
+        img.classList.add(randomEffect);
+
+        // Следующее применение через случайное время
+        const next = 2500 + Math.random() * 4500;
+        setTimeout(applyEffect, next);
+      }
+
+      // Начальная задержка перед первым эффектом
+      setTimeout(applyEffect, Math.random() * 2000);
     }
 
     // Показать модальное окно
