@@ -1,955 +1,410 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Звуковая выставка</title>
-
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#000000">
-    <link rel="icon" type="image/svg+xml" href="./icons/icon.svg">
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            background: #000;
-            font-family: 'Courier New', monospace;
-            color: #fff;
-            overflow-x: hidden;
-            overflow-y: auto;
-            min-height: 100vh;
-            min-height: calc(var(--vh, 1vh) * 100);
-        }
-
-        .phone-frame {
-            width: 100%;
-            max-width: 428px;
-            margin: 0 auto;
-            background: #000;
-            min-height: 100vh;
-            min-height: calc(var(--vh, 1vh) * 100);
-            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-        }
-
-        /* Header */
-        .header {
-            position: sticky;
-            top: 0;
-            background: #000;
-            border-bottom: 1px solid #333;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
-        }
-
-        .home-btn {
-            width: 40px;
-            height: 40px;
-            border: 1px solid #fff;
-            background: transparent;
-            color: #fff;
-            font-size: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-        }
-
-        .home-btn:hover {
-            background: #fff;
-            color: #000;
-        }
-
-        .header h1 {
-            font-size: 16px;
-            font-weight: 400;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-        }
-
-        /* Exhibition List */
-        .exhibition-list {
-            padding: 20px;
-        }
-
-        .exhibit-item {
-            border: 1px solid #333;
-            padding: 24px;
-            margin-bottom: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: #000;
-        }
-
-        .exhibit-item:hover {
-            border-color: #fff;
-            background: #111;
-        }
-
-        .exhibit-item:active {
-            background: #222;
-        }
-
-        .exhibit-number {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 8px;
-            letter-spacing: 2px;
-        }
-
-        .exhibit-title {
-            font-size: 18px;
-            margin-bottom: 12px;
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-
-        .exhibit-description {
-            font-size: 13px;
-            line-height: 1.6;
-            color: #aaa;
-        }
-
-        .exhibit-icon {
-            font-size: 32px;
-            margin-bottom: 12px;
-            opacity: 0.7;
-        }
-
-        /* Modal Player */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-            opacity: 1;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            width: 90%;
-            max-width: 380px;
-            background: #000;
-            border: 1px solid #fff;
-            padding: 30px;
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-        }
-
-        .modal-overlay.active .modal-content {
-            transform: scale(1);
-        }
-
-        .modal-header {
-            border-bottom: 1px solid #333;
-            padding-bottom: 20px;
-            margin-bottom: 20px;
-        }
-
-        .modal-number {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 8px;
-            letter-spacing: 2px;
-        }
-
-        .modal-title {
-            font-size: 20px;
-            margin-bottom: 12px;
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-
-        .modal-description {
-            font-size: 13px;
-            line-height: 1.6;
-            color: #aaa;
-        }
-
-        /* Audio Player */
-        .audio-player {
-            margin-top: 30px;
-        }
-
-        .audio-visualizer {
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-around;
-            height: 60px;
-            margin-bottom: 20px;
-            gap: 3px;
-        }
-
-        .audio-visualizer .bar {
-            width: 4px;
-            background: #fff;
-            height: 10px;
-            transition: height 0.1s ease;
-        }
-
-        .audio-visualizer.playing .bar {
-            animation: pulse 0.6s ease-in-out infinite;
-        }
-
-        .audio-visualizer .bar:nth-child(1) { animation-delay: 0s; }
-        .audio-visualizer .bar:nth-child(2) { animation-delay: 0.1s; }
-        .audio-visualizer .bar:nth-child(3) { animation-delay: 0.2s; }
-        .audio-visualizer .bar:nth-child(4) { animation-delay: 0.3s; }
-        .audio-visualizer .bar:nth-child(5) { animation-delay: 0.4s; }
-        .audio-visualizer .bar:nth-child(6) { animation-delay: 0.2s; }
-        .audio-visualizer .bar:nth-child(7) { animation-delay: 0.1s; }
-        .audio-visualizer .bar:nth-child(8) { animation-delay: 0.3s; }
-        .audio-visualizer .bar:nth-child(9) { animation-delay: 0.2s; }
-        .audio-visualizer .bar:nth-child(10) { animation-delay: 0.1s; }
-
-        @keyframes pulse {
-            0%, 100% { height: 10px; }
-            50% { height: 50px; }
-        }
-
-        .audio-time {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 10px;
-        }
-
-        .audio-progress {
-            height: 4px;
-            background: #333;
-            margin-bottom: 20px;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .audio-progress-bar {
-            height: 100%;
-            background: #fff;
-            width: 0%;
-            transition: width 0.1s linear;
-        }
-
-        .audio-controls {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .audio-btn {
-            width: 50px;
-            height: 50px;
-            background: transparent;
-            border: 1px solid #fff;
-            color: #fff;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .audio-btn:hover {
-            background: #fff;
-            color: #000;
-        }
-
-        .audio-btn:active {
-            transform: scale(0.95);
-        }
-
-        .audio-btn-play {
-            width: 60px;
-            height: 60px;
-            font-size: 20px;
-        }
-
-        .close-modal {
-            width: 100%;
-            padding: 14px;
-            background: transparent;
-            border: 1px solid #fff;
-            color: #fff;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .close-modal:hover {
-            background: #fff;
-            color: #000;
-        }
-
-        .audio-loading,
-        .audio-error {
-            text-align: center;
-            padding: 15px;
-            margin-bottom: 15px;
-            font-size: 13px;
-            border: 1px solid #333;
-        }
-
-        .audio-loading {
-            display: none;
-            color: #666;
-        }
-
-        .audio-loading.active {
-            display: block;
-        }
-
-        .audio-error {
-            display: none;
-            color: #f00;
-            border-color: #f00;
-        }
-
-        .audio-error.active {
-            display: block;
-        }
-
-        /* Footer */
-        .footer {
-            position: sticky;
-            bottom: 0;
-            background: #000;
-            border-top: 1px solid #333;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .finish-btn {
-            width: 100%;
-            padding: 16px;
-            background: #fff;
-            color: #000;
-            border: none;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            cursor: pointer;
-            text-decoration: none;
-            display: block;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: 700;
-            transition: all 0.3s ease;
-        }
-
-        .finish-btn:hover {
-            background: #ddd;
-        }
-
-        .finish-btn:active {
-            transform: scale(0.98);
-        }
-
-        /* Mobile Adaptations */
-        @media (max-width: 380px) {
-            .header h1 {
-                font-size: 14px;
-            }
-
-            .exhibit-title {
-                font-size: 16px;
-            }
-
-            .modal-title {
-                font-size: 18px;
-            }
-
-            .audio-btn {
-                width: 45px;
-                height: 45px;
-            }
-
-            .audio-btn-play {
-                width: 55px;
-                height: 55px;
-            }
-        }
-
-        /* Landscape Mode - Адаптация размеров */
-        @media (orientation: landscape) {
-            .header {
-                padding: 10px 15px;
-            }
-
-            .header h1 {
-                font-size: 12px;
-            }
-
-            .home-btn {
-                width: 30px;
-                height: 30px;
-                font-size: 16px;
-            }
-
-            .exhibit-number {
-                font-size: 7px;
-                margin-bottom: 3px;
-                letter-spacing: 1px;
-            }
-
-            .exhibit-title {
-                font-size: 9px;
-                margin-bottom: 4px;
-            }
-
-            .exhibit-description {
-                font-size: 7px;
-                line-height: 1.3;
-            }
-
-            .exhibit-icon {
-                font-size: 16px;
-                margin-bottom: 4px;
-            }
-
-            .footer {
-                padding: 10px 15px;
-            }
-
-            .finish-btn {
-                padding: 8px;
-                font-size: 10px;
-            }
-        }
-
-        /* Reduce Motion */
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>Звуковая выставка — карта</title>
+
+<!-- PWA Manifest -->
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#000000">
+<link rel="icon" type="image/svg+xml" href="./icons/icon.svg">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:#000;
+  color:#fff;
+  font-family:Arial, Helvetica, sans-serif;
+  overflow:hidden;
+  cursor:grab;
+}
+body:active{cursor:grabbing}
+
+#exhibition-space{
+  position:absolute;
+  width:5000px;
+  height:5000px;
+  transform-origin:0 0;
+  transition:transform .4s ease;
+}
+
+.bookmark{
+  position:absolute;
+  width:40px;
+  height:60px;
+  cursor:pointer;
+  transition:all .25s ease;
+  z-index:2;
+}
+.bookmark.exhibit{
+  border-top:40px solid #444;
+  border-left:20px solid transparent;
+  border-right:20px solid transparent;
+  background: linear-gradient(180deg,#222,#111);
+  border-radius:4px;
+}
+.bookmark.exhibit:hover{ transform:scale(1.15) rotate(6deg) }
+
+.bookmark.decoy{
+  width:28px;height:48px;
+  background:repeating-linear-gradient(45deg,#666,#666 5px,#333 5px,#333 10px);
+  transform:rotate(12deg);
+  border-radius:3px;
+  opacity:.95;
+}
+
+.exhibit-panel{
+  position:fixed;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:-340px;
+  width:92%;
+  max-width:680px;
+  background:rgba(14,14,14,.96);
+  padding:18px;
+  border-radius:14px 14px 0 0;
+  box-shadow:0 -6px 30px rgba(0,0,0,.6);
+  transition:bottom .45s cubic-bezier(.2,.9,.2,1);
+  z-index:1000;
+}
+.exhibit-panel.active{ bottom:0 }
+
+.exhibit-panel h2{ font-size:1.3rem; margin-bottom:8px }
+.exhibit-panel p{ opacity:.95; line-height:1.45; margin-bottom:12px }
+
+.audio-controls{ display:flex; align-items:center; gap:10px; margin-top:6px }
+.audio-controls button{
+  background:#333;border:1px solid #2a2a2a;color:#fff;padding:8px 12px;border-radius:6px;
+  cursor:pointer;font-size:14px;
+}
+.audio-controls progress{ flex:1; height:10px; border-radius:6px; overflow:hidden; cursor:pointer; }
+
+.navigation-info{
+  position:fixed; left:18px; top:18px; z-index:1000;
+  background:rgba(0,0,0,.6); padding:10px 12px; border-radius:6px; font-size:13px;
+}
+
+.home-btn{
+  position:fixed; right:18px; top:18px; z-index:1000;
+  width:44px;height:44px;border-radius:50%; background:rgba(30,30,30,.85); border:1px solid rgba(255,255,255,.3); color:#fff; font-size:20px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; text-decoration:none;
+}
+
+.zoom-controls{
+  position:fixed; right:18px; bottom:18px; display:flex; flex-direction:column; gap:8px; z-index:1000;
+}
+.zoom-controls button{
+  width:44px;height:44px;border-radius:50%; background:rgba(30,30,30,.85); border:none; color:#fff; font-size:20px; cursor:pointer;
+}
+.small-muted{ font-size:12px; opacity:.8; margin-top:6px }
+</style>
 </head>
 <body>
-    <div class="phone-frame">
-        <!-- Header -->
-        <div class="header">
-            <a href="main.html" class="home-btn" id="homeBtn" aria-label="На главную">⌂</a>
-            <h1>Звуковая выставка</h1>
-            <div style="width: 40px;"></div> <!-- Spacer for centering -->
-        </div>
+<div id="exhibition-space" aria-hidden="true"></div>
 
-        <!-- Exhibition List -->
-        <div class="exhibition-list" id="exhibitionList"></div>
+<div class="exhibit-panel" id="exhibit-panel" aria-hidden="true">
+  <h2 id="exhibit-title"></h2>
+  <p id="exhibit-description"></p>
 
-        <!-- Footer -->
-        <div class="footer">
-            <a href="quiet.html" class="finish-btn">Войти в тишину</a>
-        </div>
-    </div>
+  <div class="audio-controls">
+    <button id="play-btn" title="Воспроизвести/пауза">▶</button>
+    <button id="switch-audio" title="Переключить дорожку">Куратор</button>
+    <button id="close-btn" title="Закрыть">✕</button>
+    <progress id="audio-progress" value="0" max="100"></progress>
+  </div>
+  <div class="small-muted">Нажмите любую клавишу (вне панели) — проиграется случайный шум.</div>
+</div>
 
-    <!-- Modal Player -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-number" id="modalNumber"></div>
-                <div class="modal-title" id="modalTitle"></div>
-                <div class="modal-description" id="modalDescription"></div>
-            </div>
+<div class="navigation-info">Перетаскивайте карту · Кликните на экспонат</div>
 
-            <div class="audio-player">
-                <div class="audio-loading" id="audioLoading">Загрузка...</div>
-                <div class="audio-error" id="audioError"></div>
+<a href="main.html" class="home-btn" title="На главную">⌂</a>
 
-                <div class="audio-visualizer" id="audioVisualizer">
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                </div>
+<div class="zoom-controls">
+  <button id="zoom-in" title="Увеличить">+</button>
+  <button id="zoom-out" title="Уменьшить">−</button>
+</div>
 
-                <div class="audio-time">
-                    <span id="currentTime">0:00</span>
-                    <span id="durationTime">0:00</span>
-                </div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const exhibitionSpace = document.getElementById('exhibition-space');
+  const exhibitPanel = document.getElementById('exhibit-panel');
+  const exhibitTitle = document.getElementById('exhibit-title');
+  const exhibitDescription = document.getElementById('exhibit-description');
 
-                <div class="audio-progress" id="audioProgress">
-                    <div class="audio-progress-bar" id="audioProgressBar"></div>
-                </div>
+  const playBtn = document.getElementById('play-btn');
+  const closeBtn = document.getElementById('close-btn');
+  const audioProgress = document.getElementById('audio-progress');
+  const switchBtn = document.getElementById('switch-audio');
 
-                <div class="audio-controls">
-                    <button class="audio-btn" id="rewindBtn" title="Назад 10 сек">⏪</button>
-                    <button class="audio-btn audio-btn-play" id="playBtn">▶</button>
-                    <button class="audio-btn" id="forwardBtn" title="Вперед 10 сек">⏩</button>
-                </div>
+  const zoomInBtn = document.getElementById('zoom-in');
+  const zoomOutBtn = document.getElementById('zoom-out');
 
-                <button class="close-modal" id="closeModal">Закрыть</button>
-            </div>
-        </div>
-    </div>
+  let currentAudio = null;
+  let currentMode = 'artist';
+  let posX = 0, posY = 0, scale = 1;
+  let isDragging = false, startX = 0, startY = 0, scrollLeft = 0, scrollTop = 0;
 
-    <script>
-        // ================================================
-        // ИСПРАВЛЕНИЕ VIEWPORT ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ
-        // ================================================
-        function setViewportHeight() {
-            const vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
-        }
+  const NOISE_COUNT = 6; // количество шумов
 
-        setViewportHeight();
-        window.addEventListener('resize', setViewportHeight);
-        window.addEventListener('orientationchange', () => {
-            setTimeout(setViewportHeight, 100);
-        });
+  const exhibits = [
+    { id:1, title:"Mood Mirror", description:"Анастасия Кедрина, Мария Киселева, Иван Николаев · Интерактивная инсталляция · 2025", audio_artist:"interviews/1.mp3", audio_curator:"interviews/1.mp3", x:500, y:700 },
+    { id:2, title:"Гаджеты будущего", description:"Максимилиан Роганов · Генеративная графика · 2025", audio_artist:"interviews/2.mp3", audio_curator:"interviews/2.mp3", x:1400, y:800 },
+    { id:3, title:"Set${humans}", description:"Елена Тормышева, Игорь Тормышев, Дмитрий Чуйко · Инсталляция: видеокамера, монитор, ПО с использованием ИИ · 2025", audio_artist:"interviews/3.mp3", audio_curator:"interviews/3.mp3", x:2300, y:900 },
+    { id:4, title:"Связь", description:"Екатерина Рыжикова · Холст, акрил, ультрафиолетовые светодиоды, батарейки, переключатель · 2025", audio_artist:"interviews/4.mp3", audio_curator:"interviews/4.mp3", x:3200, y:700 },
+    { id:5, title:"Идентификация", description:"Софи Мостовлюк · Веб-сайт · 2024", audio_artist:"interviews/5.mp3", audio_curator:"interviews/5.mp3", x:800, y:1600 },
+    { id:6, title:"Трогательно", description:"DIMITRIEV & YANAK · Видео-арт, фотография · 2025", audio_artist:"interviews/6.mp3", audio_curator:"interviews/6.mp3", x:1600, y:1700 },
+    { id:7, title:"CAMP", description:"Павел Чекулаев · Двухканальное видео без звука · 2024 · «CAMP — Construction and Assembly Mobile Platform» / Fallout 76", audio_artist:"interviews/7.mp3", audio_curator:"interviews/7.mp3", x:3300, y:1500 },
+    { id:8, title:"Tuesday song", description:"z0.sya · Видео-арт · 2024", audio_artist:"interviews/8.mp3", audio_curator:"interviews/8.mp3", x:900, y:2500 },
+    { id:9, title:"Свет для одного из нас", description:"Виктор Кертанов · Схемотехника, Unity · 2025", audio_artist:"interviews/9.mp3", audio_curator:"interviews/9.mp3", x:1700, y:2600 },
+    { id:10, title:"Дневник искусственного созерцания", description:"Milana Yayo · Net-art · 2024 · Веб-сайт с аудиовизуальными записями", audio_artist:"interviews/10.mp3", audio_curator:"interviews/10.mp3", x:2600, y:2500 },
+    { id:11, title:"Soundscape console", description:"Иван Кравчук, Антон Попов · Интерактивная инсталляция · 2025", audio_artist:"interviews/11.mp3", audio_curator:"interviews/11.mp3", x:3500, y:2400 },
+    { id:12, title:"Биоконструктор", description:"Азат Галиев · Интерактивная инсталляция · 2025", audio_artist:"interviews/12.mp3", audio_curator:"interviews/12.mp3", x:1100, y:3300 },
+    { id:13, title:"ИДИЛЛИЯ", description:"Нина Сибирёва · Интерактивный прототип приложения · 2025", audio_artist:"interviews/13.mp3", audio_curator:"interviews/13.mp3", x:2000, y:3400 },
+    { id:14, title:"INVERSE", description:"Саша Пика, Даниил Каркозов, s-lab, Наталия Таренко, Татьяна Маландина · Аудиовизуальная инсталляция · 2025", audio_artist:"interviews/14.mp3", audio_curator:"interviews/14.mp3", x:2900, y:3300 },
+    { id:15, title:"Чтение лиц", description:"Марина Грекова · Текстиль с отпечатками, онлайн-приложение по QR-коду · 2025", audio_artist:"interviews/15.mp3", audio_curator:"interviews/15.mp3", x:3800, y:3200 },
+    { id:16, title:"Omniharmony", description:"Надежда Бей · VR · 2025", audio_artist:"interviews/16.mp3", audio_curator:"interviews/16.mp3", x:500, y:4200 },
+    { id:17, title:"Страшные сказки", description:"Екатерина Козлова · 3D-сканирование, AI · 2024", audio_artist:"interviews/17.mp3", audio_curator:"interviews/17.mp3", x:1400, y:4300 },
+    { id:18, title:"Тело города", description:"Елена Деми-дова · Видео · 2025", audio_artist:"interviews/18.mp3", audio_curator:"interviews/18.mp3", x:2500, y:4500 },
+    { id:19, title:"Гримаса-синтезатор", description:"Юлия Баранюк · Видеоперформанс, интерактивная инсталляция · 2025", audio_artist:"interviews/19.mp3", audio_curator:"interviews/19.mp3", x:2300, y:4300 },
+    { id:20, title:"Пользовательское соглашение любви", description:"Sun Dar, Всеволод Крючков · Веб-сайт · 2025", audio_artist:"interviews/20.mp3", audio_curator:"interviews/20.mp3", x:3200, y:4300 }
+  ];
 
-        // Exhibits Data
-        const exhibits = [
-            {
-                id: 1,
-                title: "Mood Mirror",
-                description: "Анастасия Кедрина, Мария Киселева, Иван Николаев\nИнтерактивная инсталляция, 2025",
-                icon: "🪞",
-                audioFile: './interviews/interview-1.mp3'
-            },
-            {
-                id: 2,
-                title: "Гаджеты будущего",
-                description: "Максимилиан Роганов\nГенеративная графика, 2025",
-                icon: "📱",
-                audioFile: './interviews/interview-2.mp3'
-            },
-            {
-                id: 3,
-                title: "Set${humans}",
-                description: "Елена Тормышева, Игорь Тормышев, Дмитрий Чуйко\nИнсталляция: видеокамера, монитор, ПО с использованием ИИ, 2025",
-                icon: "🤖",
-                audioFile: './interviews/interview-3.mp3'
-            },
-            {
-                id: 4,
-                title: "Связь",
-                description: "Екатерина Рыжикова\nХолст, акрил, ультрафиолетовые светодиоды, батарейки, переключатель, 2025",
-                icon: "🔗",
-                audioFile: './interviews/interview-4.mp3'
-            },
-            {
-                id: 5,
-                title: "Идентификация",
-                description: "Софи Мостовлюк\nВеб-сайт, 2024",
-                icon: "🆔",
-                audioFile: './interviews/interview-5.mp3'
-            },
-            {
-                id: 6,
-                title: "Трогательно",
-                description: "DIMITRIEV & YANAK\nВидео-арт, фотография, 2025",
-                icon: "🎬",
-                audioFile: './interviews/interview-6.mp3'
-            },
-            {
-                id: 7,
-                title: "Пользовательское соглашение любви",
-                description: "Sun Dar, Всеволод Крючков\nВеб-сайт, 2025",
-                icon: "💝",
-                audioFile: './interviews/interview-7.mp3'
-            },
-            {
-                id: 8,
-                title: "CAMP",
-                description: "Павел Чекулаев\nДвухканальное видео без звука, 2024",
-                icon: "🏕️",
-                audioFile: './interviews/interview-8.mp3'
-            },
-            {
-                id: 9,
-                title: "Tuesday song",
-                description: "z0.sya\nВидео-арт, 2024",
-                icon: "🎵",
-                audioFile: './interviews/interview-9.mp3'
-            },
-            {
-                id: 10,
-                title: "Свет для одного из нас",
-                description: "Виктор Кертанов\nСхемотехника, Unity, 2025",
-                icon: "💡",
-                audioFile: './interviews/interview-10.mp3'
-            },
-            {
-                id: 11,
-                title: "Дневник искусственного созерцания",
-                description: "Milana Yayo\nNet-art, 2024",
-                icon: "📔",
-                audioFile: './interviews/interview-11.mp3'
-            },
-            {
-                id: 12,
-                title: "Soundscape console",
-                description: "Иван Кравчук, Антон Попов\nИнтерактивная инсталляция, 2025",
-                icon: "🎚️",
-                audioFile: './interviews/interview-12.mp3'
-            },
-            {
-                id: 13,
-                title: "Биоконструктор",
-                description: "Азат Галиев\nИнтерактивная инсталляция, 2025",
-                icon: "🧬",
-                audioFile: './interviews/interview-13.mp3'
-            },
-            {
-                id: 14,
-                title: "ИДИЛЛИЯ",
-                description: "Нина Сибирёва\nИнтерактивный прототип приложения, 2025",
-                icon: "🌸",
-                audioFile: './interviews/interview-14.mp3'
-            },
-            {
-                id: 15,
-                title: "INVERSE",
-                description: "Саша Пика, Даниил Каркозов, s-lab, Наталия Таренко, Татьяна Маландина\nАудиовизуальная инсталляция, 2025",
-                icon: "🔄",
-                audioFile: './interviews/interview-15.mp3'
-            },
-            {
-                id: 16,
-                title: "Чтение лиц",
-                description: "Марина Грекова\nТекстиль с отпечатками, онлайн-приложение по QR-коду, 2025",
-                icon: "👁️",
-                audioFile: './interviews/interview-16.mp3'
-            },
-            {
-                id: 17,
-                title: "Omniharmony",
-                description: "Надежда Бей\nVR, 2025",
-                icon: "🎼",
-                audioFile: './interviews/interview-17.mp3'
-            },
-            {
-                id: 18,
-                title: "Страшные сказки",
-                description: "Екатерина Козлова\n3D-сканирование, AI, 2024",
-                icon: "👻",
-                audioFile: './interviews/interview-18.mp3'
-            },
-            {
-                id: 19,
-                title: "Facecatcher",
-                description: "Юлия Баранюк\nВидео-арт, 2025",
-                icon: "📹",
-                audioFile: './interviews/interview-19.mp3'
-            },
-            {
-                id: 20,
-                title: "Гримаса-синтезатор",
-                description: "Юлия Баранюк\nВидеоперформанс, интерактивная инсталляция, 2025",
-                icon: "😮",
-                audioFile: './interviews/interview-20.mp3'
-            },
-            {
-                id: 21,
-                title: "Технологии заботы",
-                description: "Автор уточняется\nМедиаинсталляция, 2025",
-                icon: "💫",
-                audioFile: './interviews/interview-21.mp3'
-            },
-            {
-                id: 22,
-                title: "Цифровая память",
-                description: "Автор уточняется\nИнтерактивная инсталляция, 2025",
-                icon: "💾",
-                audioFile: './interviews/interview-22.mp3'
-            },
-            {
-                id: 23,
-                title: "БИОХАБ",
-                description: "LUKÚTA\nВидеогенерация, 2024",
-                icon: "🧫",
-                audioFile: './interviews/interview-23.mp3'
-            }
-        ];
+  // Создание экспонатов
+  exhibits.forEach(ex => {
+    const el = document.createElement('div');
+    el.className = 'bookmark exhibit';
+    el.style.left = ex.x + 'px';
+    el.style.top = ex.y + 'px';
+    el.setAttribute('data-id', ex.id);
+    el.title = ex.title;
+    el.addEventListener('click', e => { e.stopPropagation(); openExhibit(ex); });
+    exhibitionSpace.appendChild(el);
+  });
 
-        // Elements
-        const exhibitionList = document.getElementById('exhibitionList');
-        const modalOverlay = document.getElementById('modalOverlay');
-        const modalNumber = document.getElementById('modalNumber');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalDescription = document.getElementById('modalDescription');
-        const playBtn = document.getElementById('playBtn');
-        const rewindBtn = document.getElementById('rewindBtn');
-        const forwardBtn = document.getElementById('forwardBtn');
-        const closeModal = document.getElementById('closeModal');
-        const audioProgress = document.getElementById('audioProgress');
-        const audioProgressBar = document.getElementById('audioProgressBar');
-        const currentTime = document.getElementById('currentTime');
-        const durationTime = document.getElementById('durationTime');
-        const audioVisualizer = document.getElementById('audioVisualizer');
-        const audioLoading = document.getElementById('audioLoading');
-        const audioError = document.getElementById('audioError');
+  // Создание декой-шумов
+  const decoyNoiseList = [
+    "interviews/noise1.mp3","interviews/noise2.mp3","interviews/noise3.mp3","interviews/noise4.mp3","interviews/noise5.mp3","interviews/noise6.mp3"
+  ];
+  for(let i=0;i<25;i++){
+    const d = document.createElement('div');
+    d.className = 'bookmark decoy';
+    d.style.left = Math.random() * 4800 + 'px';
+    d.style.top = Math.random() * 4800 + 'px';
+    d.addEventListener('click', e => {
+      e.stopPropagation();
+      playRandomDecoy();
+    });
+    exhibitionSpace.appendChild(d);
+  }
 
-        let currentAudio = null;
+  function playRandomDecoy(){
+    const src = decoyNoiseList[Math.floor(Math.random()*decoyNoiseList.length)];
+    const a = new Audio(src);
+    a.play().catch(()=>{});
+  }
 
-        // Render Exhibition List
-        exhibits.forEach((exhibit, index) => {
-            const item = document.createElement('div');
-            item.className = 'exhibit-item';
-            item.dataset.exhibitId = exhibit.id;
-            item.dataset.exhibitIndex = index;
-            item.innerHTML = `
-                <div class="exhibit-number">ЭКСПОНАТ #${String(exhibit.id).padStart(2, '0')}</div>
-                <div class="exhibit-icon">${exhibit.icon}</div>
-                <div class="exhibit-title">${exhibit.title}</div>
-                <div class="exhibit-description">${exhibit.description}</div>
-            `;
+  function openExhibit(ex){
+    if(currentAudio){ currentAudio.pause(); currentAudio = null; }
+    exhibitTitle.textContent = ex.title;
+    exhibitDescription.textContent = ex.description;
+    exhibitTitle.dataset.id = ex.id;
+    currentMode = 'artist';
+    switchBtn.textContent = 'Куратор';
+    playAudio(ex.audio_artist);
+    exhibitPanel.classList.add('active');
+    zoomTo(ex.x, ex.y, 2);
+  }
 
-            // Set position for landscape mode
-            // Simple click to open modal
-            item.addEventListener('click', () => {
-                openModal(exhibit);
-            });
+  function playAudio(src){
+    try{ if(currentAudio){ currentAudio.pause(); } }catch(e){}
+    currentAudio = new Audio(src);
+    currentAudio.volume = 1;
+    currentAudio.play().catch(()=>{});
+    playBtn.textContent = '❚❚';
+    currentAudio.addEventListener('timeupdate', () => {
+      if (!currentAudio || !currentAudio.duration || isNaN(currentAudio.duration)) return;
+      audioProgress.value = (currentAudio.currentTime / currentAudio.duration) * 100;
+    });
+    currentAudio.addEventListener('ended', () => {
+      playBtn.textContent = '▶';
+      audioProgress.value = 0;
+    });
+  }
 
-            exhibitionList.appendChild(item);
-        });
+  switchBtn.addEventListener('click', () => {
+    const id = exhibitTitle.dataset.id;
+    if(!id) return;
+    const ex = exhibits.find(e => String(e.id) === String(id));
+    if(!ex) return;
 
-        // Open Modal
-        function openModal(exhibit) {
-            modalNumber.textContent = `ЭКСПОНАТ #${String(exhibit.id).padStart(2, '0')}`;
-            modalTitle.textContent = exhibit.title;
-            modalDescription.textContent = exhibit.description;
+    const newSrc = (currentMode === 'artist') ? ex.audio_curator : ex.audio_artist;
+    const newMode = (currentMode === 'artist') ? 'curator' : 'artist';
+    const oldA = currentAudio;
+    const newA = new Audio(newSrc);
+    newA.volume = 0;
+    newA.play().catch(()=>{});
+    let steps = 20;
+    const step = 50;
+    const fade = setInterval(()=>{
+      if(oldA){ oldA.volume = Math.max(0, oldA.volume - 1/steps); }
+      newA.volume = Math.min(1, newA.volume + 1/steps);
+      steps--;
+      if(steps <= 0){
+        clearInterval(fade);
+        if(oldA) try{ oldA.pause(); }catch(e){}
+        currentAudio = newA;
+      }
+    }, step);
 
-            // Stop previous audio
-            if (currentAudio) {
-                currentAudio.pause();
-                currentAudio.currentTime = 0;
-            }
+    currentMode = newMode;
+    switchBtn.textContent = (currentMode === 'artist') ? 'Куратор' : 'Художник';
+    playBtn.textContent = '❚❚';
+    newA.addEventListener('timeupdate', () => {
+      if(!newA.duration || isNaN(newA.duration)) return;
+      audioProgress.value = (newA.currentTime / newA.duration) * 100;
+    });
+    newA.addEventListener('ended', () => {
+      playBtn.textContent = '▶';
+      audioProgress.value = 0;
+    });
+  });
 
-            // Reset UI
-            audioLoading.classList.remove('active');
-            audioError.classList.remove('active');
-            audioProgressBar.style.width = '0%';
-            currentTime.textContent = '0:00';
-            durationTime.textContent = '0:00';
-            playBtn.textContent = '▶';
-            audioVisualizer.classList.remove('playing');
+  // Play/pause
+  playBtn.addEventListener('click', () => {
+    if(!currentAudio) return;
+    if(currentAudio.paused) {
+      currentAudio.play().catch(()=>{});
+      playBtn.textContent = '❚❚';
+    } else {
+      currentAudio.pause();
+      playBtn.textContent = '▶';
+    }
+  });
 
-            // Load audio
-            loadAudio(exhibit.audioFile);
+  // Перематывание по клику на прогресс-бар
+  audioProgress.addEventListener('click', (e) => {
+    if (!currentAudio || !currentAudio.duration || isNaN(currentAudio.duration)) return;
+    const rect = audioProgress.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const ratio = x / rect.width;
+    currentAudio.currentTime = currentAudio.duration * ratio;
+    audioProgress.value = ratio * 100;
+  });
 
-            // Show modal
-            modalOverlay.classList.add('active');
-        }
+  closeBtn.addEventListener('click', () => {
+    exhibitPanel.classList.remove('active');
+    if(currentAudio) try{ currentAudio.pause(); }catch(e){}
+    playBtn.textContent = '▶';
+    audioProgress.value = 0;
+  });
 
-        // Load Audio
-        function loadAudio(audioFile) {
-            audioLoading.classList.add('active');
-            audioError.classList.remove('active');
+  // Перетаскивание карты
+  let dragStartX = 0, dragStartY = 0, mapX = -1000, mapY = -1000;
 
-            currentAudio = new Audio(audioFile);
+  function updateTransform() {
+    exhibitionSpace.style.transform = `translate(${mapX}px, ${mapY}px) scale(${scale})`;
+  }
 
-            currentAudio.addEventListener('loadedmetadata', () => {
-                audioLoading.classList.remove('active');
-                durationTime.textContent = formatTime(currentAudio.duration);
+  exhibitionSpace.addEventListener('mousedown', e => {
+    isDragging = true;
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+  });
 
-                // Автоматически начинаем воспроизведение
-                currentAudio.play().then(() => {
-                    playBtn.textContent = '⏸';
-                    audioVisualizer.classList.add('playing');
-                }).catch(err => {
-                    console.error('Autoplay error:', err);
-                    // Если автозапуск не удался (например, браузер блокирует), просто игнорируем
-                });
-            });
+  document.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    const dx = e.clientX - dragStartX;
+    const dy = e.clientY - dragStartY;
+    mapX += dx;
+    mapY += dy;
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+    updateTransform();
+  });
 
-            currentAudio.addEventListener('error', (e) => {
-                audioLoading.classList.remove('active');
-                audioError.classList.add('active');
-                audioError.textContent = 'Не удалось загрузить аудио. Проверьте наличие файла.';
-                console.error('Audio error:', e);
-            });
+  document.addEventListener('mouseup', () => {
+    isDragging = false;
+  });
 
-            currentAudio.addEventListener('timeupdate', () => {
-                if (currentAudio.duration) {
-                    const progress = (currentAudio.currentTime / currentAudio.duration) * 100;
-                    audioProgressBar.style.width = progress + '%';
-                    currentTime.textContent = formatTime(currentAudio.currentTime);
-                }
-            });
+  // Touch support
+  let touchStartX = 0, touchStartY = 0;
+  exhibitionSpace.addEventListener('touchstart', e => {
+    if (e.touches.length === 1) {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      isDragging = true;
+    }
+  });
 
-            currentAudio.addEventListener('ended', () => {
-                playBtn.textContent = '▶';
-                audioVisualizer.classList.remove('playing');
-                audioProgressBar.style.width = '0%';
-            });
-        }
+  document.addEventListener('touchmove', e => {
+    if (!isDragging || e.touches.length !== 1) return;
+    const dx = e.touches[0].clientX - touchStartX;
+    const dy = e.touches[0].clientY - touchStartY;
+    mapX += dx;
+    mapY += dy;
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    updateTransform();
+  });
 
-        // Format Time
-        function formatTime(seconds) {
-            if (isNaN(seconds) || !isFinite(seconds)) return '0:00';
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return mins + ':' + (secs < 10 ? '0' : '') + secs;
-        }
+  document.addEventListener('touchend', () => {
+    isDragging = false;
+  });
 
-        // Play/Pause Button
-        playBtn.addEventListener('click', () => {
-            if (!currentAudio) return;
+  // Zoom
+  function zoomTo(x, y, newScale) {
+    scale = newScale;
+    mapX = window.innerWidth / 2 - x * scale;
+    mapY = window.innerHeight / 2 - y * scale;
+    updateTransform();
+  }
 
-            if (currentAudio.paused) {
-                currentAudio.play().then(() => {
-                    playBtn.textContent = '⏸';
-                    audioVisualizer.classList.add('playing');
-                }).catch(err => {
-                    console.error('Play error:', err);
-                    audioError.classList.add('active');
-                    audioError.textContent = 'Ошибка воспроизведения';
-                });
-            } else {
-                currentAudio.pause();
-                playBtn.textContent = '▶';
-                audioVisualizer.classList.remove('playing');
-            }
-        });
+  zoomInBtn.addEventListener('click', () => {
+    scale = Math.min(scale + 0.2, 3);
+    updateTransform();
+  });
 
-        // Rewind Button
-        rewindBtn.addEventListener('click', () => {
-            if (!currentAudio) return;
-            currentAudio.currentTime = Math.max(0, currentAudio.currentTime - 10);
-        });
+  zoomOutBtn.addEventListener('click', () => {
+    scale = Math.max(scale - 0.2, 0.5);
+    updateTransform();
+  });
 
-        // Forward Button
-        forwardBtn.addEventListener('click', () => {
-            if (!currentAudio) return;
-            currentAudio.currentTime = Math.min(currentAudio.duration, currentAudio.currentTime + 10);
-        });
+  // Random noise on keypress
+  document.addEventListener('keydown', (e) => {
+    // Проверяем, что фокус не на панели экспоната
+    if (exhibitPanel.classList.contains('active')) return;
+    playRandomDecoy();
+  });
 
-        // Progress Bar Click
-        audioProgress.addEventListener('click', (e) => {
-            if (!currentAudio || !currentAudio.duration) return;
+  // Initial position
+  updateTransform();
 
-            const rect = audioProgress.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const percentage = clickX / rect.width;
-            currentAudio.currentTime = percentage * currentAudio.duration;
-        });
+  // Вибрация при открытии экспоната (для Android)
+  const originalOpenExhibit = openExhibit;
+  openExhibit = function(ex) {
+    if (typeof Android !== 'undefined') {
+      Android.vibrate(15);
+    } else if ('vibrate' in navigator) {
+      navigator.vibrate(15);
+    }
+    originalOpenExhibit(ex);
+  };
+});
 
-        // Close Modal
-        closeModal.addEventListener('click', () => {
-            modalOverlay.classList.remove('active');
-            if (currentAudio) {
-                currentAudio.pause();
-                currentAudio.currentTime = 0;
-            }
-            playBtn.textContent = '▶';
-            audioVisualizer.classList.remove('playing');
-        });
-
-        // Close on overlay click
-        modalOverlay.addEventListener('click', (e) => {
-            if (e.target === modalOverlay) {
-                closeModal.click();
-            }
-        });
-
-        // PWA: Service Worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./service-worker.js')
-                .then(reg => console.log('✅ SW registered'))
-                .catch(err => console.error('❌ SW error:', err));
-        }
-
-        // ========== ВКЛЮЧЕНИЕ СВЕТА ПРИ ВОЗВРАТЕ ДОМОЙ ==========
-
-        let lightsConfig = null;
-
-        // Загрузка настроек освещения
-        function loadLightsConfig() {
-            const saved = localStorage.getItem('lights_config');
-            if (saved) {
-                try {
-                    lightsConfig = JSON.parse(saved);
-                } catch (e) {
-                    console.error('Ошибка загрузки настроек света:', e);
-                }
-            }
-        }
-
-        // Включение света (Philips Hue)
-        async function turnOnLights() {
-            if (!lightsConfig || lightsConfig.type !== 'hue') return;
-
-            try {
-                const response = await fetch(`http://${lightsConfig.ip}/api/${lightsConfig.apiKey}/lights`);
-                if (!response.ok) return;
-
-                const lights = await response.json();
-                const lightIds = Object.keys(lights);
-
-                // Включаем все лампы
-                for (const id of lightIds) {
-                    await fetch(`http://${lightsConfig.ip}/api/${lightsConfig.apiKey}/lights/${id}/state`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ on: true, bri: 254 }) // Максимальная яркость
-                    });
-                }
-
-                console.log('💡 Свет включен');
-
-                // Вибрация для обратной связи
-                if (typeof Android !== 'undefined') {
-                    Android.vibrate(100);
-                }
-            } catch (error) {
-                console.error('Ошибка включения света:', error);
-            }
-        }
-
-        // Загружаем настройки при старте
-        loadLightsConfig();
-
-        // Обработчик кнопки "Домой" - включаем свет
-        const homeBtn = document.getElementById('homeBtn');
-        if (homeBtn) {
-            homeBtn.addEventListener('click', async (e) => {
-                if (lightsConfig) {
-                    e.preventDefault();
-
-                    console.log('🏠 Кнопка "Домой" нажата, включаем свет...');
-                    await turnOnLights();
-
-                    setTimeout(() => {
-                        window.location.href = 'main.html';
-                    }, 500);
-                }
-            });
-        }
-    </script>
+// PWA: Регистрация Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(registration => {
+        console.log('✅ Service Worker зарегистрирован:', registration.scope);
+      })
+      .catch(error => {
+        console.error('❌ Ошибка регистрации Service Worker:', error);
+      });
+  });
+}
+</script>
 </body>
 </html>
