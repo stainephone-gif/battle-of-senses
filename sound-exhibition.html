@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Звуковая выставка</title>
 
-    <!-- PWA Android Bridge -->
-    <script src="./pwa-android-bridge.js"></script>
-
     <!-- PWA Manifest -->
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#000000">
@@ -887,72 +884,6 @@
                 .catch(err => console.error('❌ SW error:', err));
         }
 
-        // ========== ВКЛЮЧЕНИЕ СВЕТА ПРИ ВОЗВРАТЕ ДОМОЙ ==========
-
-        let lightsConfig = null;
-
-        // Загрузка настроек освещения
-        function loadLightsConfig() {
-            const saved = localStorage.getItem('lights_config');
-            if (saved) {
-                try {
-                    lightsConfig = JSON.parse(saved);
-                } catch (e) {
-                    console.error('Ошибка загрузки настроек света:', e);
-                }
-            }
-        }
-
-        // Включение света (Philips Hue)
-        async function turnOnLights() {
-            if (!lightsConfig || lightsConfig.type !== 'hue') return;
-
-            try {
-                const response = await fetch(`http://${lightsConfig.ip}/api/${lightsConfig.apiKey}/lights`);
-                if (!response.ok) return;
-
-                const lights = await response.json();
-                const lightIds = Object.keys(lights);
-
-                // Включаем все лампы
-                for (const id of lightIds) {
-                    await fetch(`http://${lightsConfig.ip}/api/${lightsConfig.apiKey}/lights/${id}/state`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ on: true, bri: 254 }) // Максимальная яркость
-                    });
-                }
-
-                console.log('💡 Свет включен');
-
-                // Вибрация для обратной связи
-                if (typeof Android !== 'undefined') {
-                    Android.vibrate(100);
-                }
-            } catch (error) {
-                console.error('Ошибка включения света:', error);
-            }
-        }
-
-        // Загружаем настройки при старте
-        loadLightsConfig();
-
-        // Обработчик кнопки "Домой" - включаем свет
-        const homeBtn = document.getElementById('homeBtn');
-        if (homeBtn) {
-            homeBtn.addEventListener('click', async (e) => {
-                if (lightsConfig) {
-                    e.preventDefault();
-
-                    console.log('🏠 Кнопка "Домой" нажата, включаем свет...');
-                    await turnOnLights();
-
-                    setTimeout(() => {
-                        window.location.href = 'main.html';
-                    }, 500);
-                }
-            });
-        }
     </script>
 </body>
 </html>
