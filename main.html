@@ -304,112 +304,42 @@
       document.head.appendChild(link);
     });
 
-    // ========== УПРАВЛЕНИЕ УМНЫМ ОСВЕЩЕНИЕМ ==========
-
-    let lightsConfig = null;
-
-    // Загрузка настроек освещения
-    function loadLightsConfig() {
-      const saved = localStorage.getItem('lights_config');
-      if (saved) {
-        try {
-          lightsConfig = JSON.parse(saved);
-        } catch (e) {
-          console.error('Ошибка загрузки настроек света:', e);
-        }
-      }
-    }
-
-    // Выключение света (Philips Hue)
-    async function turnOffLights() {
-      if (!lightsConfig || lightsConfig.type !== 'hue') return;
-
-      try {
-        const response = await fetch(`http://${lightsConfig.ip}/api/${lightsConfig.apiKey}/lights`);
-        if (!response.ok) return;
-
-        const lights = await response.json();
-        const lightIds = Object.keys(lights);
-
-        // Выключаем все лампы
-        for (const id of lightIds) {
-          await fetch(`http://${lightsConfig.ip}/api/${lightsConfig.apiKey}/lights/${id}/state`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ on: false })
-          });
-        }
-
-        console.log('💡 Свет выключен');
-
-        // Вибрация для обратной связи
-        if (typeof Android !== 'undefined') {
-          Android.vibrate(200);
-        }
-      } catch (error) {
-        console.error('Ошибка выключения света:', error);
-      }
-    }
-
-    // Включение света (Philips Hue)
-    async function turnOnLights() {
-      if (!lightsConfig || lightsConfig.type !== 'hue') return;
-
-      try {
-        const response = await fetch(`http://${lightsConfig.ip}/api/${lightsConfig.apiKey}/lights`);
-        if (!response.ok) return;
-
-        const lights = await response.json();
-        const lightIds = Object.keys(lights);
-
-        // Включаем все лампы
-        for (const id of lightIds) {
-          await fetch(`http://${lightsConfig.ip}/api/${lightsConfig.apiKey}/lights/${id}/state`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ on: true, bri: 254 }) // Максимальная яркость
-          });
-        }
-
-        console.log('💡 Свет включен');
-
-        // Вибрация для обратной связи
-        if (typeof Android !== 'undefined') {
-          Android.vibrate(100);
-        }
-      } catch (error) {
-        console.error('Ошибка включения света:', error);
-      }
-    }
-
-    // Загружаем настройки при старте
-    loadLightsConfig();
-
-    // Обработчик кнопки "Слух" - выключаем свет
-    const soundBtn = document.getElementById('soundBtn');
-    if (soundBtn) {
-      soundBtn.addEventListener('click', async (e) => {
-        if (lightsConfig) {
-          e.preventDefault(); // Предотвращаем немедленный переход
-
-          console.log('🎵 Кнопка "Слух" нажата, выключаем свет...');
-          await turnOffLights();
-
-          // Небольшая задержка для завершения выключения
-          setTimeout(() => {
-            window.location.href = 'sluh.html';
-          }, 500);
-        }
-        // Если настроек нет, просто переходим по ссылке
-      });
-    }
-
     // Добавляем тактильную обратную связь на мобильных устройствах
     if ('vibrate' in navigator) {
       document.querySelectorAll('.choice-button').forEach(button => {
         button.addEventListener('click', () => {
           navigator.vibrate(10); // 10ms вибрация
         });
+      });
+    }
+
+    // ========== ОТСЛЕЖИВАНИЕ ВЫБОРА ПУТИ ==========
+
+    // Функция для увеличения счетчика выбора
+    function trackChoice(choice) {
+      try {
+        const key = `choice_${choice}`; // choice_vision или choice_sound
+        const currentCount = parseInt(localStorage.getItem(key) || '0');
+        localStorage.setItem(key, (currentCount + 1).toString());
+        console.log(`✅ Выбор "${choice}" отслежен. Всего: ${currentCount + 1}`);
+      } catch (e) {
+        console.error('Ошибка сохранения выбора:', e);
+      }
+    }
+
+    // Отслеживаем клик на "Зрение"
+    const visionBtn = document.querySelector('a[href="zrenie_mob.html"]');
+    if (visionBtn) {
+      visionBtn.addEventListener('click', () => {
+        trackChoice('vision');
+      });
+    }
+
+    // Отслеживаем клик на "Слух"
+    const soundBtn = document.getElementById('soundBtn');
+    if (soundBtn) {
+      soundBtn.addEventListener('click', () => {
+        trackChoice('sound');
       });
     }
 
